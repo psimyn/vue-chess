@@ -7,16 +7,6 @@ import chess from 'node-chess'
 Vue.use(Vuex)
 Vue.use(VuexFire)
 
-// initial state
-const state = {
-  game: chess.classic.engine(),
-  gameId: null,
-  ranks: [],
-  moves: [],
-  turn: 'White',
-  selected: null,
-}
-
 const config = {
   apiKey: "AIzaSyDgo_wWAkKHmFxHMvDGFL4IUKfy0WNyJK4",
   authDomain: "chess-cfde8.firebaseapp.com",
@@ -26,6 +16,17 @@ const config = {
 
 Firebase.initializeApp(config);
 const database = Firebase.database()
+
+
+// initial state
+const state = {
+  game: chess.classic.engine(),
+  boardState: {},
+  gameId: null,
+  ranks: [],
+  moves: [],
+  selected: null,
+}
 
 const gameId = document.location.hash.slice(1) || database.ref('games').push().key
 document.location.hash = `#${gameId}`
@@ -38,10 +39,14 @@ export const store = new Vuex.Store({
   state,
   mutations: VuexFire.mutations,
   getters: {
-    things: state => 'test',
+    boardState: state => {
+      state.game = chess.classic.engine()
+      state.moves.forEach((move) => {
+        state.game.movePiece(move)
+      })
+      return state.game.boardState
+    },
     moves: state => state.moves,
-    ranks: state => state.game.boardState.ranks.filter(r => r != null),
-    turn: state => state.turn ? 'White' : 'Black',
     selected: state => state.selected,
   },
   actions: {
@@ -63,7 +68,6 @@ export const store = new Vuex.Store({
             file: move.to.file,
           }
         })
-        state.turn = state.game.boardState.whitesTurn
         state.selected = null
       } else {
         state.selected = square
