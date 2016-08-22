@@ -1,0 +1,56 @@
+<template>
+        <span
+          class="square"
+          @click="selectSquare(square)"
+          :class="{black, selected}"
+          :data-rank="square.rank"
+          :data-file="square.file"
+        >
+          <piece :piece="square.piece" />
+        </span>
+</template>
+
+<script>
+import {mapActions, mapGetters} from 'vuex'
+import Piece from './Piece.vue'
+
+export default {
+  components: {
+    Piece
+  },
+  props: ['square', 'selected'],
+  computed: {
+    black() {
+      return !((this.square.rank % 2 == 0 && this.square.file % 2 == 1)
+      || (this.square.rank % 2 == 1 && this.square.file % 2 == 0))
+    },
+  },
+  methods: {
+    selectSquare (square) {
+      this.$store.dispatch('selectSquare', square)
+    }
+  }
+}
+</script>
+
+<style>
+.square {
+  cursor: pointer;
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  display: inline-block;
+  vertical-align: top;
+  background: white;
+  flex-shrink: 0;
+}
+
+.black {
+  background: #bbb;
+}
+
+.selected {
+  box-shadow: 0 0 4px 2px #2288bb inset;
+}
+</style>
