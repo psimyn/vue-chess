@@ -1,11 +1,6 @@
   <template>
     <div id="app">
       <div>
-        <!-- <h2>
-          <span v-if="!showTitle">{{gameTitle}}</span>
-          <input v-if="showTitle" :value="gameTitle" @keyup="setTitle" />
-          <label>&#x1f589;<input style="display: none" type="checkbox" v-model="showTitle" /></label>
-        </h2> -->
         <h3>
           <span v-if="false">Check!</span>
           <span>{{turn}} to move</span>
@@ -20,6 +15,9 @@
             </square>
           </div>
         </div>
+      </div>
+      <div>
+        <input @change="setName(playerName)" v-model="playerName" />
       </div>
     </div>
   </template>
@@ -37,6 +35,7 @@
       ...mapGetters({
         selected: 'selected',
         boardState: 'boardState',
+        playerName: 'playerName',
       }),
       turn () {
         return this.boardState.whitesTurn ? 'White' : 'Black'
@@ -48,9 +47,10 @@
     data() {
       return {
         showTitle: false,
+        name: '',
       }
     },
-    methods: mapActions(['selectSqaure']),
+    methods: mapActions(['selectSqaure', 'setName']),
   }
   </script>
 

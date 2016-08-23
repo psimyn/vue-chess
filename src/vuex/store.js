@@ -18,27 +18,70 @@ Firebase.initializeApp(config);
 const database = Firebase.database()
 
 
+const playerId = database.ref('players').push().key
+
 // initial state
 const state = {
   game: chess.classic.engine(),
   boardState: {},
-  gameId: null,
+  gameId: document.location.hash.slice(1) || database.ref('games').push().key,
   ranks: [],
   moves: [],
   selected: null,
+  player: {
+    name: 'test',
+    id: playerId,
+  },
 }
 
-const gameId = document.location.hash.slice(1) || database.ref('games').push().key
-document.location.hash = `#${gameId}`
+document.location.hash = `#${state.gameId}`
 
-const playerId = localStorage.getItem('playerId') || database.ref('users').push().key
-localStorage.setItem('playerId', playerId)
-// database.ref(`users/${playerId}/games`).push(gameId)
+const chessActions = {
+  // todo: this should be 2 functions, and call the correct one
+  // based on selected
+  selectSquare ({commit, state}, square) {
+    if (state.selected) {
+      const move = {from: state.selected, to: square}
+      state.game.movePiece(move)
+      // state.boardState = state.game.boardState
+      // todo: this should not be here
+      // and move should be auto-flattened or somethign
+      database.ref(`games/${state.gameId}/moves`).push({
+        from: {
+          rank: move.from.rank,
+          file: move.from.file,
+        },
+        to: {
+          rank: move.to.rank,
+          file: move.to.file,
+        }
+      })
+      state.selected = null
+    } else {
+      state.selected = square
+    }
+  }
+}
+
+const playerActions = {
+  setName ({state}, name) {
+    database.ref(`player/${playerId}`).child('name').set(name)
+  }
+}
 
 export const store = new Vuex.Store({
   state,
-  mutations: VuexFire.mutations,
+  mutations: {
+    ...VuexFire.mutations,
+
+  },
   getters: {
+    player: state => {
+      return state.player
+    },
+    playerName: state => {
+      return state.player.name
+    },
     boardState: state => {
       state.game = chess.classic.engine()
       state.moves.forEach((move) => {
@@ -46,36 +89,18 @@ export const store = new Vuex.Store({
       })
       return state.game.boardState
     },
-    moves: state => state.moves,
     selected: state => state.selected,
   },
   actions: {
-    // todo: this should be 2 functions, and call the correct one
-    // based on selected
-    selectSquare ({commit, state}, square) {
-      if (state.selected) {
-        const move = {from: state.selected, to: square}
-        state.game.movePiece(move)
-        // todo: this should not be here
-        // and move should be auto-flattened or somethign
-        database.ref(`games/${gameId}/moves`).push({
-          from: {
-            rank: move.from.rank,
-            file: move.from.file,
-          },
-          to: {
-            rank: move.to.rank,
-            file: move.to.file,
-          }
-        })
-        state.selected = null
-      } else {
-        state.selected = square
-      }
-    }
+    ...chessActions,
+    ...playerActions,
   }
 })
 
 export const firebase = {
-  moves: database.ref(`games/${gameId}/moves`)
+  moves: database.ref(`games/${state.gameId}/moves`),
+  player: {
+    source: database.ref(`players/${state.player.id}`),
+    asObject: true,
+  }
 }
