@@ -17,8 +17,12 @@
         </div>
       </div>
       <div>
-        <input @change="setName(playerName)" v-model="playerName" />
+        <label>Name</label>
+        <input v-on:keyup="setName(playerName)" v-model="playerName" />
       </div>
+      <button v-on:click="addGame">Save game</button>
+      <button v-on:click="setPlayer('white')">Play as White</button>
+      <button v-on:click="setPlayer('black')">Play as Black</button>
     </div>
   </template>
 
@@ -35,8 +39,11 @@
       ...mapGetters({
         selected: 'selected',
         boardState: 'boardState',
-        playerName: 'playerName',
+        player: 'player',
       }),
+      playerName () {
+        return this.player.name
+      },
       turn () {
         return this.boardState.whitesTurn ? 'White' : 'Black'
       },
@@ -46,11 +53,12 @@
     },
     data() {
       return {
+        playerName: '',
         showTitle: false,
         name: '',
       }
     },
-    methods: mapActions(['selectSqaure', 'setName']),
+    methods: mapActions(['selectSqaure', 'setName', 'addGame', 'setPlayer']),
   }
   </script>
 

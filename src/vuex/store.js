@@ -17,32 +17,48 @@ const config = {
 Firebase.initializeApp(config);
 const database = Firebase.database()
 
+const gameRef = database.ref('games')
+const playerRef = database.ref('players')
 
-const playerId = database.ref('players').push().key
+const playerId = localStorage.getItem('playerId') || playerRef.push().key
+const gameId = document.location.hash.slice(1) || gameRef.push().key
 
 // initial state
 const state = {
-  game: chess.classic.engine(),
+  playerId,
+  gameId,
+
+  game: {
+    players: {
+      white: playerId,
+      black: 'Player 2',
+    },
+    engine: chess.classic.engine(),
+  },
   boardState: {},
-  gameId: document.location.hash.slice(1) || database.ref('games').push().key,
   ranks: [],
   moves: [],
   selected: null,
+
   player: {
-    name: 'test',
-    id: playerId,
+    name: 'Player 1',
+    games: [],
   },
 }
 
+localStorage.setItem('playerId', state.playerId)
 document.location.hash = `#${state.gameId}`
 
 const chessActions = {
+  setPlayer ({state}, color) {
+    database.ref(`games/${state.gameId}/players/${color}`).set(state.playerId)
+  },
   // todo: this should be 2 functions, and call the correct one
   // based on selected
   selectSquare ({commit, state}, square) {
     if (state.selected) {
       const move = {from: state.selected, to: square}
-      state.game.movePiece(move)
+      state.game.engine.movePiece(move)
       // state.boardState = state.game.boardState
       // todo: this should not be here
       // and move should be auto-flattened or somethign
@@ -65,29 +81,28 @@ const chessActions = {
 
 const playerActions = {
   setName ({state}, name) {
-    database.ref(`player/${playerId}`).child('name').set(name)
-  }
+    database.ref(`players/${state.playerId}/name`).set(name)
+  },
+  addGame ({state}) {
+    database.ref(`players/${state.playerId}/games`).push(state.gameId)
+  },
 }
 
 export const store = new Vuex.Store({
   state,
   mutations: {
     ...VuexFire.mutations,
-
   },
   getters: {
     player: state => {
       return state.player
     },
-    playerName: state => {
-      return state.player.name
-    },
     boardState: state => {
-      state.game = chess.classic.engine()
+      state.game.engine = chess.classic.engine()
       state.moves.forEach((move) => {
-        state.game.movePiece(move)
+        state.game.engine.movePiece(move)
       })
-      return state.game.boardState
+      return state.game.engine.boardState
     },
     selected: state => state.selected,
   },
@@ -97,10 +112,21 @@ export const store = new Vuex.Store({
   }
 })
 
+const chessBase = {
+  moves: gameRef.child(`${state.gameId}/moves`),
+  players: {
+    source: gameRef.child(`${state.gameId}/players`),
+    asObject: true,
+  },
+}
+
 export const firebase = {
-  moves: database.ref(`games/${state.gameId}/moves`),
+  game: {
+    source: gameRef.child(state.gameId),
+    asObject: true,
+  },
   player: {
-    source: database.ref(`players/${state.player.id}`),
+    source: database.ref(`players/${state.playerId}`),
     asObject: true,
   }
 }
