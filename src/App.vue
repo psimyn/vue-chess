@@ -3,62 +3,48 @@
       <div>
         <h3>
           <span v-if="false">Check!</span>
-          <span>{{turn}} to move</span>
+          <span v-if="yourMove">Your move! ({{turn}})</span>
         </h3>
-        <div>
-          <div class="row" v-for="row in ranks">
-            <square
-              :square="square"
-              :selected="square == selected"
-              v-for="square in row.squares.filter(i => i != null)"
-            >
-            </square>
-          </div>
-        </div>
+        <board />
       </div>
-      <div>
-        <label>Name</label>
-        <input v-on:keyup="setName(playerName)" v-model="playerName" />
-      </div>
-      <button v-on:click="addGame">Save game</button>
-      <button v-on:click="setPlayer('white')">Play as White</button>
-      <button v-on:click="setPlayer('black')">Play as Black</button>
+      <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
+      <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
+      <player />
     </div>
   </template>
 
 <script>
-  import Square from './Square.vue'
+  import Board from './components/Board.vue'
+  import Player from './components/Player.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
   import Chess from 'node-chess'
 
   export default {
     components: {
-      Square,
+      Board,
+      Player,
     },
     computed: {
       ...mapGetters({
-        selected: 'selected',
         boardState: 'boardState',
         player: 'player',
+        game: 'game',
       }),
-      playerName () {
-        return this.player.name
+      players () {
+        return this.game.players
       },
       turn () {
         return this.boardState.whitesTurn ? 'White' : 'Black'
       },
-      ranks () {
-        return this.boardState.ranks.filter(rank => rank != null)
-      }
+      yourMove () {
+        if (this.boardState.whitesTurn) {
+          return this.players.white === this.player.id
+        } else {
+          return this.players.black === this.player.id
+        }
+      },
     },
-    data() {
-      return {
-        playerName: '',
-        showTitle: false,
-        name: '',
-      }
-    },
-    methods: mapActions(['selectSqaure', 'setName', 'addGame', 'setPlayer']),
+    methods: mapActions(['setPlayer']),
   }
   </script>
 

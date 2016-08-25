@@ -1,13 +1,13 @@
 <template>
-        <span
-          class="square"
-          @click="selectSquare(square)"
-          :class="{black, selected}"
-          :data-rank="square.rank"
-          :data-file="square.file"
-        >
-          <piece :piece="square.piece" />
-        </span>
+  <span
+    class="square"
+    @click="selectSquare(square)"
+    :class="{black, selected}"
+    :data-rank="square.rank"
+    :data-file="square.file"
+  >
+    <piece :piece="square.piece" />
+  </span>
 </template>
 
 <script>
@@ -37,13 +37,19 @@ export default {
 .square {
   cursor: pointer;
   text-align: center;
-  width: 50px;
-  height: 50px;
+  flex: 1 1 auto;
   padding: 0;
   display: inline-block;
   vertical-align: top;
   background: white;
-  flex-shrink: 0;
+  position: relative;
+}
+
+.square:after {
+  content: ' ';
+  padding-bottom: 100%;
+  display: block;
+  height: 0;
 }
 
 .black {

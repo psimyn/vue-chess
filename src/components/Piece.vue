@@ -1,15 +1,10 @@
 <template>
-  <span>
-    <span
-      v-if="piece"
-      :class="{white}"
-      class="piece"
-    >
-      <img :src="img" />
-    </span>
-    <span v-if="!piece">
-      &nbsp;
-    </span>
+  <span
+    v-if="piece"
+    v-bind:class="{white}"
+    class="piece"
+    v-bind:style="{'background-image': `url(${img})`}"
+  >
   </span>
 </template>
 
@@ -22,7 +17,7 @@ export default {
     },
     img() {
       const color = this.piece.isWhite ? 'white' : 'black'
-      return require(`./assets/${color}-${this.piece.name.toLowerCase()}.svg`)
+      return require(`../assets/${color}-${this.piece.name.toLowerCase()}.svg`)
     }
   },
   methods: {
@@ -35,6 +30,12 @@ export default {
   font-weight: bold;
   font-size: 16px;
   text-shadow: 0 2px 2px white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-size: cover;
 }
 
 .white {

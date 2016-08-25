@@ -23,21 +23,33 @@ const playerRef = database.ref('players')
 const playerId = localStorage.getItem('playerId') || playerRef.push().key
 const gameId = document.location.hash.slice(1) || gameRef.push().key
 
+let engine = chess.classic.engine()
+const moves = [] // JSON.parse(localStorage.getItem('moves') || '[]')
+
+const gameState = {
+  gameId,
+  boardState: makeMoves(moves),
+  moves,
+  players: {
+    white: null,
+    black: null,
+  },
+}
+
+function makeMoves (moves) {
+  engine = chess.classic.engine()
+  moves.forEach((move) => {
+    engine.movePiece(move)
+  })
+  return engine.boardState
+}
+
 // initial state
 const state = {
   playerId,
-  gameId,
 
-  game: {
-    players: {
-      white: playerId,
-      black: 'Player 2',
-    },
-    engine: chess.classic.engine(),
-  },
-  boardState: {},
-  ranks: [],
-  moves: [],
+  ...gameState,
+
   selected: null,
 
   player: {
@@ -52,29 +64,33 @@ document.location.hash = `#${state.gameId}`
 const chessActions = {
   setPlayer ({state}, color) {
     database.ref(`games/${state.gameId}/players/${color}`).set(state.playerId)
+    database.ref(`players/${state.playerId}/games`).push(state.gameId)
   },
   // todo: this should be 2 functions, and call the correct one
   // based on selected
   selectSquare ({commit, state}, square) {
     if (state.selected) {
-      const move = {from: state.selected, to: square}
-      state.game.engine.movePiece(move)
-      // state.boardState = state.game.boardState
-      // todo: this should not be here
-      // and move should be auto-flattened or somethign
-      database.ref(`games/${state.gameId}/moves`).push({
+      const move = {
         from: {
-          rank: move.from.rank,
-          file: move.from.file,
+          rank: state.selected.rank,
+          file: state.selected.file,
         },
         to: {
-          rank: move.to.rank,
-          file: move.to.file,
+          rank: square.rank,
+          file: square.file,
         }
-      })
+      }
+      state.moves.push(move)
+      database.ref(`games/${state.gameId}/moves`).push(move)
       state.selected = null
     } else {
-      state.selected = square
+      if (!square.piece) return
+
+      if (square.piece.isWhite && state.playerId === state.players.white) {
+        state.selected = square
+      } else if (!square.piece.isWhite && state.playerId === state.players.black) {
+        state.selected = square
+      }
     }
   }
 }
@@ -82,9 +98,6 @@ const chessActions = {
 const playerActions = {
   setName ({state}, name) {
     database.ref(`players/${state.playerId}/name`).set(name)
-  },
-  addGame ({state}) {
-    database.ref(`players/${state.playerId}/games`).push(state.gameId)
   },
 }
 
@@ -95,14 +108,18 @@ export const store = new Vuex.Store({
   },
   getters: {
     player: state => {
-      return state.player
+      return {
+        ...state.player,
+        id: state.playerId,
+      }
+    },
+    game: state => {
+      return {
+        players: state.players
+      }
     },
     boardState: state => {
-      state.game.engine = chess.classic.engine()
-      state.moves.forEach((move) => {
-        state.game.engine.movePiece(move)
-      })
-      return state.game.engine.boardState
+      return makeMoves(state.moves)
     },
     selected: state => state.selected,
   },
@@ -121,10 +138,7 @@ const chessBase = {
 }
 
 export const firebase = {
-  game: {
-    source: gameRef.child(state.gameId),
-    asObject: true,
-  },
+  ...chessBase,
   player: {
     source: database.ref(`players/${state.playerId}`),
     asObject: true,
