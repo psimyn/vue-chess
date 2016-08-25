@@ -1,15 +1,17 @@
   <template>
     <div id="app">
-      <div>
-        <h3>
-          <span v-if="false">Check!</span>
-          <span v-if="yourMove">Your move! ({{turn}})</span>
-        </h3>
-        <board />
+      <div class="container">
+        <div>
+          <h3>
+            <span v-if="false">Check!</span>
+            <span v-if="yourMove">Your move! ({{turn}})</span>
+          </h3>
+          <board />
+        </div>
+        <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
+        <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
+        <player />
       </div>
-      <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
-      <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
-      <player />
     </div>
   </template>
 
@@ -59,6 +61,11 @@
   #app {
     max-height: 100vh;
     overflow-y: scroll;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
   }
 
   .row {
