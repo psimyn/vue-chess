@@ -20,7 +20,13 @@ const database = Firebase.database()
 const gameRef = database.ref('games')
 const playerRef = database.ref('players')
 
-const playerId = localStorage.getItem('playerId') || playerRef.push().key
+// check localStorage for playerId, else get from firebase
+const search = document.location.search.slice(1)
+let pid
+if (search.indexOf('pid=') > -1) {
+  pid = search.split('pid=')[1].split('&')[0].split('#')[0]
+}
+const playerId = pid || localStorage.getItem('playerId') || playerRef.push().key
 const gameId = document.location.hash.slice(1) || gameRef.push().key
 
 let engine = chess.classic.engine()

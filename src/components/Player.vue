@@ -58,7 +58,7 @@ export default {
     },
     playerUrl () {
       const url = new URL(document.location)
-      url.search = this.player.id
+      url.search = `pid=${this.player.id}`
       return url.href
     },
   },
