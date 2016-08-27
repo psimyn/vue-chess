@@ -2,7 +2,6 @@
   <p>
     <a
       v-bind:href="link"
-      <!-- v-on:click="loadGame(gameId)" -->
     >
       {{gameId}}
     </a>

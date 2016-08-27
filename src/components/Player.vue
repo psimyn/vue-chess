@@ -1,34 +1,25 @@
 <template>
-  <div>
-    <fieldset>
-      <div class="players">
-        <span class="left">
-          <label>Your name</label>
-          <input v-on:keyup="setName(playerName)" v-model="playerName" />
-        </span>
+  <div class="player-container">
+    <div class="players">
+      <span class="left">
+        <label>Your name</label>
+        <input v-on:keyup="setName(playerName)" v-model="playerName" />
+      </span>
 
-        <span v-if="false" class="right">
-          <label>Opponent</label>
-          <span>{{opponent}}</span>
-        </span>
-      </div>
+      <span v-if="false" class="right">
+        <label>Opponent</label>
+        <span>{{opponent}}</span>
+      </span>
+    </div>
 
-      <div>
-        <p>To play from another browser or device, click the button to get the link with your Player ID</p>
-        <button v-if="!showUrl" v-on:click="showUrl = !showUrl">
-          Show secret link
-        </button>
-        <button v-if="showUrl" v-on:click="copy">Copy URL</button>
-        <span v-if="message">{{message}}</span>
-        <textarea v-if="showUrl" id="playerUrl">{{playerUrl}}</textarea>
-      </div>
-    </fieldset>
-    <div v-if="false">
-      <h3>My Games</h3>
-      <game-link
-        v-bind:gameId="game"
-        v-for="game in games"
-      />
+    <div>
+      <p>To play from another browser or device, click the button to get the link with your Player ID</p>
+      <button v-if="!showUrl" v-on:click="showUrl = !showUrl">
+        Show secret link
+      </button>
+      <button v-if="showUrl" v-on:click="copy">Copy URL</button>
+      <p v-if="message">{{message}}</p>
+      <textarea v-if="showUrl" id="playerUrl">{{playerUrl}}</textarea>
     </div>
   </div>
 </template>
@@ -47,9 +38,6 @@ export default {
       game: 'game',
       playerId: 'playerId'
     }),
-    games () {
-      return this.player.games
-    },
     opponent () {
       return this.game.players
     },
@@ -92,10 +80,9 @@ export default {
 </script>
 
 <style>
-  fieldset {
-    background: #fefefe;
-    margin-top: 24px;
+  .player-container {
     padding: 16px;
+    min-height: 100vh;
   }
   .players {
     overflow: hidden;
@@ -111,8 +98,10 @@ export default {
   }
   textarea {
     display: block;
-    min-width: 80%;
-    margin-left: 12px;
+    width: 100%;
+    padding: 0;
+    outline: none;
+    border: none;
   }
   .hide {
     height: 0;
