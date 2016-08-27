@@ -2,8 +2,8 @@
   <div class="board">
     <div class="row" v-for="row in ranks">
       <square
-        :square="square"
-        :selected="square == selected"
+        v-bind:square="square"
+        v-bind:selected="square == selected"
         v-for="square in row.squares.filter(i => i != null)"
       >
       </square>

@@ -1,30 +1,28 @@
   <template>
     <div id="app">
       <div class="container">
-        <div>
-          <h3>
-            <span v-if="false">Check!</span>
-            <span v-if="yourMove">Your move! ({{turn}})</span>
-          </h3>
-          <board />
-        </div>
+        <board />
+        <h3>
+          <span v-if="false">Check!</span>
+          <span v-if="yourMove">Your move! ({{turn}})</span>
+        </h3>
         <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
         <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
-        <player />
       </div>
+      <sidebar />
     </div>
   </template>
 
 <script>
   import Board from './components/Board.vue'
-  import Player from './components/Player.vue'
+  import Sidebar from './components/Sidebar.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
   import Chess from 'node-chess'
 
   export default {
     components: {
       Board,
-      Player,
+      Sidebar,
     },
     computed: {
       ...mapGetters({
@@ -55,6 +53,7 @@
     font-family: Helvetica, sans-serif;
     margin: 0;
     overflow-y: hidden;
+    height: 100vh;
     background: #f2f2f2;
   }
 
@@ -81,6 +80,6 @@
     border-bottom: solid 2px #888;
     background: white;
     line-height: 2;
-    margin: 1em;
+    margin: 1em 0;
   }
 </style>

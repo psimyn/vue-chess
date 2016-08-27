@@ -1,12 +1,10 @@
 <template>
   <span
     class="square"
-    @click="selectSquare(square)"
-    :class="{black, selected}"
-    :data-rank="square.rank"
-    :data-file="square.file"
+    v-on:click="selectSquare(square)"
+    v-bind:class="{black, selected}"
   >
-    <piece :piece="square.piece" />
+    <piece v-bind:piece="square.piece" />
   </span>
 </template>
 
