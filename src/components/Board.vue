@@ -14,7 +14,6 @@
 <script>
 import Square from './Square.vue'
 import {mapActions, mapGetters, mapState} from 'vuex'
-import Chess from 'node-chess'
 
 export default {
   components: {

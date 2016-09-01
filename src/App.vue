@@ -17,7 +17,6 @@
   import Board from './components/Board.vue'
   import Sidebar from './components/Sidebar.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
-  import Chess from 'node-chess'
 
   export default {
     components: {
