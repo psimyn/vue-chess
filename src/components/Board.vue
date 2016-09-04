@@ -2,7 +2,7 @@
   <div class="board">
     <div class="row" v-for="row in ranks">
       <square
-        v-for="s in filter(row)"
+        v-for="s of row.squares.filter(i => i != null)"
         v-bind:square="s"
         v-bind:selected="s == selected">
       </square>
@@ -25,9 +25,6 @@ export default {
     }),
     ranks () {
       return this.boardState.ranks.filter(rank => rank != null)
-    },
-    filter (row) {
-      return row.squares.filter(i => i != null)
     }
   },
 }
