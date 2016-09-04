@@ -33,6 +33,8 @@ export default {
 
 <style>
   .board {
+    display: flex;
+    flex-direction: column-reverse;
     margin: 0 auto;
     max-width: 600px;
     box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);

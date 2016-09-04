@@ -69,6 +69,8 @@ document.location.hash = `#${state.gameId}`
 
 const chessActions = {
   setPlayer ({state}, color) {
+    state.players[color] = state.playerId
+    // todo
     database.ref(`games/${state.gameId}/players/${color}`).set(state.playerId)
     database.ref(`players/${state.playerId}/games`).push(state.gameId)
   },
@@ -86,12 +88,13 @@ const chessActions = {
           file: square.file,
         }
       }
-      state.moves.push(move)
-      database.ref(`games/${state.gameId}/moves`).push(move)
+      state.boardState = makeMoves(state.moves.concat(move))
+      const moves = state.boardState.moveHistory.map(m => ({from: m.from, to: m.to}))
+      state.moves = moves
       state.selected = null
+      database.ref(`games/${state.gameId}/moves`).set(moves)
     } else {
       if (!square.piece) return
-
       if (square.piece.isWhite && state.playerId === state.players.white) {
         state.selected = square
       } else if (!square.piece.isWhite && state.playerId === state.players.black) {
@@ -103,7 +106,7 @@ const chessActions = {
 
 const playerActions = {
   setName ({state}, name) {
-    database.ref(`players/${state.playerId}/name`).set(name)
+    // database.ref(`players/${state.playerId}/name`).set(name)
   },
 }
 
@@ -119,11 +122,9 @@ export const store = new Vuex.Store({
         id: state.playerId,
       }
     },
-    game: state => {
-      return {
-        players: state.players
-      }
-    },
+    game: state => ({
+      players: state.players
+    }),
     boardState: state => {
       return makeMoves(state.moves)
     },
