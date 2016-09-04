@@ -2,10 +2,12 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexFire from 'vuexfire'
 import Firebase from 'firebase'
-import chess from 'node-chess'
+import chess from 'chess'
 
 Vue.use(Vuex)
 Vue.use(VuexFire)
+
+window.Chess = chess
 
 const config = {
   apiKey: "AIzaSyDgo_wWAkKHmFxHMvDGFL4IUKfy0WNyJK4",
@@ -29,12 +31,10 @@ if (search.indexOf('pid=') > -1) {
 const playerId = pid || localStorage.getItem('playerId') || playerRef.push().key
 const gameId = document.location.hash.slice(1) || gameRef.push().key
 
-let engine = chess.classic.engine()
 const moves = [] // JSON.parse(localStorage.getItem('moves') || '[]')
-
 const gameState = {
   gameId,
-  boardState: makeMoves(moves),
+  gameClient: chess.create(),
   moves,
   players: {
     white: null,
@@ -42,22 +42,16 @@ const gameState = {
   },
 }
 
-function makeMoves (moves) {
-  engine = chess.classic.engine()
-  moves.forEach((move) => {
-    engine.movePiece(move)
-  })
-  return engine.boardState
-}
+window.State = gameState
 
 // initial state
 const state = {
-  playerId,
-
   ...gameState,
 
   selected: null,
+  message: '',
 
+  playerId,
   player: {
     name: 'Player 1',
   },
@@ -75,6 +69,7 @@ const chessActions = {
   // todo: this should be 2 functions, and call the correct one
   // based on selected
   selectSquare ({commit, state}, square) {
+    state.message = null
     if (state.selected) {
       const move = {
         from: {
@@ -86,17 +81,38 @@ const chessActions = {
           file: square.file,
         }
       }
-      state.boardState = makeMoves(state.moves.concat(move))
-      const moves = state.boardState.moveHistory.map(m => ({from: m.from, to: m.to}))
-      state.moves = moves
+      // if valid move, do stuff
+      const notatedMoves = state.gameClient.getStatus().notatedMoves
+      const validMove = Object.keys(notatedMoves).find((key) => {
+        const notatedMove = notatedMoves[key]
+        return notatedMove.src.file === move.from.file &&
+          notatedMove.src.rank === move.from.rank &&
+          notatedMove.dest.file === move.to.file &&
+          notatedMove.dest.rank === move.to.rank
+      })
+
+      if (validMove) {
+        state.gameClient.move(validMove)
+        database.ref(`games/${state.gameId}/moves`).push({
+          pge: validMove,
+        })
+      } else {
+        state.message = 'Invalid move'
+      }
       state.selected = null
-      // database.ref(`games/${state.gameId}/moves`).set(moves)
     } else {
+      // no piece, can't select
       if (!square.piece) return
-      if (square.piece.isWhite && state.playerId === state.players.white) {
-        state.selected = square
-      } else if (!square.piece.isWhite && state.playerId === state.players.black) {
-        state.selected = square
+
+      const turn = state.moves.length % 2 === 0 ? 'white' : 'black'
+      if (state.playerId === state.players[turn.toLowerCase()]) {
+        if (turn === square.piece.side.name) {
+          state.selected = square
+        } else {
+          state.message = `It is ${turn}'s move`
+        }
+      } else {
+        state.message = 'Not your piece'
       }
     }
   }
@@ -123,8 +139,20 @@ export const store = new Vuex.Store({
     game: state => ({
       players: state.players
     }),
-    boardState: state => {
-      return makeMoves(state.moves)
+    message: state => state.message,
+    moves: state => state.moves,
+    board: state => {
+      state.gameClient = chess.create({PGN: true})
+      state.moves.forEach((move, index) => {
+        try {
+          move = move.pge || move
+          state.gameClient.move(move)
+        } catch (e) {
+          console.log(index, move)
+          // this will happen for every n-1 moves
+        }
+      })
+      return state.gameClient.getStatus().board
     },
     selected: state => state.selected,
   },

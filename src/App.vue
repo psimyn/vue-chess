@@ -22,18 +22,18 @@
     },
     computed: {
       ...mapGetters({
-        boardState: 'boardState',
         player: 'player',
         game: 'game',
+        moves: 'moves',
       }),
       players () {
         return this.game.players
       },
       turn () {
-        return this.boardState.whitesTurn ? 'White' : 'Black'
+        return this.moves.length % 2 === 1 ? 'White' : 'Black'
       },
       yourMove () {
-        if (this.boardState.whitesTurn) {
+        if (this.moves.length % 2 === 1) {
           return this.players.white === this.player.id
         } else {
           return this.players.black === this.player.id

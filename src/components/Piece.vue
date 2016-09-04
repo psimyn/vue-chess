@@ -1,7 +1,7 @@
 <template>
   <span
     v-if="piece"
-    v-bind:class="{white}"
+    v-bind:class="{side}"
     class="piece"
     v-bind:style="{'background-image': `url(${img})`}"
   >
@@ -12,12 +12,12 @@
 export default {
   props: ['piece'],
   computed: {
-    white() {
-      return this.piece.isWhite
+    side() {
+      return this.piece.side.name
     },
     img() {
-      const color = this.piece.isWhite ? 'white' : 'black'
-      return require(`../assets/${color}-${this.piece.name.toLowerCase()}.svg`)
+      const color = this.piece.side.name
+      return require(`../assets/${color}-${this.piece.type.toLowerCase()}.svg`)
     }
   },
   methods: {

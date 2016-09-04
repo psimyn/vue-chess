@@ -3,14 +3,15 @@
       <h3>
         <span v-if="false">Check!</span>
         <span v-if="yourMove">Your move! ({{turn}})</span>
+        <span v-if="message">{{message}}</span>
       </h3>
       <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
       <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
-      <div v-if="moves.length > 1">
+      <div v-if="moves.length > 1" class="moveHistory">
         <button v-on:click="showMoves = !showMoves">
           Move History
         </button>
-        <p v-if="showMoves" v-for="move in moves">
+        <p v-if="!showMoves" v-for="move in groupedMoves" class="move">
           {{move}}
         </p>
       </div>
@@ -30,32 +31,28 @@
     },
     computed: {
       ...mapGetters({
-        boardState: 'boardState',
         player: 'player',
         game: 'game',
+        moves: 'moves',
+        message: 'message',
       }),
       players () {
         return this.game.players
       },
-      moves () {
-        return this.boardState.moveHistory.map((move) => {
-          const from = {
-            row: move.from.rank,
-            column: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][move.from.file - 1],
-          }
-          const to = {
-            row: move.to.rank,
-            column: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][move.to.file - 1],
-          }
-
-          return `${from.column}${from.row} => ${to.column}${to.row}`
-        })
-      },
       turn () {
-        return this.boardState.whitesTurn ? 'White' : 'Black'
+        return this.moves.length % 2 === 0 ? 'White' : 'Black'
+      },
+      groupedMoves () {
+        return this.moves.reduce((moveList, move, index) => {
+          const moveIndex = Math.floor(index / 2)
+          const moveNumber = moveIndex + 1
+          moveList[moveIndex] = moveList[moveIndex] || `${moveNumber}.`
+          moveList[moveIndex] += ` ${move.pge}`
+          return moveList
+        }, [])
       },
       yourMove () {
-        if (this.boardState.whitesTurn) {
+        if (this.moves.length % 2 === 0) {
           return this.players.white === this.player.id
         } else {
           return this.players.black === this.player.id
@@ -67,37 +64,23 @@
   </script>
 
   <style>
-  body {
-    font-family: Helvetica, sans-serif;
-    margin: 0;
-    overflow-y: hidden;
-    height: 100vh;
-    background: #f2f2f2;
-  }
-
-  #app {
-    max-height: 100vh;
-    overflow-y: scroll;
-  }
-
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .row {
-    display: flex;
-  }
-
-  input {
-
-  }
-
   button {
-    border: solid 1px #222;
+    border: none;
     border-bottom: solid 2px #888;
     background: white;
-    line-height: 2;
-    margin: 1em 0;
+  }
+
+  .moveHistory {
+    padding: 1em;
+    float: right;
+    background: white;
+    transition: width 0.15s;
+  }
+
+  .move {
+    line-height: 1.5;
+    font-size: calc(1em + 1vw);
+    margin: 0 auto;
+    font-weight: bold;
   }
 </style>
