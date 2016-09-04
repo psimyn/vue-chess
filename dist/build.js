@@ -1121,9 +1121,175 @@ utils.subclass(module.exports, Error);
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
+    }
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(10).nextTick;
+/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(5).nextTick;
 var apply = Function.prototype.apply;
 var slice = Array.prototype.slice;
 var immediateIds = {};
@@ -1199,10 +1365,10 @@ exports.setImmediate = typeof setImmediate === "function" ? setImmediate : funct
 exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
   delete immediateIds[id];
 };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5).setImmediate, __webpack_require__(5).clearImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6).setImmediate, __webpack_require__(6).clearImmediate))
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 var g;
@@ -1227,11 +1393,11 @@ module.exports = g;
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
 
 /*  */
 
@@ -1449,7 +1615,7 @@ var config = {
   /**
    * Whether to enable devtools
    */
-  devtools: "production" !== 'production',
+  devtools: process.env.NODE_ENV !== 'production',
 
   /**
    * Error handler for watcher errors
@@ -1522,7 +1688,7 @@ var config = {
   /**
    * Server rendering?
    */
-  _isServer: {"NODE_ENV":"production"}.VUE_ENV === 'server'
+  _isServer: process.env.VUE_ENV === 'server'
 }
 
 /*  */
@@ -1679,7 +1845,7 @@ if (typeof Set !== 'undefined' && /native code/.test(Set.toString())) {
 var hasProxy;
 var proxyHandlers;
 var initProxy;
-if (false) {
+if (process.env.NODE_ENV !== 'production') {
   var allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
     'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
@@ -1783,7 +1949,7 @@ var index = 0
 function resetSchedulerState () {
   queue.length = 0
   has = {}
-  if (false) {
+  if (process.env.NODE_ENV !== 'production') {
     circular = {}
   }
   waiting = flushing = false
@@ -1813,7 +1979,7 @@ function flushSchedulerQueue () {
     has[id] = null
     watcher.run()
     // in dev build, check and stop circular updates.
-    if (false) {
+    if (process.env.NODE_ENV !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1
       if (circular[id] > config._maxUpdateCount) {
         warn(
@@ -1906,7 +2072,7 @@ var Watcher = function Watcher (
     this.getter = parsePath(expOrFn)
     if (!this.getter) {
       this.getter = function () {}
-      "production" !== 'production' && warn(
+      process.env.NODE_ENV !== 'production' && warn(
         "Failed watching path: \"" + expOrFn + "\" " +
         'Watcher only accepts simple dot-delimited paths. ' +
         'For full control, use a function instead.',
@@ -2009,7 +2175,7 @@ Watcher.prototype.run = function run () {
         try {
           this.cb.call(this.vm, value, oldValue)
         } catch (e) {
-          "production" !== 'production' && warn(
+          process.env.NODE_ENV !== 'production' && warn(
             ("Error in watcher \"" + (this.expression) + "\""),
             this.vm
           )
@@ -2310,7 +2476,7 @@ function defineReactive (
       if (newVal === value) {
         return
       }
-      if (false) {
+      if (process.env.NODE_ENV !== 'production' && customSetter) {
         customSetter()
       }
       if (setter) {
@@ -2340,7 +2506,7 @@ function set (obj, key, val) {
   }
   var ob = obj.__ob__
   if (obj._isVue || (ob && ob.vmCount)) {
-    "production" !== 'production' && warn(
+    process.env.NODE_ENV !== 'production' && warn(
       'Avoid adding reactive properties to a Vue instance or its root $data ' +
       'at runtime - declare it upfront in the data option.'
     )
@@ -2361,7 +2527,7 @@ function set (obj, key, val) {
 function del (obj, key) {
   var ob = obj.__ob__
   if (obj._isVue || (ob && ob.vmCount)) {
-    "production" !== 'production' && warn(
+    process.env.NODE_ENV !== 'production' && warn(
       'Avoid deleting properties on a Vue instance or its root $data ' +
       '- just set it to null.'
     )
@@ -2399,7 +2565,7 @@ function initProps (vm) {
     var loop = function ( i ) {
       var key = keys[i]
       /* istanbul ignore else */
-      if (false) {
+      if (process.env.NODE_ENV !== 'production') {
         defineReactive(vm, key, validateProp(key, props, propsData, vm), function () {
           if (vm.$parent && !observerState.isSettingProps) {
             warn(
@@ -2428,7 +2594,7 @@ function initData (vm) {
     : data || {}
   if (!isPlainObject(data)) {
     data = {}
-    "production" !== 'production' && warn(
+    process.env.NODE_ENV !== 'production' && warn(
       'data functions should return an object.',
       vm
     )
@@ -2439,7 +2605,7 @@ function initData (vm) {
   var i = keys.length
   while (i--) {
     if (props && hasOwn(props, keys[i])) {
-      "production" !== 'production' && warn(
+      process.env.NODE_ENV !== 'production' && warn(
         "The data property \"" + (keys[i]) + "\" is already declared as a prop. " +
         "Use prop default value instead.",
         vm
@@ -2543,7 +2709,7 @@ function stateMixin (Vue) {
   dataDef.get = function () {
     return this._data
   }
-  if (false) {
+  if (process.env.NODE_ENV !== 'production') {
     dataDef.set = function (newData) {
       warn(
         'Avoid replacing instance root $data. ' +
@@ -2749,7 +2915,7 @@ function updateListeners (
     cur = on[name]
     old = oldOn[name]
     if (!cur) {
-      "production" !== 'production' && warn(
+      process.env.NODE_ENV !== 'production' && warn(
         ("Handler for event \"" + name + "\" is undefined.")
       )
     } else if (!old) {
@@ -2839,7 +3005,7 @@ function lifecycleMixin (Vue) {
     vm.$el = el
     if (!vm.$options.render) {
       vm.$options.render = emptyVNode
-      if (false) {
+      if (process.env.NODE_ENV !== 'production') {
         /* istanbul ignore if */
         if (vm.$options.template) {
           warn(
@@ -2917,7 +3083,7 @@ function lifecycleMixin (Vue) {
     // update props
     if (propsData && vm.$options.props) {
       observerState.shouldConvert = false
-      if (false) {
+      if (process.env.NODE_ENV !== 'production') {
         observerState.isSettingProps = true
       }
       var propKeys = vm.$options._propKeys || []
@@ -2926,7 +3092,7 @@ function lifecycleMixin (Vue) {
         vm[key] = validateProp(key, vm.$options.props, propsData, vm)
       }
       observerState.shouldConvert = true
-      if (false) {
+      if (process.env.NODE_ENV !== 'production') {
         observerState.isSettingProps = false
       }
     }
@@ -3018,7 +3184,7 @@ function createComponent (
   }
 
   if (typeof Ctor !== 'function') {
-    if (false) {
+    if (process.env.NODE_ENV !== 'production') {
       warn(("Invalid Component definition: " + (String(Ctor))), context)
     }
     return
@@ -3198,7 +3364,7 @@ function resolveAsyncComponent (
     }
 
     var reject = function (reason) {
-      "production" !== 'production' && warn(
+      process.env.NODE_ENV !== 'production' && warn(
         "Failed to resolve async component: " + (String(factory)) +
         (reason ? ("\nReason: " + reason) : '')
       )
@@ -3310,7 +3476,7 @@ function _createElement (
   children
 ) {
   if (data && data.__ob__) {
-    "production" !== 'production' && warn(
+    process.env.NODE_ENV !== 'production' && warn(
       "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
       'Always create fresh vnode data objects in each render!',
       context
@@ -3393,7 +3559,7 @@ function renderMixin (Vue) {
     try {
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
-      if (false) {
+      if (process.env.NODE_ENV !== 'production') {
         warn(("Error when rendering " + (formatComponentName(vm)) + ":"))
       }
       /* istanbul ignore else */
@@ -3411,7 +3577,7 @@ function renderMixin (Vue) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
-      if (false) {
+      if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
         warn(
           'Multiple root nodes returned from render function. Render function ' +
           'should return a single root node.',
@@ -3501,7 +3667,7 @@ function renderMixin (Vue) {
     asProp) {
     if (value) {
       if (!isObject(value)) {
-        "production" !== 'production' && warn(
+        process.env.NODE_ENV !== 'production' && warn(
           'v-bind without argument expects an Object or Array value',
           this
         )
@@ -3666,7 +3832,7 @@ function initMixin (Vue) {
       )
     }
     /* istanbul ignore else */
-    if (false) {
+    if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
       vm._renderProxy = vm
@@ -3728,7 +3894,7 @@ renderMixin(Vue)
 var warn
 var formatComponentName
 
-if (false) {
+if (process.env.NODE_ENV !== 'production') {
   var hasConsole = typeof console !== 'undefined'
 
   warn = function (msg, vm) {
@@ -3769,7 +3935,7 @@ var strats = config.optionMergeStrategies
 /**
  * Options with restrictions
  */
-if (false) {
+if (process.env.NODE_ENV !== 'production') {
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
       warn(
@@ -3822,7 +3988,7 @@ strats.data = function (
       return parentVal
     }
     if (typeof childVal !== 'function') {
-      "production" !== 'production' && warn(
+      process.env.NODE_ENV !== 'production' && warn(
         'The "data" option should be a function ' +
         'that returns a per-instance value in component ' +
         'definitions.',
@@ -3959,7 +4125,7 @@ function normalizeComponents (options) {
     for (var key in components) {
       var lower = key.toLowerCase()
       if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
-        "production" !== 'production' && warn(
+        process.env.NODE_ENV !== 'production' && warn(
           'Do not use built-in or reserved HTML elements as component ' +
           'id: ' + key
         )
@@ -3989,7 +4155,7 @@ function normalizeProps (options) {
       if (typeof val === 'string') {
         name = camelize(val)
         res[name] = { type: null }
-      } else if (false) {
+      } else if (process.env.NODE_ENV !== 'production') {
         warn('props must be strings when using array syntax.')
       }
     }
@@ -4085,7 +4251,7 @@ function resolveAsset (
     assets[camelize(id)] ||
     // Pascal Case ID
     assets[capitalize(camelize(id))]
-  if (false) {
+  if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
     warn(
       'Failed to resolve ' + type.slice(0, -1) + ': ' + id,
       options
@@ -4125,7 +4291,7 @@ function validateProp (
     observe(value)
     observerState.shouldConvert = prevShouldConvert
   }
-  if (false) {
+  if (process.env.NODE_ENV !== 'production') {
     assertProp(prop, key, value, vm, absent)
   }
   return value
@@ -4142,7 +4308,7 @@ function getPropDefaultValue (vm, prop, name) {
   var def = prop.default
   // warn against non-factory defaults for Object & Array
   if (isObject(def)) {
-    "production" !== 'production' && warn(
+    process.env.NODE_ENV !== 'production' && warn(
       'Invalid default value for prop "' + name + '": ' +
       'Props with type Object/Array must use a factory function ' +
       'to return the default value.',
@@ -4336,7 +4502,7 @@ function initExtend (Vue) {
       return extendOptions._Ctor
     }
     var name = extendOptions.name || Super.options.name
-    if (false) {
+    if (process.env.NODE_ENV !== 'production') {
       if (!/^[a-zA-Z][\w-]*$/.test(name)) {
         warn(
           'Invalid component name: "' + name + '". Component names ' +
@@ -4395,7 +4561,7 @@ function initAssetRegisters (Vue) {
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
-        if (false) {
+        if (process.env.NODE_ENV !== 'production') {
           if (type === 'component' && config.isReservedTag(id)) {
             warn(
               'Do not use built-in or reserved HTML elements as component ' +
@@ -4462,7 +4628,7 @@ function initGlobalAPI (Vue) {
   // config
   var configDef = {}
   configDef.get = function () { return config; }
-  if (false) {
+  if (process.env.NODE_ENV !== 'production') {
     configDef.set = function () {
       warn(
         'Do not replace the Vue.config object, set individual fields instead.'
@@ -4735,7 +4901,7 @@ function query (el) {
     var selector = el
     el = document.querySelector(el)
     if (!el) {
-      "production" !== 'production' && warn(
+      process.env.NODE_ENV !== 'production' && warn(
         'Cannot find element: ' + selector
       )
       return document.createElement('div')
@@ -4954,7 +5120,7 @@ function createPatchFunction (backend) {
     var children = vnode.children
     var tag = vnode.tag
     if (isDef(tag)) {
-      if (false) {
+      if (process.env.NODE_ENV !== 'production') {
         if (
           !vnode.ns &&
           !(config.ignoredElements && config.ignoredElements.indexOf(tag) > -1) &&
@@ -5153,7 +5319,7 @@ function createPatchFunction (backend) {
         } else {
           elmToMove = oldCh[idxInOld]
           /* istanbul ignore if */
-          if (false) {
+          if (process.env.NODE_ENV !== 'production' && !elmToMove) {
             warn(
               'It seems there are duplicate keys that is causing an update error. ' +
               'Make sure each v-for item has a unique key.'
@@ -5241,7 +5407,7 @@ function createPatchFunction (backend) {
 
   var bailed = false
   function hydrate (elm, vnode, insertedVnodeQueue) {
-    if (false) {
+    if (process.env.NODE_ENV !== 'production') {
       if (!assertNodeMatch(elm, vnode)) {
         return false
       }
@@ -5273,7 +5439,9 @@ function createPatchFunction (backend) {
           }
         }
         if (!childrenMatch) {
-          if (false) {
+          if (process.env.NODE_ENV !== 'production' &&
+              typeof console !== 'undefined' &&
+              !bailed) {
             bailed = true
             console.warn('Parent: ', elm)
             console.warn('Mismatching childNodes vs. VNodes: ', childNodes, children)
@@ -5325,7 +5493,7 @@ function createPatchFunction (backend) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true)
               return oldVnode
-            } else if (false) {
+            } else if (process.env.NODE_ENV !== 'production') {
               warn(
                 'The client-side rendered virtual DOM tree is not matching ' +
                 'server-rendered content. This is likely caused by incorrect ' +
@@ -6132,7 +6300,7 @@ if (isIE9) {
 
 var model = {
   bind: function bind (el, binding, vnode) {
-    if (false) {
+    if (process.env.NODE_ENV !== 'production') {
       if (!modelableTagRE.test(vnode.tag)) {
         warn(
           "v-model is not supported on element type: <" + (vnode.tag) + ">. " +
@@ -6176,7 +6344,7 @@ function setSelected (el, binding, vm) {
   var value = binding.value
   var isMultiple = el.multiple
   if (isMultiple && !Array.isArray(value)) {
-    "production" !== 'production' && warn(
+    process.env.NODE_ENV !== 'production' && warn(
       "<select multiple v-model=\"" + (binding.expression) + "\"> " +
       "expects an Array value for its binding, but got " + (Object.prototype.toString.call(value).slice(8, -1)),
       vm
@@ -6365,7 +6533,7 @@ var Transition = {
     }
 
     // warn multiple elements
-    if (false) {
+    if (process.env.NODE_ENV !== 'production' && children.length > 1) {
       warn(
         '<transition> can only be used on a single element. Use ' +
         '<transition-group> for lists.',
@@ -6376,7 +6544,8 @@ var Transition = {
     var mode = this.mode
 
     // warn invalid mode
-    if (false) {
+    if (process.env.NODE_ENV !== 'production' &&
+        mode && mode !== 'in-out' && mode !== 'out-in') {
       warn(
         'invalid <transition> mode: ' + mode,
         this.$parent
@@ -6483,7 +6652,7 @@ var TransitionGroup = {
           children.push(c)
           map[c.key] = c
           ;(c.data || (c.data = {})).transition = transitionData
-        } else if (false) {
+        } else if (process.env.NODE_ENV !== 'production') {
           var opts = c.componentOptions
           var name = opts
             ? (opts.Ctor.options.name || opts.tag)
@@ -6626,7 +6795,8 @@ setTimeout(function () {
     if (devtools) {
       devtools.emit('init', Vue)
     } else if (
-      false
+      process.env.NODE_ENV !== 'production' &&
+      inBrowser && /Chrome\/\d+/.test(window.navigator.userAgent)
     ) {
       console.log(
         'Download the Vue Devtools for a better development experience:\n' +
@@ -6637,10 +6807,10 @@ setTimeout(function () {
 }, 0)
 
 module.exports = Vue;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(7)))
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 var toString = __webpack_require__(53);
@@ -6701,7 +6871,7 @@ module.exports = Engine;
 //# sourceMappingURL=engine.js.map
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 /* Bytecode instruction opcodes. */
@@ -6753,177 +6923,11 @@ module.exports = {
 
 
 /***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-(function () {
-    try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
-        }
-    }
-    try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
-        }
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex__);
@@ -7589,7 +7593,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.board {\n  padding: 1em;\n  background: rgba(88, 88, 88, 0.05);\n  display: flex;\n  flex-direction: column-reverse;\n  margin: 0 auto;\n  max-width: 600px;\n  box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);\n}\n.row {\n  display: flex;\n}\n", ""]);
+exports.push([module.i, "\n.sidebar {\n  background: white;\n  position: fixed;\n  top: 0;\n  right: 0;\n  min-height: 100vh;\n  width: 300px;\n\n  box-shadow: -2px 0 3px 1px rgba(170, 170, 170, 0.2);\n  transition: transform 0.2s ease;\n\n  transform: translate(calc(100% - 56px), calc(100vh - 56px));\n}\n.sidebar h2 {\n  padding: 0 16px;\n  opacity: 0;\n  transition: opacity 0.1s;\n}\ninput:checked ~ .sidebar {\n  transform: translate(0);\n}\ninput:checked ~ .sidebar h2 {\n  opacity: 1;\n}\n#menu {\n  position: fixed;\n  bottom: 0;\n  right: 24px;\n  z-index: 99;\n  height: 0;\n  font-size: 32px;\n  line-height: 1.5;\n}\n#menu:after {\n  content: '=';\n  font-weight: bold;\n  display: block;\n  width: 56px;\n  height: 56px;\n  line-height: 56px;\n  position: fixed;\n  bottom: 0;\n  right: 0;\n  text-align: center;\n}\n#menu:checked:after {\n  content: 'x';\n  color: #dd6666;\n}\n", ""]);
 
 // exports
 
@@ -7617,7 +7621,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.sidebar {\n  background: white;\n  position: fixed;\n  top: 0;\n  right: 0;\n  min-height: 100vh;\n  width: 300px;\n\n  box-shadow: -2px 0 3px 1px rgba(170, 170, 170, 0.2);\n  transition: transform 0.2s ease;\n\n  transform: translate(calc(100% - 56px), calc(100vh - 56px));\n}\n.sidebar h2 {\n  padding: 0 16px;\n  opacity: 0;\n  transition: opacity 0.1s;\n}\ninput:checked ~ .sidebar {\n  transform: translate(0);\n}\ninput:checked ~ .sidebar h2 {\n  opacity: 1;\n}\n#menu {\n  position: fixed;\n  bottom: 0;\n  right: 24px;\n  z-index: 99;\n  height: 0;\n  font-size: 32px;\n  line-height: 1.5;\n}\n#menu:after {\n  content: '=';\n  font-weight: bold;\n  display: block;\n  width: 56px;\n  height: 56px;\n  line-height: 56px;\n  position: fixed;\n  bottom: 0;\n  right: 0;\n  text-align: center;\n}\n#menu:checked:after {\n  content: 'x';\n  color: #dd6666;\n}\n", ""]);
+exports.push([module.i, "\n.board {\n  padding: 1em;\n  background: rgba(88, 88, 88, 0.05);\n  display: flex;\n  flex-direction: column-reverse;\n  margin: 0 auto;\n  max-width: 600px;\n  box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);\n}\n.row {\n  display: flex;\n}\n", ""]);
 
 // exports
 
@@ -8346,7 +8350,7 @@ Y.prototype.capi_=function(a){ka=a};W.prototype.on=W.prototype.O;W.prototype.res
 ta.STATE_CHANGED="state_changed";ua.RUNNING="running";ua.PAUSED="paused";ua.SUCCESS="success";ua.CANCELED="canceled";ua.ERROR="error";Ua.RAW="raw";Ua.BASE64="base64";Ua.BASE64URL="base64url";Ua.DATA_URL="data_url";H.prototype["catch"]=H.prototype.l;H.prototype.then=H.prototype.then;
 (function(){function a(a){return new Y(a)}var b={TaskState:ua,TaskEvent:ta,StringFormat:Ua,Storage:Y,Reference:X};if(window.firebase&&firebase.INTERNAL&&firebase.INTERNAL.registerService)firebase.INTERNAL.registerService("storage",a,b);else throw Error("Cannot install Firebase Storage - be sure to load firebase-app.js first.");})();})();
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ },
 /* 43 */
@@ -9431,10 +9435,10 @@ var canAttachTrace = util.canAttachTrace;
 var unhandledRejectionHandled;
 var possiblyUnhandledRejection;
 var debugging = false || (util.isNode &&
-                    (!!{"NODE_ENV":"production"}["BLUEBIRD_DEBUG"] ||
-                     "production" === "development"));
+                    (!!process.env["BLUEBIRD_DEBUG"] ||
+                     process.env["NODE_ENV"] === "development"));
 
-if (util.isNode && {"NODE_ENV":"production"}["BLUEBIRD_DEBUG"] == 0) debugging = false;
+if (util.isNode && process.env["BLUEBIRD_DEBUG"] == 0) debugging = false;
 
 if (debugging) {
     async.disableTrampolineIfNecessary();
@@ -13239,7 +13243,7 @@ module.exports = ret;
 
 },{"./es5.js":14}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(6), __webpack_require__(5).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(7), __webpack_require__(6).setImmediate))
 
 /***/ },
 /* 44 */
@@ -13780,7 +13784,7 @@ module.exports = bishop;
 /* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Engine = __webpack_require__(8);
+var Engine = __webpack_require__(9);
 var pawn = __webpack_require__(58);
 var knight = __webpack_require__(57);
 var bishop = __webpack_require__(54);
@@ -14259,7 +14263,7 @@ var Direction = exports.Direction;
 /* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Engine = __webpack_require__(8);
+var Engine = __webpack_require__(9);
 var classicEngine = __webpack_require__(55);
 var enums = __webpack_require__(64);
 var chess = {
@@ -14344,7 +14348,7 @@ module.exports = {
 /***/ function(module, exports, __webpack_require__) {
 
 var utils = __webpack_require__(0),
-    op    = __webpack_require__(9);
+    op    = __webpack_require__(10);
 
 /* Generates bytecode.
  *
@@ -14956,7 +14960,7 @@ module.exports = function(ast) {
 /***/ function(module, exports, __webpack_require__) {
 
 var utils = __webpack_require__(0),
-    op    = __webpack_require__(9);
+    op    = __webpack_require__(10);
 
 /* Generates parser JavaScript code. */
 module.exports = function(ast, options) {
@@ -19010,13 +19014,13 @@ module.exports = {
 var __vue_exports__, __vue_options__
 
 /* styles */
-__webpack_require__(90)
+__webpack_require__(92)
 
 /* script */
 __vue_exports__ = __webpack_require__(14)
 
 /* template */
-var __vue_template__ = __webpack_require__(82)
+var __vue_template__ = __webpack_require__(84)
 __vue_options__ = __vue_exports__ = __vue_exports__ || {}
 if (typeof __vue_exports__.default === "object") {
 __vue_options__ = __vue_exports__ = __vue_exports__.default
@@ -19118,13 +19122,13 @@ module.exports = __vue_exports__
 var __vue_exports__, __vue_options__
 
 /* styles */
-__webpack_require__(92)
+__webpack_require__(90)
 
 /* script */
 __vue_exports__ = __webpack_require__(18)
 
 /* template */
-var __vue_template__ = __webpack_require__(84)
+var __vue_template__ = __webpack_require__(82)
 __vue_options__ = __vue_exports__ = __vue_exports__ || {}
 if (typeof __vue_exports__.default === "object") {
 __vue_options__ = __vue_exports__ = __vue_exports__.default
@@ -19211,23 +19215,41 @@ module.exports={render:function (){with(this) {
 /***/ function(module, exports) {
 
 module.exports={render:function (){with(this) {
-  return _h('div', {
-    staticClass: "board"
-  }, [(ranks) && _l((ranks), function(row) {
-    return _h('div', {
-      staticClass: "row"
-    }, [(row.squares.filter(i => i != null)) && _l((row.squares.filter(i => i != null)), function(s) {
-      return _h('square', {
-        attrs: {
-          "square": s
-        },
-        domProps: {
-          "selected": s == selected
+  return _h('div', [_h('input', {
+    class: {
+      open: showMenu
+    },
+    attrs: {
+      "id": "menu",
+      "type": "checkbox"
+    },
+    domProps: {
+      "checked": Array.isArray(showMenu) ? (showMenu).indexOf(null) > -1 : (showMenu) === (true)
+    },
+    on: {
+      "change": function($event) {
+        var $$a = showMenu,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = null,
+            $$i = $$a.indexOf($$v);
+          if ($$c) {
+            $$i < 0 && (showMenu = $$a.concat($$v))
+          } else {
+            $$i > -1 && (showMenu = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          showMenu = $$c
         }
-      })
-    })])
-  })])
-}},staticRenderFns: []}
+      }
+    }
+  }), " ", _h('div', {
+    staticClass: "sidebar"
+  }, [_m(0), " ", _h('player')])])
+}},staticRenderFns: [function (){with(this) {
+  return _h('h2', ["Settings"])
+}}]}
 
 /***/ },
 /* 83 */
@@ -19266,41 +19288,23 @@ module.exports={render:function (){with(this) {
 /***/ function(module, exports) {
 
 module.exports={render:function (){with(this) {
-  return _h('div', [_h('input', {
-    class: {
-      open: showMenu
-    },
-    attrs: {
-      "id": "menu",
-      "type": "checkbox"
-    },
-    domProps: {
-      "checked": Array.isArray(showMenu) ? (showMenu).indexOf(null) > -1 : (showMenu) === (true)
-    },
-    on: {
-      "change": function($event) {
-        var $$a = showMenu,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = null,
-            $$i = $$a.indexOf($$v);
-          if ($$c) {
-            $$i < 0 && (showMenu = $$a.concat($$v))
-          } else {
-            $$i > -1 && (showMenu = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          showMenu = $$c
+  return _h('div', {
+    staticClass: "board"
+  }, [(ranks) && _l((ranks), function(row) {
+    return _h('div', {
+      staticClass: "row"
+    }, [(row.squares.filter(i => i != null)) && _l((row.squares.filter(i => i != null)), function(s) {
+      return _h('square', {
+        attrs: {
+          "square": s
+        },
+        domProps: {
+          "selected": s == selected
         }
-      }
-    }
-  }), " ", _h('div', {
-    staticClass: "sidebar"
-  }, [_m(0), " ", _h('player')])])
-}},staticRenderFns: [function (){with(this) {
-  return _h('h2', ["Settings"])
-}}]}
+      })
+    })])
+  })])
+}},staticRenderFns: []}
 
 /***/ },
 /* 85 */
@@ -19448,8 +19452,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-2!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Board.vue", function() {
-			var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-2!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Board.vue");
+		module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-2!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Sidebar.vue", function() {
+			var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-2!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Sidebar.vue");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
@@ -19500,8 +19504,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Sidebar.vue", function() {
-			var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Sidebar.vue");
+		module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Board.vue", function() {
+			var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Board.vue");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
@@ -20067,7 +20071,7 @@ webpackContext.id = 98;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__App_vue__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__App_vue__);
