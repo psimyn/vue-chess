@@ -2,10 +2,9 @@
   <div class="board">
     <div class="row" v-for="row in ranks">
       <square
-        v-bind:square="square"
-        v-bind:selected="square == selected"
-        v-for="square in row.squares.filter(i => i != null)"
-      >
+        v-for="s of row.squares.filter(i => i != null)"
+        v-bind:square="s"
+        v-bind:selected="s == selected">
       </square>
     </div>
   </div>
@@ -14,7 +13,6 @@
 <script>
 import Square from './Square.vue'
 import {mapActions, mapGetters, mapState} from 'vuex'
-import Chess from 'node-chess'
 
 export default {
   components: {
@@ -34,6 +32,10 @@ export default {
 
 <style>
   .board {
+    padding: 1em;
+    background: rgba(88, 88, 88, 0.05);
+    display: flex;
+    flex-direction: column-reverse;
     margin: 0 auto;
     max-width: 600px;
     box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);

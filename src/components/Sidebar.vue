@@ -27,9 +27,6 @@ export default {
       game: 'game',
       playerId: 'playerId'
     }),
-    games () {
-      return this.player.games
-    },
   },
   data () {
     return {

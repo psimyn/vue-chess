@@ -1,24 +1,32 @@
   <template>
-    <div id="app">
-      <div class="container">
-        <board />
-        <status />
+    <div id="">
+      <h3>
+        <span v-if="false">Check!</span>
+        <span v-if="yourMove">Your move! ({{turn}})</span>
+      </h3>
+      <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
+      <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
+      <div v-if="moves.length > 1">
+        <button v-on:click="showMoves = !showMoves">
+          Move History
+        </button>
+        <p v-if="showMoves" v-for="move in moves">
+          {{move}}
+        </p>
       </div>
-      <sidebar />
     </div>
   </template>
 
 <script>
-  import Board from './components/Board.vue'
-  import Status from './components/Status.vue'
-  import Sidebar from './components/Sidebar.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
   export default {
     components: {
-      Board,
-      Sidebar,
-      Status,
+    },
+    data () {
+      return {
+        showMoves: false,
+      }
     },
     computed: {
       ...mapGetters({
@@ -28,6 +36,20 @@
       }),
       players () {
         return this.game.players
+      },
+      moves () {
+        return this.boardState.moveHistory.map((move) => {
+          const from = {
+            row: move.from.rank,
+            column: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][move.from.file - 1],
+          }
+          const to = {
+            row: move.to.rank,
+            column: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][move.to.file - 1],
+          }
+
+          return `${from.column}${from.row} => ${to.column}${to.row}`
+        })
       },
       turn () {
         return this.boardState.whitesTurn ? 'White' : 'Black'
