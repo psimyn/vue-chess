@@ -6,8 +6,10 @@
       </h3>
       <button v-if="!players.white" v-on:click="setPlayer('white')">Play as White</button>
       <button v-if="!players.black" v-on:click="setPlayer('black')">Play as Black</button>
-      <div>
-        <h3 v-on:click="showMoves = !showMoves">Move History</h3>
+      <div v-if="moves.length > 1">
+        <button v-on:click="showMoves = !showMoves">
+          Move History
+        </button>
         <p v-if="showMoves" v-for="move in moves">
           {{move}}
         </p>

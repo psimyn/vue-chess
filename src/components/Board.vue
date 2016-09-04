@@ -2,10 +2,9 @@
   <div class="board">
     <div class="row" v-for="row in ranks">
       <square
-        v-bind:square="square"
-        v-bind:selected="square == selected"
-        v-for="square in row.squares.filter(i => i != null)"
-      >
+        v-for="s in row.squares.filter(i => i != null)"
+        v-bind:square="s"
+        v-bind:selected="s == selected">
       </square>
     </div>
   </div>
@@ -33,6 +32,8 @@ export default {
 
 <style>
   .board {
+    padding: 1em;
+    background: rgba(88, 88, 88, 0.05);
     display: flex;
     flex-direction: column-reverse;
     margin: 0 auto;

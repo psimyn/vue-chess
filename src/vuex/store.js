@@ -60,7 +60,6 @@ const state = {
 
   player: {
     name: 'Player 1',
-    games: [],
   },
 }
 
@@ -72,7 +71,6 @@ const chessActions = {
     state.players[color] = state.playerId
     // todo
     database.ref(`games/${state.gameId}/players/${color}`).set(state.playerId)
-    database.ref(`players/${state.playerId}/games`).push(state.gameId)
   },
   // todo: this should be 2 functions, and call the correct one
   // based on selected
@@ -92,7 +90,7 @@ const chessActions = {
       const moves = state.boardState.moveHistory.map(m => ({from: m.from, to: m.to}))
       state.moves = moves
       state.selected = null
-      database.ref(`games/${state.gameId}/moves`).set(moves)
+      // database.ref(`games/${state.gameId}/moves`).set(moves)
     } else {
       if (!square.piece) return
       if (square.piece.isWhite && state.playerId === state.players.white) {
