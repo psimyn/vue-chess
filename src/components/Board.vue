@@ -2,7 +2,7 @@
   <div class="board">
     <div class="row" v-for="row in ranks">
       <square
-        v-for="s of row.squares.filter(i => i != null)"
+        v-for="s of row"
         v-bind:square="s"
         v-bind:selected="s == selected">
       </square>
@@ -21,10 +21,14 @@ export default {
   computed: {
     ...mapGetters({
       selected: 'selected',
-      boardState: 'boardState',
+      board: 'board',
     }),
     ranks () {
-      return this.boardState.ranks.filter(rank => rank != null)
+      return this.board.squares.reduce((acc, item) => {
+        acc[item.rank] = acc[item.rank] || []
+        acc[item.rank].push(item)
+        return acc
+      }, [])
     }
   },
 }

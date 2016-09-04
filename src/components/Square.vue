@@ -19,8 +19,8 @@ export default {
   props: ['square', 'selected'],
   computed: {
     black() {
-      return !((this.square.rank % 2 == 0 && this.square.file % 2 == 1)
-      || (this.square.rank % 2 == 1 && this.square.file % 2 == 0))
+      return !((this.square.rank % 2 == 1 && ['a', 'c', 'e', 'g'].includes(this.square.file))
+      || (this.square.rank % 2 == 0 && ['b', 'd', 'f', 'h'].includes(this.square.file)))
     },
   },
   methods: {
