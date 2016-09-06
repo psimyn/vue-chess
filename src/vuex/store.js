@@ -115,6 +115,9 @@ const chessActions = {
         state.message = 'Not your piece'
       }
     }
+    window.setTimeout(() => {
+      state.message = null
+    }, 3000)
   }
 }
 
@@ -137,7 +140,8 @@ export const store = new Vuex.Store({
       }
     },
     game: state => ({
-      players: state.players
+      players: state.players,
+      isCheck: state.gameClient.getStatus().isCheck,
     }),
     message: state => state.message,
     moves: state => state.moves,
