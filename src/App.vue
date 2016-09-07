@@ -1,8 +1,9 @@
   <template>
     <div id="app">
       <div class="container">
-        <board />
-        <status />
+        <board v-if="player.id" />
+        <status v-if="player.id" />
+        <login v-if="!player.id" />
       </div>
       <sidebar />
     </div>
@@ -10,6 +11,7 @@
 
 <script>
   import Board from './components/Board.vue'
+  import Login from './components/Login.vue'
   import Status from './components/Status.vue'
   import Sidebar from './components/Sidebar.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
@@ -17,6 +19,7 @@
   export default {
     components: {
       Board,
+      Login,
       Sidebar,
       Status,
     },
@@ -46,11 +49,16 @@
 
   <style>
   body {
-    font-family: Helvetica, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     overflow-y: hidden;
     height: 100vh;
     background: #f2f2f2;
+  }
+
+  body * {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
   }
 
   #app {

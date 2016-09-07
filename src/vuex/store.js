@@ -7,8 +7,6 @@ import chess from 'chess'
 Vue.use(Vuex)
 Vue.use(VuexFire)
 
-window.Chess = chess
-
 const config = {
   apiKey: "AIzaSyDgo_wWAkKHmFxHMvDGFL4IUKfy0WNyJK4",
   authDomain: "chess-cfde8.firebaseapp.com",
@@ -20,29 +18,26 @@ Firebase.initializeApp(config);
 const database = Firebase.database()
 
 const gameRef = database.ref('games')
-const playerRef = database.ref('players')
 
 // check localStorage for playerId, else get from firebase
-const search = document.location.search.slice(1)
-let pid
-if (search.indexOf('pid=') > -1) {
-  pid = search.split('pid=')[1].split('&')[0].split('#')[0]
-}
-const playerId = pid || localStorage.getItem('playerId') || playerRef.push().key
+const playerId = localStorage.getItem('playerId')
 const gameId = document.location.hash.slice(1) || gameRef.push().key
 
-const moves = [] // JSON.parse(localStorage.getItem('moves') || '[]')
+const cachedGame = JSON.parse(localStorage.getItem(gameId) || '{}')
+const moves = cachedGame.moves || []
+const players = cachedGame.players || {white: null, black: null}
+const gameClient = chess.create()
+moves.forEach(move => {
+  gameClient.move(move)
+})
+
 const gameState = {
   gameId,
-  gameClient: chess.create(),
+  gameClient,
   moves,
-  players: {
-    white: null,
-    black: null,
-  },
+  currentMove: moves.length,
+  players,
 }
-
-window.State = gameState
 
 // initial state
 const state = {
@@ -57,7 +52,6 @@ const state = {
   },
 }
 
-localStorage.setItem('playerId', state.playerId)
 document.location.hash = `#${state.gameId}`
 
 const chessActions = {
@@ -66,9 +60,13 @@ const chessActions = {
     // todo
     database.ref(`games/${state.gameId}/players/${color}`).set(state.playerId)
   },
+  setCurrentMove ({}, move) {
+    state.currentMove = move
+  },
   // todo: this should be 2 functions, and call the correct one
   // based on selected
-  selectSquare ({commit, state}, square) {
+  selectSquare ({dispatch, commit, state}, square) {
+    dispatch('setCurrentMove', state.moves.length)
     state.message = null
     if (state.selected) {
       const move = {
@@ -93,6 +91,7 @@ const chessActions = {
 
       if (validMove) {
         state.gameClient.move(validMove)
+        state.currentMove += 1
         database.ref(`games/${state.gameId}/moves`).push({
           pge: validMove,
         })
@@ -125,6 +124,35 @@ const playerActions = {
   setName ({state}, name) {
     // database.ref(`players/${state.playerId}/name`).set(name)
   },
+  setPlayerId ({state}, player) {
+    if (player) {
+      state.playerId = player.uid
+      localStorage.setItem('playerId', player.uid)
+      state.player = {
+        ...state.player,
+        photoUrl: player.photoUrl,
+        name: player.displayName,
+      }
+    } else {
+      localStorage.removeItem('playerId')
+      state.playerId = null
+    }
+  },
+  signOut ({dispatch}) {
+    Firebase.auth().signOut()
+    dispatch('setPlayerId')
+  },
+  signInWithGoogle ({dispatch, state}) {
+    const provider = new Firebase.auth.GoogleAuthProvider()
+    Firebase.auth().signInWithPopup(provider)
+    .then((result) => {
+      const token = result.credential.accessToken
+      dispatch('setPlayerId', result.user)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  },
 }
 
 export const store = new Vuex.Store({
@@ -142,14 +170,21 @@ export const store = new Vuex.Store({
     game: state => ({
       players: state.players,
       isCheck: state.gameClient.getStatus().isCheck,
+      isCheckmate: state.gameClient.getStatus().isCheckmate,
     }),
     message: state => state.message,
     moves: state => state.moves,
+    currentMove: state => state.currentMove,
     board: state => {
       state.gameClient = chess.create({PGN: true})
       state.moves.forEach((move, index) => {
+        if (index > state.currentMove) return
         try {
           move = move.pge || move
+          localStorage.setItem(state.gameId, JSON.stringify({
+            moves: state.moves.map(move => move.pge),
+            players: state.players
+          }))
           state.gameClient.move(move)
         } catch (e) {
           console.log(index, move)

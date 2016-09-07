@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="player.id">
     <input
       id="menu"
       type="checkbox"
@@ -8,7 +8,9 @@
     />
     <div class="sidebar">
       <h2>Settings</h2>
-      <player />
+      {{player.name}}
+      <img v-bind:src="photoUrl" />
+      <button v-on:click="signOut()">Logout</button>
     </div>
   </div>
 </template>
@@ -25,8 +27,11 @@ export default {
     ...mapGetters({
       player: 'player',
       game: 'game',
-      playerId: 'playerId'
+      playerId: 'playerId',
     }),
+    photoUrl () {
+      return this.player.photoUrl
+    }
   },
   data () {
     return {
@@ -34,7 +39,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setName']),
+    ...mapActions(['signOut']),
     copy () {
       const text = document.querySelector('#playerUrl')
       text.select()
