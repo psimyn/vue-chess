@@ -26,7 +26,8 @@
     created() {
       if ('serviceWorker' in navigator) {
         // todo: remove dist from this path
-        navigator.serviceWorker.register('/vue-chess/sw.js')
+        const appPath = process.env.NODE_ENV === 'production' ? '/vue-chess' : ''
+        navigator.serviceWorker.register(`${appPath}/sw.js`)
           .then(this.initialiseState)
           .catch((err) => {
           console.error(':^(', err)

@@ -18,3 +18,23 @@ self.addEventListener('push', function(event) {
     })
   )
 })
+
+self.addEventListener('notificationclick', function(event) {
+  // android doesn't close notification - http://crbug.com/463146
+  event.notification.close()
+
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window'
+    })
+    .then((clientList) => {
+      // todo: check gameId
+      const existingWindow = clientList.find(client => client.url === '/' && 'focus' in client)
+      if (existingWindow) {
+        existingWindow.focus()
+      } else {
+        clients.openWindow('/')
+      }
+    })
+  )
+})

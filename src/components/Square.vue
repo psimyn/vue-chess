@@ -44,7 +44,7 @@ export default {
 }
 
 .square:hover {
-  box-shadow: 0 0 9px 6px #2288bb inset;
+  box-shadow: 0 0 3px 2px #2288bb inset;
 }
 
 .square:after {
