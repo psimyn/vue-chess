@@ -1,7 +1,7 @@
 <template>
   <span
     v-if="piece"
-    v-bind:class="{side}"
+    v-bind:class="{side, flat}"
     class="piece"
     v-bind:style="{'background-image': `url(${img})`}"
   >
@@ -14,6 +14,9 @@ export default {
   computed: {
     side() {
       return this.piece.side.name
+    },
+    flat() {
+      return true
     },
     img() {
       const color = this.piece.side.name
@@ -39,8 +42,8 @@ export default {
   z-index: 2;
 }
 
-.3d .piece {
-  transform: rotate3d(1, 0, 0, -30deg) scaleY(2.7) translateY(-31%);
+.piece:not(.flat) {
+  transform: rotate3d(1, 0, 0, -30deg) translateY(-31%);
 }
 
 .white {

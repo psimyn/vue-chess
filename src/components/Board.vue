@@ -1,5 +1,5 @@
 <template>
-  <div class="board">
+  <div class="board" v-bind:class="{flat, playingAsBlack}">
     <div class="row" v-for="row in ranks">
       <square
         v-for="s of row"
@@ -47,6 +47,14 @@ export default {
       board: 'board',
       game: 'game',
     }),
+    // todo: make switchable
+    flat () {
+      return true
+    },
+    // todo: determine, default to false
+    playingAsBlack () {
+      return true
+    },
     players () {
       return this.game.players
     },
@@ -77,9 +85,13 @@ export default {
     position: relative;
   }
 
-  .3d .board {
+  .board:not(.flat) {
     perspective: 600px;
     transform: rotate3d(1, 0, 0, 30deg);
+    transform-style: preserve-3d;
+  }
+
+  .playingAsBlack {
     flex-direction: column;
   }
 
