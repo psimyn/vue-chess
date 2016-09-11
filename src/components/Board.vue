@@ -80,6 +80,7 @@ export default {
   .3d .board {
     perspective: 600px;
     transform: rotate3d(1, 0, 0, 30deg);
+    flex-direction: column;
   }
 
   .row {
