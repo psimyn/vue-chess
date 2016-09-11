@@ -73,6 +73,7 @@
   .container {
     max-width: 600px;
     margin: 0 auto;
+    perspective: 700px;
   }
 
   .row {

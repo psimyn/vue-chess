@@ -36,6 +36,8 @@ export default {
   top: 0;
   bottom: 0;
   background-size: cover;
+  z-index: 2;
+  transform: rotate3d(1, 0, 0, -30deg) scaleY(2.7) translateY(-31%);
 }
 
 .white {

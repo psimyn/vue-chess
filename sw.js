@@ -9,7 +9,7 @@ self.addEventListener('push', function(event) {
 
   const title = `It's your move!`
   const body = 'Click to go to game'
-  const icon = 'https://psimyn.com/vue-chess/dist/black-pawn.svg'
+  // const icon = 'https://psimyn.com/vue-chess/dist/black-pawn.svg'
 
   event.waitUntil(
     self.registration.showNotification(title, {
