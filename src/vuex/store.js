@@ -95,6 +95,11 @@ const chessActions = {
         database.ref(`games/${state.gameId}/moves`).push({
           pge: validMove,
         })
+        const theOtherGuy = state.players[(square.piece.side.name === 'white' ? 'black' : 'white')]
+        database.ref('turns').push({
+          playerId: theOtherGuy,
+          gameId: state.gameId,
+        })
       } else {
         state.message = 'Invalid move'
       }
@@ -123,6 +128,14 @@ const chessActions = {
 const playerActions = {
   setName ({state}, name) {
     // database.ref(`players/${state.playerId}/name`).set(name)
+  },
+  subscribe ({state}, subscription) {
+    const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
+    database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(true)
+  },
+  unsubscribe ({state}, subscription) {
+    const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
+    database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(false)
   },
   setPlayerId ({state}, player) {
     if (player) {

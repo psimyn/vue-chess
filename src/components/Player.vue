@@ -2,24 +2,15 @@
   <div class="player-container">
     <div class="players">
       <span class="left">
-        <label>Your name</label>
-        <input v-on:keyup="setName(playerName)" v-model="playerName" />
+        Logged in as {{player.name}}
       </span>
 
       <span v-if="false" class="right">
         <label>Opponent</label>
         <span>{{opponent}}</span>
       </span>
-    </div>
 
-    <div>
-      <p>To play from another browser or device, click the button to get the link with your Player ID</p>
-      <button v-if="!showUrl" v-on:click="showUrl = !showUrl">
-        Show secret link
-      </button>
-      <button v-if="showUrl" v-on:click="copy">Copy URL</button>
-      <p v-if="message">{{message}}</p>
-      <textarea v-if="showUrl" id="playerUrl">{{playerUrl}}</textarea>
+      <button class="right" v-on:click="signOut()">Logout</button>
     </div>
   </div>
 </template>
@@ -51,28 +42,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setName']),
-    copy () {
-      const text = document.querySelector('#playerUrl')
-      text.select()
-      let res
-      try {
-        res = document.execCommand('copy')
-      } catch (e) {
-        res = false
-      }
-      if (res) {
-        this.showUrl = false
-        this.message = 'Url copied to clipboard!'
-        window.setTimeout(() => {
-          this.message = ''
-        }, 2000)
-      }
-    },
+    ...mapActions(['signOut']),
   },
   data () {
     return {
-      showUrl: false,
       message: '',
     }
   },

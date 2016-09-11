@@ -1,19 +1,32 @@
   <template>
-    <div v-if="moves.length > 1" class="moveHistory">
+    <div>
       <button class="button" v-on:click="showMoves = !showMoves">
         Move History
       </button>
-      <input v-if="showMoves" min="-1" v-bind:max="moves.length" type="number" v-on:change="setCurrentMove(current)" v-model="current" />
-      <div class="move-history-list">
-        <div class="slider">
-          <div v-bind:style="{top}" class="slider-knob">
+      <div
+        v-if="moves.length > 1"
+        class="moveHistory"
+        v-bind:class="{open: showMoves}">
+        <input
+          v-if="showMoves"
+          min="-1"
+          v-bind:max="moves.length"
+          type="number"
+          v-on:change="setCurrentMove(current)"
+          v-model="current"
+          debounce="100"
+        />
+        <div class="move-history-list">
+          <div class="slider">
+            <div v-bind:style="{top}" class="slider-knob">
+            </div>
           </div>
+          <p v-if="showMoves" v-for="move in groupedMoves" class="move">
+            <span>{{move.number}}.</span>
+            <span v-bind:class="{active: move.white.active}">{{move.white.pge}}</span>
+            <span v-if="move.black" v-bind:class="{active: move.black.active}">{{move.black.pge}}</span>
+          </p>
         </div>
-        <p v-if="showMoves" v-for="move in groupedMoves" class="move">
-          <span>{{move.number}}.</span>
-          <span v-bind:class="{active: move.white.active}">{{move.white.pge}}</span>
-          <span v-if="move.black" v-bind:class="{active: move.black.active}">{{move.black.pge}}</span>
-        </p>
       </div>
     </div>
   </template>
@@ -98,10 +111,21 @@
   }
 
   .moveHistory {
-    float: right;
+    max-height: 100vh;
+    overflow-y: auto;
     padding: 0 1em;
     margin-bottom: 64px;
     background: white;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.95);
+    transform: translateX(100%);
+    z-index: 99999;
+  }
+
+  .open {
+    transform: translate(0);
   }
 
   .move-history-list {

@@ -2,11 +2,13 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  entry: './src/main.js',
+  entry: {
+    build: './src/main.js'
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/vue-chess/dist/',
-    filename: 'build.js'
+    filename: '[name].js'
   },
   resolveLoader: {
     root: path.join(__dirname, 'node_modules'),

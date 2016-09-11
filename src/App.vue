@@ -4,8 +4,10 @@
         <board v-if="player.id" />
         <status v-if="player.id" />
         <login v-if="!player.id" />
+
+        <notification-button />
+        <player />
       </div>
-      <sidebar />
     </div>
   </template>
 
@@ -13,14 +15,16 @@
   import Board from './components/Board.vue'
   import Login from './components/Login.vue'
   import Status from './components/Status.vue'
-  import Sidebar from './components/Sidebar.vue'
+  import Player from './components/Player.vue'
+  import NotificationButton from './components/NotificationButton.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
   export default {
     components: {
       Board,
       Login,
-      Sidebar,
+      NotificationButton,
+      Player,
       Status,
     },
     computed: {
