@@ -19,10 +19,8 @@ const database = Firebase.database()
 const gameRef = database.ref('games')
 
 const playerId = null
-// todo: this is shit.
-// check for /vue-chess/:gameId - unsure how to access router.params here
-const gameId = document.location.pathname.split('/')[2] || gameRef.push().key
-window.history.replaceState({gameId}, 'chess', `/vue-chess/${gameId}`)
+const gameId = document.location.hash.slice(1) || gameRef.push().key
+document.location.hash = `#${gameId}`
 if (navigator.serviceWorker.controller) {
   navigator.serviceWorker.controller.postMessage({
     command: 'setGameId',

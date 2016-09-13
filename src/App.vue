@@ -2,11 +2,9 @@
     <div id="app">
       <h2 v-if="loading" class="container">Loading</h2>
       <div v-if="!loading" class="container">
-        <router-link v-bind:to="{ name: 'new' }">New game</router-link>
         <board v-if="player.id" />
         <status v-if="player.id" />
         <login v-if="!player.id" />
-
         <notification-button />
         <player />
       </div>
