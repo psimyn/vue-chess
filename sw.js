@@ -5,14 +5,11 @@ self.addEventListener('install', function(event) {
 })
 
 self.addEventListener('push', function(event) {
-  console.log('Push message', event)
-
   const title = `It's your move!`
   const body = 'Click to go to game'
 
   event.waitUntil(
     localforage.getItem('gameId').then((gameId) => {
-      console.log(gameId)
       const icon = 'https://psimyn.com/vue-chess/dist/white-pawn.png'
        // const rest = `https://chess-cfde8.firebaseio.com/turns/${playerId}.json?auth=${token}`
       self.registration.showNotification(title, {
