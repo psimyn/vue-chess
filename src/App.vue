@@ -1,6 +1,7 @@
   <template>
     <div id="app">
-      <div class="container">
+      <h2 v-if="loading" class="container">Loading</h2>
+      <div v-if="!loading" class="container">
         <router-link v-bind:to="{ name: 'new' }">New game</router-link>
         <board v-if="player.id" />
         <status v-if="player.id" />
@@ -34,6 +35,7 @@
         game: 'game',
         gameId: 'gameId',
         moves: 'moves',
+        loading: 'loading',
       }),
       players () {
         return this.game.players

@@ -1,5 +1,5 @@
 <template>
-  <button v-on:click="toggleSubscribe">
+  <button v-if="player.id" v-on:click="toggleSubscribe">
     {{verb}} push notifications
   </button>
 </template>
