@@ -36,7 +36,7 @@ self.addEventListener('notificationclick', function(event) {
       })
       .then((clientList) => {
         // todo: remove hardcoded path
-        const target = `http://localhost:8080/vue-chess/${gameId}`
+        const target = `https://psimyn.com/vue-chess/#${gameId}`
         const existingWindow = clientList.find(client => client.url === target && 'focus' in client)
         if (existingWindow) {
           existingWindow.focus()
