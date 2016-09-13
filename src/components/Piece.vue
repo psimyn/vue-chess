@@ -43,7 +43,7 @@ export default {
 }
 
 .piece:not(.flat) {
-  transform: rotate3d(1, 0, 0, -30deg) translateY(-31%);
+  transform: rotate3d(1, 0, 0, -15deg) translateY(-21%);
 }
 
 .white {

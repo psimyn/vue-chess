@@ -53,7 +53,7 @@ export default {
     },
     // todo: determine, default to false
     playingAsBlack () {
-      return true
+      return false
     },
     players () {
       return this.game.players
@@ -86,8 +86,8 @@ export default {
   }
 
   .board:not(.flat) {
-    perspective: 600px;
-    transform: rotate3d(1, 0, 0, 30deg);
+    perspective: 1600px;
+    transform: rotate3d(1, 0, 0, 10deg);
     transform-style: preserve-3d;
   }
 
@@ -112,6 +112,7 @@ export default {
     display: flex;
     justify-content: space-around;
     background: rgba(33, 33, 33, 0.66);
+    z-index: 2;
   }
 
   .button {

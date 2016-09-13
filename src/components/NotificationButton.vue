@@ -29,9 +29,7 @@
         const appPath = process.env.NODE_ENV === 'production' ? '/vue-chess' : ''
         navigator.serviceWorker.register(`${appPath}/sw.js`)
           .then(this.initialiseState)
-          .catch((err) => {
-          console.error(':^(', err)
-        })
+          .catch((err) => console.error(':^(', err))
       }
     },
     methods: {

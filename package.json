@@ -4,7 +4,7 @@
   "author": "psimyn",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --hot",
+    "dev": "webpack-dev-server --content-base ./ --inline --hot",
     "build": "webpack --progress --hide-modules"
   },
   "dependencies": {
@@ -25,10 +25,13 @@
     "cross-env": "^1.0.6",
     "css-loader": "^0.23.1",
     "file-loader": "^0.8.4",
+    "localforage": "^1.4.2",
     "vue-loader": "^9.4.2",
     "vue-router": "^2.0.0-rc.4",
+    "vuex-router-sync": "^3.0.0",
     "vuexfire": "^0.2.1",
     "webpack": "^2.1.0-beta.20",
-    "webpack-dev-server": "^2.1.0-beta.0"
+    "webpack-dev-server": "^2.1.0-beta.0",
+    "worker-loader": "^0.7.1"
   }
 }

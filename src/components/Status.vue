@@ -30,7 +30,7 @@
         return this.game.players
       },
       gameStarted () {
-        return this.players.white && this.players.black
+        return this.players.white && this.players.black && this.moves
       },
       isCheck () {
         return this.game.isCheck

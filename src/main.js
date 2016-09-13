@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
 import {store, firebase} from './vuex/store'
+import {sync} from 'vuex-router-sync'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,8 @@ const router = new VueRouter({
     { path: '/vue-chess/:gameId', name: 'game', component: Game },
   ]
 })
+
+sync(store, router)
 
 new Vue({
   router,

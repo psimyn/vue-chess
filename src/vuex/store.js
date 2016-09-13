@@ -16,26 +16,29 @@ const config = {
 
 Firebase.initializeApp(config);
 const database = Firebase.database()
-
 const gameRef = database.ref('games')
 
-// check localStorage for playerId, else get from firebase
-const playerId = localStorage.getItem('playerId')
-const gameId = document.location.hash.slice(1) || gameRef.push().key
-
-const cachedGame = JSON.parse(localStorage.getItem(gameId) || '{}')
-const moves = cachedGame.moves || []
-const players = cachedGame.players || {white: null, black: null}
-const gameClient = chess.create()
-moves.forEach(move => {
-  gameClient.move(move)
-})
+const playerId = null
+// todo: this is shit.
+// check for /vue-chess/:gameId - unsure how to access router.params here
+const gameId = document.location.pathname.split('/')[2] || gameRef.push().key
+window.history.replaceState({gameId}, 'chess', `/vue-chess/${gameId}`)
+if (navigator.serviceWorker.controller) {
+  navigator.serviceWorker.controller.postMessage({
+    command: 'setGameId',
+    message: {
+      gameId
+    }
+  })
+}
+const moves = []
+const players = {white: null, black: null}
+const gameClient = chess.create({PGN: true})
 
 const gameState = {
   gameId,
   gameClient,
   moves,
-  currentMove: moves.length,
   players,
 }
 
@@ -43,21 +46,17 @@ const gameState = {
 const state = {
   ...gameState,
 
+  loading: true,
   selected: null,
   message: '',
 
   playerId,
-  player: {
-    name: 'Player 1',
-  },
+  player: {},
 }
-
-document.location.hash = `#${state.gameId}`
 
 const chessActions = {
   setPlayer ({state}, color) {
     state.players[color] = state.playerId
-    // todo
     database.ref(`games/${state.gameId}/players/${color}`).set(state.playerId)
   },
   setCurrentMove ({}, move) {
@@ -96,7 +95,7 @@ const chessActions = {
           pge: validMove,
         })
         const theOtherGuy = state.players[(square.piece.side.name === 'white' ? 'black' : 'white')]
-        database.ref('turns').push({
+        database.ref(`turns`).push({
           playerId: theOtherGuy,
           gameId: state.gameId,
         })
@@ -126,9 +125,6 @@ const chessActions = {
 }
 
 const playerActions = {
-  setName ({state}, name) {
-    // database.ref(`players/${state.playerId}/name`).set(name)
-  },
   subscribe ({state}, subscription) {
     const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
     database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(true)
@@ -140,14 +136,12 @@ const playerActions = {
   setPlayerId ({state}, player) {
     if (player) {
       state.playerId = player.uid
-      localStorage.setItem('playerId', player.uid)
       state.player = {
         ...state.player,
         photoUrl: player.photoUrl,
         name: player.displayName,
       }
     } else {
-      localStorage.removeItem('playerId')
       state.playerId = null
     }
   },
@@ -163,7 +157,7 @@ const playerActions = {
       dispatch('setPlayerId', result.user)
     })
     .catch((error) => {
-      console.log(error)
+      console.warn(error)
     })
   },
 }
@@ -173,7 +167,15 @@ export const store = new Vuex.Store({
   mutations: {
     ...VuexFire.mutations,
   },
+  actions: {
+    ...chessActions,
+    ...playerActions,
+    firebaseLoaded ({state}) {
+      state.loading = false
+    }
+  },
   getters: {
+    loading: state => state.loading,
     player: state => {
       return {
         ...state.player,
@@ -181,6 +183,7 @@ export const store = new Vuex.Store({
       }
     },
     game: state => ({
+      id: state.gameId,
       players: state.players,
       isCheck: state.gameClient.getStatus().isCheck,
       isCheckmate: state.gameClient.getStatus().isCheckmate,
@@ -188,42 +191,48 @@ export const store = new Vuex.Store({
     message: state => state.message,
     moves: state => state.moves,
     currentMove: state => state.currentMove,
+    selected: state => state.selected,
     board: state => {
       state.gameClient = chess.create({PGN: true})
       state.moves.forEach((move, index) => {
         if (index > state.currentMove) return
-        try {
-          move = move.pge || move
-          localStorage.setItem(state.gameId, JSON.stringify({
-            moves: state.moves.map(move => move.pge),
-            players: state.players
-          }))
-          state.gameClient.move(move)
-        } catch (e) {
-          console.log(index, move)
-          // this will happen for every n-1 moves
-        }
+        state.gameClient.move(move.pge)
       })
       return state.gameClient.getStatus().board
     },
-    selected: state => state.selected,
   },
-  actions: {
-    ...chessActions,
-    ...playerActions,
+})
+
+
+Firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    store.dispatch('setPlayerId', user)
+    user.getToken().then((token) => {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          command: 'setPlayerToken',
+          message: {
+            playerId: user.uid,
+            token,
+          }
+        })
+      }
+    })
+  } else {
+    // no user signed in
   }
 })
 
-const chessBase = {
+gameRef.once('value', (snapshot) => {
+  store.dispatch('firebaseLoaded')
+})
+
+export const firebase = {
   moves: gameRef.child(`${state.gameId}/moves`),
   players: {
     source: gameRef.child(`${state.gameId}/players`),
     asObject: true,
   },
-}
-
-export const firebase = {
-  ...chessBase,
   player: {
     source: database.ref(`players/${state.playerId}`),
     asObject: true,

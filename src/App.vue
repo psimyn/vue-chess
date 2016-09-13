@@ -2,7 +2,6 @@
     <div id="app">
       <div class="container">
         <router-link v-bind:to="{ name: 'new' }">New game</router-link>
-        {{$route.params.gameId}}ID
         <board v-if="player.id" />
         <status v-if="player.id" />
         <login v-if="!player.id" />
@@ -33,11 +32,9 @@
       ...mapGetters({
         player: 'player',
         game: 'game',
+        gameId: 'gameId',
         moves: 'moves',
       }),
-      id() {
-        return this.$route.params.gameId
-      },
       players () {
         return this.game.players
       },
@@ -52,7 +49,6 @@
         }
       },
     },
-    methods: mapActions(['setPlayer']),
   }
   </script>
 
@@ -83,10 +79,6 @@
 
   .row {
     display: flex;
-  }
-
-  input {
-
   }
 
   button {
