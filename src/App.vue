@@ -1,6 +1,6 @@
   <template>
     <div id="app">
-      <h2 v-if="loading" class="container">Loading</h2>
+      <loader v-if="loading" />
       <div v-if="!loading" class="container">
         <board v-if="player.id" />
         <status v-if="player.id" />
@@ -16,12 +16,14 @@
   import Login from './components/Login.vue'
   import Status from './components/Status.vue'
   import Player from './components/Player.vue'
+  import Loader from './components/Loader.vue'
   import NotificationButton from './components/NotificationButton.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
   export default {
     components: {
       Board,
+      Loader,
       Login,
       NotificationButton,
       Player,
