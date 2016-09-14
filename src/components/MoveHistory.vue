@@ -116,11 +116,10 @@
     padding: 0 1em;
     margin-bottom: 64px;
     background: white;
-    position: absolute;
     top: 0;
     right: 0;
     transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.95);
-    transform: translateX(100%);
+    /*transform: translateX(100%);*/
     z-index: 99999;
   }
 

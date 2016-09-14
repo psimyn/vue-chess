@@ -12,7 +12,7 @@ self.addEventListener('push', function(event) {
     localforage.getItem('gameId').then((gameId) => {
       const icon = 'https://psimyn.com/vue-chess/dist/white-pawn.png'
        // const rest = `https://chess-cfde8.firebaseio.com/turns/${playerId}.json?auth=${token}`
-      self.registration.showNotification(title, {
+      return self.registration.showNotification(title, {
         body,
         icon,
         // todo: test for null

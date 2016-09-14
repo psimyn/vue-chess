@@ -1,10 +1,6 @@
 <template>
   <div class="player-container">
     <div class="players">
-      <span class="left">
-        Logged in as {{player.name}}
-      </span>
-
       <span v-if="false" class="right">
         <label>Opponent</label>
         <span>{{opponent}}</span>
@@ -55,7 +51,6 @@ export default {
 <style>
   .player-container {
     padding: 16px;
-    min-height: 100vh;
   }
   .players {
     overflow: hidden;
