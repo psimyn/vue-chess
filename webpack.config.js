@@ -8,7 +8,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/vue-chess/dist/',
-    filename: '[name].js'
+    filename: '[name].[hash].js'
   },
   resolveLoader: {
     root: path.join(__dirname, 'node_modules'),
