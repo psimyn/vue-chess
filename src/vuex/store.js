@@ -2,8 +2,11 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import chess from 'chess'
 import VuexFire from 'vuexfire'
-
 import Firebase from 'firebase'
+import { notationToIndex, moveAsPGNFromSquares } from './chess'
+
+Vue.use(Vuex)
+
 const config = {
   apiKey: 'AIzaSyDgo_wWAkKHmFxHMvDGFL4IUKfy0WNyJK4',
   authDomain: 'chess-cfde8.firebaseapp.com',
@@ -17,10 +20,6 @@ if (typeof window !== 'undefined') {
   Firebase.initializeApp(config)
   database = Firebase.database()
 }
-
-import { notationToIndex, moveAsPGNFromSquares } from './chess'
-
-Vue.use(Vuex)
 
 export const initialState = {
   gameId,
@@ -41,6 +40,9 @@ export const initialState = {
 }
 
 export const SET_PLAYER_NAME = 'SET_PLAYER_NAME'
+export const SET_PLAYER = 'SET_PLAYER'
+export const UNSET_PLAYER = 'UNSET_PLAYER'
+export const UPDATE_PLAYER_NAMES = 'UPDATE_PLAYER_NAMES'
 export const SET_MESSAGE = 'SET_MESSAGE'
 export const SET_SELECTED_SQUARE = 'SET_SELECTED_SQUARE'
 export const ADD_MOVE = 'ADD_MOVE'
@@ -60,6 +62,20 @@ export const mutations = {
       [gameId]: game,
     }
   },
+  [UPDATE_PLAYER_NAMES](state, players) {
+    state.players = {
+      ...state.players,
+      ...players,
+    }
+  },
+  [SET_PLAYER](state, {id, name}) {
+    state.playerId = id
+    state.player.name = name
+  },
+  [UNSET_PLAYER](state) {
+    state.playerId = null
+    state.playerGames = []
+  },
   [SET_MESSAGE](state, message) {
     state.message = message
   },
@@ -76,9 +92,6 @@ export const mutations = {
     state.players = {
       ...state.players,
       [playerId]: name,
-    }
-    if (playerId === state.playerId) {
-      state.player.name = name
     }
   },
 }
@@ -110,24 +123,6 @@ export const actions = {
         white,
         black,
       }
-
-      database.ref(`players/${state.game.white}/name`).on('value', (snapshot) => {
-        const name = snapshot.val()
-        const playerId = state.game.white
-        commit(SET_PLAYER_NAME, {
-          name,
-          playerId,
-        })
-      })
-
-      database.ref(`players/${state.game.black}/name`).on('value', (snapshot) => {
-        const name = snapshot.val()
-        const playerId = state.game.black
-        commit(SET_PLAYER_NAME, {
-          name,
-          playerId,
-        })
-      })
     })
 
     document.location.hash = gameId
@@ -198,55 +193,55 @@ const playerActions = {
     const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
     database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(false)
   },
-  setPlayerId ({commit, state}, player) {
-    if (player) {
-      state.playerId = player.uid
-      state.player = {
-        ...state.player,
-        photoUrl: player.photoUrl,
-        name: player.displayName,
+  setPlayer ({commit, state}, player) {
+    commit(SET_PLAYER, {
+      id: player.uid,
+      name: player.displayName,
+    })
+
+    player.getToken().then((token) => {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          command: 'setPlayerToken',
+          message: {
+            playerId: player.uid,
+            token,
+          }
+        })
       }
-      database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
-        const gameIds = snapshot.val() || {}
-        const games = Object.keys(gameIds).filter(i => gameIds[i])
-        games.forEach(gameId => {
-          database.ref(`games/${gameId}`).once('value', (snap) => {
-            const game = snap.val()
-            database.ref(`players/${game.white}/name`).once('value', (snap) => {
-              const name = snap.val()
-              commit(UPDATE_MY_GAMES, {
-                gameId,
-                white: name,
-              })
+    })
+
+    database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
+      const gameIds = snapshot.val() || {}
+      const games = Object.keys(gameIds).filter(i => gameIds[i])
+      games.forEach(gameId => {
+        database.ref(`games/${gameId}`).once('value').then(s => s.val()).then((game) => {
+          return Promise.all([
+            database.ref(`players/${game.white}/name`).once('value'),
+            database.ref(`players/${game.black}/name`).once('value'),
+          ])
+          .then(([white, black]) => {
+            commit(UPDATE_PLAYER_NAMES, {
+              [game.white]: white.val(),
+              [game.black]: black.val(),
             })
-            database.ref(`players/${game.black}/name`).once('value', (snap) => {
-              const name = snap.val()
-              commit(UPDATE_MY_GAMES, {
-                gameId,
-                black: name,
-              })
+            commit(UPDATE_MY_GAMES, {
+              gameId,
+              white: white.val(),
+              black: black.val(),
             })
           })
         })
       })
-    } else {
-      database.ref(`players/${state.playerId}/games`).off('value')
-      state.playerId = null
-      state.playerGames = []
-    }
+    })
   },
   setPlayerName({commit, state}, name) {
-    const playerId = state.playerId
-    database.ref(`players/${playerId}/name`).set(name)
-    commit(SET_PLAYER_NAME, {
-      name,
-      playerId,
-    })
+    database.ref(`players/${state.playerId}/name`).set(name)
   },
   signOut ({dispatch}) {
     Firebase.auth().signOut()
-    // signOut doesn't fire authChanged
-    dispatch('setPlayerId')
+    database.ref(`players/${state.playerId}/games`).off('value')
+    commit(UNSET_PLAYER)
   },
   signInWithGoogle ({dispatch, state}) {
     const provider = new Firebase.auth.GoogleAuthProvider()
@@ -305,24 +300,9 @@ export const store = new Vuex.Store({
 if (typeof window !== 'undefined') {
   gameId = document.location.hash.slice(1) || database.ref('games').push().key
   store.dispatch('loadGame', gameId)
-
   Firebase.auth().onAuthStateChanged((user) => {
-    // playerRef.set({}) and append gameId
     if (user) {
-      store.dispatch('setPlayerId', user)
-      user.getToken().then((token) => {
-        // todo: bring this back
-        if (false && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({
-            command: 'setPlayerToken',
-            message: {
-              playerId: user.uid,
-              token,
-            }
-          })
-        }
-      })
-    } else {
+      store.dispatch('setPlayer', user)
     }
   })
 }
