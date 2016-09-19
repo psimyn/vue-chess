@@ -1,8 +1,11 @@
 <template>
   <span
     class="square"
-    v-on:click="selectSquare(square)"
-    v-bind:class="{black, selected}"
+    v-on:click="handleClick(square)"
+    v-bind:class="{
+      black,
+      selected: selected === `${square.file}${square.rank}`
+    }"
   >
     <piece v-bind:piece="square.piece" />
   </span>
@@ -16,16 +19,23 @@ export default {
   components: {
     Piece
   },
-  props: ['square', 'selected'],
+  props: ['square'],
   computed: {
+    ...mapGetters({selected: 'selected'}),
     black() {
       return !((this.square.rank % 2 == 1 && ['a', 'c', 'e', 'g'].includes(this.square.file))
       || (this.square.rank % 2 == 0 && ['b', 'd', 'f', 'h'].includes(this.square.file)))
     },
   },
   methods: {
-    selectSquare (square) {
-      this.$store.dispatch('selectSquare', square)
+    ...mapActions(['selectSquare', 'movePiece']),
+    handleClick (square) {
+      square = `${square.file}${square.rank}`
+      if (this.selected) {
+        this.movePiece(square)
+      } else {
+        this.selectSquare(square)
+      }
     }
   }
 }

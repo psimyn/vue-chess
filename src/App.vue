@@ -2,10 +2,9 @@
     <div id="app">
       <loader v-if="loading" />
       <div v-if="!loading" class="container">
-        <board v-if="player.id" />
-        <status v-if="player.id" />
-        <login v-if="!player.id" />
-        <notification-button />
+        <board v-if="player.id && player.name" />
+        <status v-if="player.id && player.name" />
+        <hr />
         <player />
       </div>
     </div>
@@ -13,19 +12,15 @@
 
 <script>
   import Board from './components/Board.vue'
-  import Login from './components/Login.vue'
   import Status from './components/Status.vue'
   import Player from './components/Player.vue'
   import Loader from './components/Loader.vue'
-  import NotificationButton from './components/NotificationButton.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
   export default {
     components: {
       Board,
       Loader,
-      Login,
-      NotificationButton,
       Player,
       Status,
     },
@@ -50,6 +45,9 @@
           return this.players.black === this.player.id
         }
       },
+    },
+    created () {
+
     },
   }
   </script>

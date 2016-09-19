@@ -5,6 +5,17 @@
 </template>
 
 <script>
+
+// todo: run this on mount or something
+// if (navigator.serviceWorker.controller) {
+//   navigator.serviceWorker.controller.postMessage({
+//     command: 'setGameId',
+//     message: {
+//       gameId
+//     }
+//   })
+// }
+
   import {mapActions, mapGetters} from 'vuex'
 
   export default {

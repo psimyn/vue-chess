@@ -1,34 +1,37 @@
 <template>
-  <div class="board" v-bind:class="{flat, playingAsBlack}">
-    <div class="row" v-for="row in ranks">
-      <square
-        v-for="s of row"
-        v-bind:square="s"
-        v-bind:selected="s == selected">
-      </square>
-    </div>
-    <div class="overlay" v-if="!gameStarted">
-      <button
-        class="button white"
-        v-bind:class="{
-          hidden: players.white
-        }"
-        v-on:click="setPlayer('white')"
-      >
-        <span>Play as</span>&nbsp;<span>White</span>
-      </button>
-      <button
-        class="button black"
-        v-bind:class="{
-          hidden: players.black
-        }"
-        v-on:click="setPlayer('black')"
-      >
-        <span>Play as</span>&nbsp;<span>Black</span>
-      </button>
-    </div>
-    <div class="overlay" v-if="game.isCheckmate">
-      <h3 class="checkmate" v-if="game.isCheckmate">Checkmate</h3>
+  <div>
+    <div v-if="game && game.white && game.black">{{whiteName}} v {{blackName}}</div>
+    <div class="board" v-bind:class="{flat, playingAsBlack}">
+      <div class="row" v-for="row in ranks">
+        <square
+          v-for="s of row"
+          v-bind:square="s"
+          v-bind:selected="s == selected">
+        </square>
+      </div>
+      <div class="overlay" v-if="!gameStarted">
+        <button
+          class="button white"
+          v-bind:class="{
+            hidden: game && game.white
+          }"
+          v-on:click="joinTeam('white')"
+        >
+          <span>Play as</span>&nbsp;<span>White</span>
+        </button>
+        <button
+          class="button black"
+          v-bind:class="{
+            hidden: game.black
+          }"
+          v-on:click="joinTeam('black')"
+        >
+          <span>Play as</span>&nbsp;<span>Black</span>
+        </button>
+      </div>
+      <div class="overlay" v-if="game.isCheckmate">
+        <h3 class="checkmate" v-if="game.isCheckmate">Checkmate</h3>
+      </div>
     </div>
   </div>
 </template>
@@ -46,20 +49,24 @@ export default {
       selected: 'selected',
       board: 'board',
       game: 'game',
+      players: 'players',
     }),
     // todo: make switchable
     flat () {
       return true
     },
+    whiteName() {
+      return this.players[this.game.white]
+    },
+    blackName() {
+      return this.players[this.game.black]
+    },
     // todo: determine, default to false
     playingAsBlack () {
       return false
     },
-    players () {
-      return this.game.players
-    },
     gameStarted () {
-      return this.players.white && this.players.black
+      return this.game.white && this.game.black
     },
     ranks () {
       return this.board.squares.reduce((acc, item) => {
@@ -69,7 +76,7 @@ export default {
       }, [])
     }
   },
-  methods: mapActions(['setPlayer']),
+  methods: mapActions(['joinTeam']),
 }
 </script>
 

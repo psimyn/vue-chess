@@ -5,6 +5,6 @@ import {store, firebase} from './vuex/store'
 new Vue({
   el: '#app',
   store,
-  firebase,
+  // firebase,
   render: h => h(App),
 })

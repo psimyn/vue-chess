@@ -4,6 +4,7 @@
       <h3 v-if="gameStarted">
         <span v-if="isCheck">Check!</span>
         <span v-if="yourMove">Your move ({{turn}})</span>
+        <span v-if="!yourMove">{{turn}} to move</span>
         <span class="error" transition="slide" v-show="message">{{message}}</span>
       </h3>
       <move-history />
@@ -21,16 +22,14 @@
     computed: {
       ...mapGetters({
         player: 'player',
+        players: 'players',
         game: 'game',
         moves: 'moves',
         message: 'message',
         currentMove: 'currentMove',
       }),
-      players () {
-        return this.game.players
-      },
       gameStarted () {
-        return this.players.white && this.players.black && this.moves
+        return this.game.white && this.game.black
       },
       isCheck () {
         return this.game.isCheck
@@ -40,9 +39,9 @@
       },
       yourMove () {
         if (this.moves.length % 2 === 0) {
-          return this.players.white === this.player.id
+          return this.game.white === this.player.id
         } else {
-          return this.players.black === this.player.id
+          return this.game.black === this.player.id
         }
       },
     },
