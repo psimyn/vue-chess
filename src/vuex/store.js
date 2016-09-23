@@ -103,6 +103,8 @@ export const actions = {
       database.ref(`moves/${state.gameId}`).off('child_added')
       database.ref(`players/${state.game.white}/name`).off('value')
       database.ref(`players/${state.game.black}/name`).off('value')
+      throw 'balh'
+      return
     }
 
     state.gameClient = chess.create({PGN: true})

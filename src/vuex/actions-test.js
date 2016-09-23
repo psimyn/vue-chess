@@ -43,8 +43,14 @@ describe('actions', () => {
     // todo: move mutations to here
   })
 
-  describe('loadGame', () => {
-
+  describe.only('loadGame', () => {
+    it('remove refs', () => {
+      const state = {
+        gameId: 'oldtestgame',
+        game: {black: 123, white: 456},
+      }
+      return testAction(loadGame, 'testgame', state, [])
+    })
   })
 
   describe('select piece', () => {
