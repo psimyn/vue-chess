@@ -29,6 +29,7 @@ export const initialState = {
   moves: [],
 
   loading: true,
+  flat: true,
   selected: null,
   message: null,
 
