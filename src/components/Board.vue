@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div v-if="game && game.white && game.black">{{whiteName}} v {{blackName}}</div>
     <div class="board" v-bind:class="{flat, playingAsBlack}">
       <div class="row" v-for="row in ranks">
         <square
@@ -54,12 +53,6 @@ export default {
     // todo: make switchable
     flat () {
       return true
-    },
-    whiteName() {
-      return this.players[this.game.white]
-    },
-    blackName() {
-      return this.players[this.game.black]
     },
     // todo: determine, default to false
     playingAsBlack () {

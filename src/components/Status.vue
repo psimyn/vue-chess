@@ -1,24 +1,23 @@
   <template>
-    <div id="">
+    <div class="wrapper" id="currentGame">
       <h3 v-if="!gameStarted">Waiting for players...</h3>
-      <h3 v-if="gameStarted">
+      <h3 class="status" v-if="gameStarted">
         <span v-if="isCheck">Check!</span>
         <span v-if="yourMove">Your move ({{turn}})</span>
         <span v-if="!yourMove">{{turn}} to move</span>
         <span class="error" transition="slide" v-show="message">{{message}}</span>
       </h3>
-      <move-history />
+      <div class="opponent" v-if="opponent">
+        <h3 class="title">Opponent</h3>
+        <span>{{opponent}}</span>
+      </div>
     </div>
   </template>
 
 <script>
-  import MoveHistory from './MoveHistory.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
   export default {
-    components: {
-      MoveHistory,
-    },
     computed: {
       ...mapGetters({
         player: 'player',
@@ -30,6 +29,16 @@
       }),
       gameStarted () {
         return this.game.white && this.game.black
+      },
+      opponent () {
+        if (!(this.game && this.game.white && this.game.black)) return
+        return this.players[this.game.white]
+      },
+      whiteName() {
+        return this.players[this.game.white]
+      },
+      blackName() {
+        return this.players[this.game.black]
       },
       isCheck () {
         return this.game.isCheck
@@ -48,10 +57,29 @@
   }
   </script>
 
-  <style scoped>
+<style scoped>
+  .wrapper {
+    padding: 24px 12px 12px;
+    overflow: hidden;
+  }
   .error {
     width: 160px;
     float: right;
     color: #dd5555;
+  }
+
+  .opponent {
+    float: right;
+    text-align: right;
+  }
+
+  .status,
+  .title {
+    margin: 0;
+    line-height: 32px;
+  }
+
+  .status {
+    float: left;
   }
 </style>

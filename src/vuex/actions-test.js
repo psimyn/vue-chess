@@ -1,6 +1,14 @@
 import chess from 'chess'
 import { expect } from 'chai'
-import { actions, initialState, SET_SELECTED_SQUARE, SET_MESSAGE, ADD_MOVE } from './store'
+import { initialState, SET_SELECTED_SQUARE, SET_MESSAGE, ADD_MOVE } from './store'
+const actionsInjector = require('inject!./store')
+const actions = actionsInjector({
+  './api': {
+    on() {
+
+    }
+  }
+}).actions
 
 const { joinTeam, selectSquare, movePiece, loadGame } = actions
 

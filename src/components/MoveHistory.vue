@@ -4,6 +4,7 @@
         v-if="moves.length > 1"
         class="moveHistory"
       >
+        <h3>Move History [beta]</h3>
         <div class="move-history-list">
           <div class="slider">
             <div v-bind:style="{top}" class="slider-knob">
@@ -103,25 +104,23 @@
   .moveHistory {
     max-height: 100vh;
     overflow-y: auto;
-    padding: 0 1em;
-    margin-bottom: 64px;
+    padding: 24px 16px 24px 12px;
+    margin-bottom: 0;
     background: white;
-    top: 0;
-    right: 0;
-    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.95);
-    z-index: 99999;
+    border-top: solid 1px #ddd;
+    border-bottom: solid 1px #ddd;
   }
 
   .move-history-list {
     position: relative;
-    padding: 0 16px 0 24px;
+    padding: 16px 16px 0 24px;
   }
 
   .slider {
     position: absolute;
     background: #bbb;
     left: 0;
-    top: 0;
+    top: 12px;
     bottom: 0;
     width: 4px;
   }

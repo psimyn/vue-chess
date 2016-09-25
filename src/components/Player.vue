@@ -3,23 +3,25 @@
     <login v-if="!player.id && !player.name" />
     <div v-if="player.id">
       <div class="games" v-if="player.name && myGames.length">
-        <h2>My Games</h2>
+        <h3>My Games</h3>
         <p class="link" v-for="game in myGames" v-on:click="loadGame(game.gameId)">
           {{game.white}} v {{game.black}}
         </p>
-        <hr />
       </div>
-      <div v-if="!player.name || edit">
-        <p>Please enter your name</p>
-        <input v-model="name" />
-        <button v-on:click="saveName">Update name</button>
+      <hr />
+      <div class="player-stuff">
+        <div v-if="!player.name || edit">
+          <p>Please enter your name</p>
+          <input v-model="name" />
+          <button v-on:click="saveName">Update name</button>
+        </div>
+        <div v-if="player.name && !edit">
+          <span>logged in as {{player.name}} </span>
+          <a class="link" v-on:click="editName">edit</a>
+        </div>
+        <notification-button />
+        <button class="right" v-on:click="signOut()">Logout</button>
       </div>
-      <div v-if="player.name && !edit">
-        <span>logged in as {{player.name}} </span>
-        <a class="link" v-on:click="editName">edit</a>
-      </div>
-      <notification-button />
-      <button class="right" v-on:click="signOut()">Logout</button>
     </div>
   </div>
 </template>
@@ -85,6 +87,9 @@ export default {
 </script>
 
 <style>
+  .games {
+    padding: 16px 12px;
+  }
   .link {
     color: #2a7ae2;
     cursor: pointer;
@@ -95,11 +100,12 @@ export default {
     background-position-y: 1.3125em;
     margin: 0 24px;
   }
-  .games{
-    margin: 32px 0;
-  }
   .players {
     overflow: hidden;
+  }
+  .player-stuff {
+    overflow: hidden;
+    padding: 12px;
   }
   .left {
     float: left;

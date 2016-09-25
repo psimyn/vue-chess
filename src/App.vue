@@ -4,7 +4,7 @@
       <div v-if="!loading" class="container">
         <board v-if="player.id && player.name" />
         <status v-if="player.id && player.name" />
-        <hr />
+        <move-history></move-history>
         <player />
       </div>
     </div>
@@ -14,6 +14,7 @@
   import Board from './components/Board.vue'
   import Status from './components/Status.vue'
   import Player from './components/Player.vue'
+  import MoveHistory from './components/MoveHistory.vue'
   import Loader from './components/Loader.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
 
@@ -21,6 +22,7 @@
     components: {
       Board,
       Loader,
+      MoveHistory,
       Player,
       Status,
     },
@@ -59,6 +61,10 @@
     overflow-y: hidden;
     height: 100vh;
     background: #f2f2f2;
+  }
+
+  h3 {
+    margin: 0;
   }
 
   body * {
