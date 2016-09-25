@@ -68,6 +68,8 @@
           return
         }
 
+        this.swRegistration = swRegistration
+
         swRegistration.pushManager.getSubscription()
         .then((subscription) => {
           if (!subscription) {
@@ -79,15 +81,13 @@
         })
       },
       dosubscribe() {
-        navigator.serviceWorker.ready.then((swRegistration) => {
-          swRegistration.pushManager.subscribe({userVisibleOnly: true})
-          .then((subscription) => {
-            this.enabled = true
-            this.subscribe(subscription)
-          })
-          .catch((err) => {
-            console.warn('getSubscription() failed', err)
-          })
+        this.swRegistration.pushManager.subscribe({userVisibleOnly: true})
+        .then((subscription) => {
+          this.enabled = true
+          this.subscribe(subscription)
+        })
+        .catch((err) => {
+          console.warn('getSubscription() failed', err)
         })
       },
       dounsubscribe() {

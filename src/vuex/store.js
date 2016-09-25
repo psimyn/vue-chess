@@ -175,10 +175,11 @@ export const actions = {
 
     if (validMove) {
       database.ref(`moves/${state.gameId}`).push(validMove)
-      commit(SET_SELECTED_SQUARE, null)
       commit(SET_MESSAGE, null)
+      commit(SET_SELECTED_SQUARE, null)
     } else {
       commit(SET_MESSAGE, 'Invalid move')
+      commit(SET_SELECTED_SQUARE, null)
     }
   }
 }
