@@ -49,11 +49,8 @@ export default {
       board: 'board',
       game: 'game',
       players: 'players',
+      flat: 'flat',
     }),
-    // todo: make switchable
-    flat () {
-      return true
-    },
     // todo: determine, default to false
     playingAsBlack () {
       return false
@@ -83,11 +80,11 @@ export default {
     max-width: 600px;
     box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);
     position: relative;
+    transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1);
   }
 
   .board:not(.flat) {
-    perspective: 1600px;
-    transform: rotate3d(1, 0, 0, 10deg);
+    transform: rotate3d(1, 0, 0, 15deg);
     transform-style: preserve-3d;
   }
 

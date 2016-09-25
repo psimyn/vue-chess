@@ -48,8 +48,16 @@ export const SET_SELECTED_SQUARE = 'SET_SELECTED_SQUARE'
 export const ADD_MOVE = 'ADD_MOVE'
 export const SET_GAME_ID = 'SET_GAME_ID'
 export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
+export const SET_LOADING = 'SET_LOADING'
+export const SET_FLAT = 'SET_FLAT'
 
 export const mutations = {
+  [SET_LOADING](state, val) {
+    state.loading = val
+  },
+  [SET_FLAT](state, flat) {
+    state.flat = flat
+  },
   [SET_GAME_ID](state, gameId) {
     state.gameId = gameId
   },
@@ -97,13 +105,16 @@ export const mutations = {
 }
 
 export const actions = {
+  toggleFlat({commit, state}) {
+    commit(SET_FLAT, !state.flat)
+  },
   loadGame({commit, state}, gameId) {
+    commit(SET_LOADING, true)
     // remove old listeners
     if (state.gameId) {
       database.ref(`moves/${state.gameId}`).off('child_added')
       database.ref(`players/${state.game.white}/name`).off('value')
       database.ref(`players/${state.game.black}/name`).off('value')
-      return
     }
 
     state.gameClient = chess.create({PGN: true})
@@ -112,6 +123,7 @@ export const actions = {
     database.ref(`moves/${gameId}`).on('child_added', (snapshot) => {
       const move = snapshot.val()
       commit(ADD_MOVE, move)
+      commit(SET_LOADING, false)
     })
 
     database.ref(`games/${gameId}`).on('value', (snapshot) => {
@@ -124,6 +136,7 @@ export const actions = {
         white,
         black,
       }
+      commit(SET_LOADING, false)
     })
 
     document.location.hash = gameId
@@ -133,7 +146,7 @@ export const actions = {
     database.ref(`games/${state.gameId}/${team}`).set(state.playerId)
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
-  selectSquare({commit, state}, selection) {
+  selectSquare({commit, dispatch, state}, selection) {
     const status = state.gameClient.getStatus()
     const index = notationToIndex(selection)
     const square = status.board.squares[index]
@@ -146,13 +159,19 @@ export const actions = {
       if (turn === selectionTeam) {
         commit(SET_SELECTED_SQUARE, selection)
       } else {
-        commit(SET_MESSAGE, `It is ${turn}'s move`)
+        dispatch('timedMessage', {message: `It is ${turn}'s move`})
       }
     } else {
-      commit(SET_MESSAGE, 'Not your piece')
+      dispatch('timedMessage', {message: 'Not your piece'})
     }
   },
-  movePiece({commit, state}, to) {
+  timedMessage({commit}, {message, timeout = 2000}) {
+    commit(SET_MESSAGE, message)
+    setTimeout(() => {
+      commit(SET_MESSAGE, null)
+    }, timeout)
+  },
+  movePiece({commit, dispatch, state}, to) {
     if (!state.selected) throw 'no piece selected'
     const fromIndex = notationToIndex(state.selected)
     const toIndex = notationToIndex(to)
@@ -178,7 +197,7 @@ export const actions = {
       commit(SET_MESSAGE, null)
       commit(SET_SELECTED_SQUARE, null)
     } else {
-      commit(SET_MESSAGE, 'Invalid move')
+      dispatch('timedMessage', {message: 'Invalid move'})
       commit(SET_SELECTED_SQUARE, null)
     }
   }
@@ -217,7 +236,10 @@ const playerActions = {
       const gameIds = snapshot.val() || {}
       const games = Object.keys(gameIds).filter(i => gameIds[i])
       games.forEach(gameId => {
-        database.ref(`games/${gameId}`).once('value').then(s => s.val()).then((game) => {
+        database.ref(`games/${gameId}`).on('value', updateGames)
+
+        function updateGames(snapshot) {
+          const game = snapshot.val()
           return Promise.all([
             database.ref(`players/${game.white}/name`).once('value'),
             database.ref(`players/${game.black}/name`).once('value'),
@@ -232,20 +254,23 @@ const playerActions = {
               white: white.val(),
               black: black.val(),
             })
+            if (state.players.white && state.players.black) {
+              database.ref(`games/${gameId}`).off('value', updateGames)
+            }
           })
-        })
+        }
       })
     })
   },
   setPlayerName({commit, state}, name) {
     database.ref(`players/${state.playerId}/name`).set(name)
   },
-  signOut ({dispatch}) {
+  signOut ({commit}) {
     Firebase.auth().signOut()
     database.ref(`players/${state.playerId}/games`).off('value')
     commit(UNSET_PLAYER)
   },
-  signInWithGoogle ({dispatch, state}) {
+  signInWithGoogle ({state}) {
     const provider = new Firebase.auth.GoogleAuthProvider()
     Firebase.auth().signInWithPopup(provider)
     .then((result) => {
@@ -273,7 +298,8 @@ export const store = new Vuex.Store({
     ...playerActions,
   },
   getters: {
-    loading: state => false, //state.loading,
+    loading: state => state.loading,
+    flat: state => state.flat,
     player: state => {
       return {
         ...state.player,
