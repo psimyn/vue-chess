@@ -4,7 +4,7 @@
         v-if="moves.length > 1"
         class="moveHistory"
       >
-        <h3>Move History [beta]</h3>
+        <h3>Move History</h3>
         <div class="move-history-list">
           <div class="slider">
             <div v-bind:style="{top}" class="slider-knob">
