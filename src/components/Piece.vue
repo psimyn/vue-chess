@@ -43,7 +43,35 @@ export default {
 }
 
 .piece:not(.flat) {
-  transform: rotate3d(1, 0, 0, -15deg) translateY(-21%);
+  transform: rotate3d(1, 0, 0, -25deg) translateY(-18%);
+}
+
+
+.piece:not(.flat):before {
+  content: ' ';
+  background-image: inherit;
+  background-size: cover;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+}
+
+.piece:not(.flat):after {
+  content: ' ';
+  background-image: inherit;
+  background-size: cover;
+  width: 100%;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  height: 100%;
+  display: inline-block;
+  transform: rotate(4deg) scaleY(1.05) translateY(-2px);
+  filter: contrast(0) opacity(0.3) blur(2px);
 }
 
 .white {

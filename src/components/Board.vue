@@ -87,7 +87,7 @@ export default {
 
   .board:not(.flat) {
     perspective: 1600px;
-    transform: rotate3d(1, 0, 0, 10deg);
+    transform: rotate3d(1, 0, 0, 25deg);
     transform-style: preserve-3d;
   }
 
