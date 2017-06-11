@@ -10,17 +10,10 @@
       </div>
       <hr />
       <div class="player-stuff">
-        <div v-if="!player.name || edit">
-          <p>Please enter your name</p>
-          <input v-model="name" />
-          <button v-on:click="saveName">Update name</button>
-        </div>
-        <div v-if="player.name && !edit">
+        <div v-if="player.name">
           <span>logged in as {{player.name}} </span>
-          <a class="link" v-on:click="editName">edit</a>
         </div>
-        <notification-button />
-        <button class="right" v-on:click="signOut()">Logout</button>
+        <button v-on:click="signOut()">logout</button>
       </div>
     </div>
   </div>
@@ -28,7 +21,6 @@
 
 <script>
 import {mapActions, mapGetters, mapState} from 'vuex'
-import NotificationButton from './NotificationButton.vue'
 import GameLink from './GameLink.vue'
 import Login from './Login.vue'
 
@@ -36,7 +28,6 @@ export default {
   components: {
     GameLink,
     Login,
-    NotificationButton,
   },
   computed: {
     ...mapGetters({
@@ -66,21 +57,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['signOut', 'loadGame', 'setPlayerName',]),
-    saveName() {
-      this.setPlayerName(this.name)
-      this.edit = false
-    },
-    editName() {
-      this.name = this.player.name
-      this.edit = true
-    }
+    ...mapActions(['signOut', 'loadGame',])
   },
   data () {
     return {
       message: '',
-      name: '',
-      edit: false,
+      name: ''
     }
   },
 }
@@ -104,14 +86,11 @@ export default {
     overflow: hidden;
   }
   .player-stuff {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     overflow: hidden;
     padding: 12px;
-  }
-  .left {
-    float: left;
-  }
-  .right {
-    float: right;
   }
   label {
     display: block;
