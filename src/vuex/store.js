@@ -211,7 +211,7 @@ const playerActions = {
       name: player.displayName
     })
 
-    player.getToken().then((token) => {
+    player.getIdToken().then((token) => {
       if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           command: 'setPlayerToken',
