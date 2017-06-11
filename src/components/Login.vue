@@ -37,9 +37,12 @@ export default {
 </script>
 
 <style scoped>
-  .button {
+  button {
     display: flex;
+    justify-content: center;
     align-items: center;
+    width: 240px;
+    margin: 24px auto;
   }
 
   .icon {

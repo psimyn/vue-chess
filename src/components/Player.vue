@@ -1,6 +1,6 @@
 <template>
   <div class="player-container">
-    <login v-if="!player.id && !player.name" />
+    <login v-if="!player || (!player.id && !player.name)" />
     <div v-if="player.id">
       <div class="games" v-if="player.name && myGames.length">
         <h3>My Games</h3>
@@ -80,7 +80,7 @@ export default {
     background-size: 4px 2px;
     background-repeat: repeat-x;
     background-position-y: 1.3125em;
-    margin: 0 24px;
+    margin: 8px 0;
   }
   .players {
     overflow: hidden;

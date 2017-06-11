@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import chess from 'chess'
-import VuexFire from 'vuexfire'
 import Firebase from 'firebase'
-import { notationToIndex, moveAsPGNFromSquares } from './chess'
+import { notationToIndex } from './chess'
 
 Vue.use(Vuex)
 
@@ -11,7 +10,7 @@ const config = {
   apiKey: 'AIzaSyDgo_wWAkKHmFxHMvDGFL4IUKfy0WNyJK4',
   authDomain: 'chess-cfde8.firebaseapp.com',
   databaseURL: 'https://chess-cfde8.firebaseio.com',
-  storageBucket: '',
+  storageBucket: ''
 }
 // todo: fake db for mocha tests
 let database = {}
@@ -35,8 +34,8 @@ export const initialState = {
   playerId: null,
   player: {
     id: null,
-    games: {},
-  },
+    games: {}
+  }
 }
 
 export const SET_PLAYER_NAME = 'SET_PLAYER_NAME'
@@ -51,57 +50,57 @@ export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
 export const SET_LOADING = 'SET_LOADING'
 
 export const mutations = {
-  [SET_LOADING](state, val) {
+  [SET_LOADING] (state, val) {
     state.loading = val
   },
-  [SET_GAME_ID](state, gameId) {
+  [SET_GAME_ID] (state, gameId) {
     state.gameId = gameId
   },
-  [UPDATE_MY_GAMES](state, {gameId, white, black}) {
+  [UPDATE_MY_GAMES] (state, {gameId, white, black}) {
     const game = state.player.games[gameId] || {}
     game['white'] = white || game.white
     game['black'] = black || game.black
     state.player.games = {
       ...state.player.games,
-      [gameId]: game,
+      [gameId]: game
     }
   },
-  [UPDATE_PLAYER_NAMES](state, players) {
+  [UPDATE_PLAYER_NAMES] (state, players) {
     state.players = {
       ...state.players,
-      ...players,
+      ...players
     }
   },
-  [SET_PLAYER](state, {id, name}) {
+  [SET_PLAYER] (state, {id, name}) {
     state.playerId = id
     state.player.name = name
   },
-  [UNSET_PLAYER](state) {
+  [UNSET_PLAYER] (state) {
     state.playerId = null
     state.playerGames = []
   },
-  [SET_MESSAGE](state, message) {
+  [SET_MESSAGE] (state, message) {
     state.message = message
   },
-  [SET_SELECTED_SQUARE](state, selection) {
+  [SET_SELECTED_SQUARE] (state, selection) {
     state.selected = selection
   },
-  [ADD_MOVE](state, move) {
+  [ADD_MOVE] (state, move) {
     // todo: should this error instead?
     if (move) {
       state.moves = state.moves.concat(move)
     }
   },
-  [SET_PLAYER_NAME](state, {name, playerId}) {
+  [SET_PLAYER_NAME] (state, {name, playerId}) {
     state.players = {
       ...state.players,
-      [playerId]: name,
+      [playerId]: name
     }
-  },
+  }
 }
 
 export const actions = {
-  loadGame({commit, state}, gameId) {
+  loadGame ({commit, state}, gameId) {
     commit(SET_LOADING, true)
     // remove old listeners
     if (state.gameId) {
@@ -120,14 +119,13 @@ export const actions = {
     })
 
     database.ref(`games/${gameId}`).on('value', (snapshot) => {
-      const key = snapshot.key
       const white = snapshot.child('white').val()
       const black = snapshot.child('black').val()
 
       state.game = {
         ...state.game,
         white,
-        black,
+        black
       }
       commit(SET_LOADING, false)
     })
@@ -135,11 +133,11 @@ export const actions = {
     document.location.hash = gameId
     commit(SET_GAME_ID, gameId)
   },
-  joinTeam({commit, state}, team) {
+  joinTeam ({commit, state}, team) {
     database.ref(`games/${state.gameId}/${team}`).set(state.playerId)
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
-  selectSquare({commit, dispatch, state}, selection) {
+  selectSquare ({commit, dispatch, state}, selection) {
     const status = state.gameClient.getStatus()
     const index = notationToIndex(selection)
     const square = status.board.squares[index]
@@ -158,14 +156,14 @@ export const actions = {
       dispatch('timedMessage', {message: 'Not your piece'})
     }
   },
-  timedMessage({commit}, {message, timeout = 2000}) {
+  timedMessage ({commit}, {message, timeout = 2000}) {
     commit(SET_MESSAGE, message)
     setTimeout(() => {
       commit(SET_MESSAGE, null)
     }, timeout)
   },
-  movePiece({commit, dispatch, state}, to) {
-    if (!state.selected) throw 'no piece selected'
+  movePiece ({commit, dispatch, state}, to) {
+    if (!state.selected) throw new Error('no piece selected')
     const fromIndex = notationToIndex(state.selected)
     const toIndex = notationToIndex(to)
 
@@ -173,7 +171,7 @@ export const actions = {
     const squares = game.board.squares
     const move = {
       from: squares[fromIndex],
-      to: squares[toIndex],
+      to: squares[toIndex]
     }
     // const move = moveAsPGNFromSquares(fromSquare, toSquare)
     // const validMove = Object.keys(game.notatedMoves).indexOf(move) > -1
@@ -198,19 +196,19 @@ export const actions = {
 
 const playerActions = {
   subscribe ({state}, subscription) {
-    if (!state.playerId) throw 'missing playerId'
+    if (!state.playerId) throw new Error('missing playerId')
     const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
     database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(true)
   },
   unsubscribe ({state}, subscription) {
-    if (!state.playerId) throw 'missing playerId'
+    if (!state.playerId) throw new Error('missing playerId')
     const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
     database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(false)
   },
   setPlayer ({commit, state}, player) {
     commit(SET_PLAYER, {
       id: player.uid,
-      name: player.displayName,
+      name: player.displayName
     })
 
     player.getToken().then((token) => {
@@ -219,7 +217,7 @@ const playerActions = {
           command: 'setPlayerToken',
           message: {
             playerId: player.uid,
-            token,
+            token
           }
         })
       }
@@ -231,21 +229,21 @@ const playerActions = {
       games.forEach(gameId => {
         database.ref(`games/${gameId}`).on('value', updateGames)
 
-        function updateGames(snapshot) {
+        function updateGames (snapshot) {
           const game = snapshot.val()
           return Promise.all([
             database.ref(`players/${game.white}/name`).once('value'),
-            database.ref(`players/${game.black}/name`).once('value'),
+            database.ref(`players/${game.black}/name`).once('value')
           ])
           .then(([white, black]) => {
             commit(UPDATE_PLAYER_NAMES, {
               [game.white]: white.val(),
-              [game.black]: black.val(),
+              [game.black]: black.val()
             })
             commit(UPDATE_MY_GAMES, {
               gameId,
               white: white.val(),
-              black: black.val(),
+              black: black.val()
             })
             if (state.players.white && state.players.black) {
               database.ref(`games/${gameId}`).off('value', updateGames)
@@ -255,10 +253,10 @@ const playerActions = {
       })
     })
   },
-  setPlayerName({commit, state}, name) {
+  setPlayerName ({commit, state}, name) {
     database.ref(`players/${state.playerId}/name`).set(name)
   },
-  signOut ({commit}) {
+  signOut ({commit, state}) {
     Firebase.auth().signOut()
     database.ref(`players/${state.playerId}/games`).off('value')
     commit(UNSET_PLAYER)
@@ -273,9 +271,10 @@ const playerActions = {
       console.warn(error)
     })
   },
-  signInAnonymously({}) {
+  signInAnonymously () {
     Firebase.auth().signInAnonymously().then((result) => {
       console.log(`logged in as ${result.uid}`)
+      this.setPlayerName('Guest')
     })
     .catch((error) => {
       console.warn(error)
@@ -288,14 +287,14 @@ export const store = new Vuex.Store({
   mutations,
   actions: {
     ...actions,
-    ...playerActions,
+    ...playerActions
   },
   getters: {
     loading: state => state.loading,
     player: state => {
       return {
         ...state.player,
-        id: state.playerId,
+        id: state.playerId
       }
     },
     playerGames: state => state.playerGames,
@@ -312,8 +311,8 @@ export const store = new Vuex.Store({
         state.gameClient.move(move)
       })
       return state.gameClient.getStatus().board
-    },
-  },
+    }
+  }
 })
 
 // todo: move this to created in App.vue or something
