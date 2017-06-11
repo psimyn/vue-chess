@@ -10,7 +10,6 @@
         </h3>
         <span><strong>{{whiteName}}</strong> v <strong>{{blackName}}</strong></span>
       </div>
-      <button v-on:click="toggleFlat()">view: {{viewMode}}</button>
     </div>
   </template>
 
@@ -24,12 +23,8 @@
         players: 'players',
         game: 'game',
         moves: 'moves',
-        message: 'message',
-        flat: 'flat'
+        message: 'message'
       }),
-      viewMode() {
-        return this.flat ? 'flat' : '3d'
-      },
       gameStarted() {
         return this.game.white && this.game.black
       },
@@ -51,9 +46,8 @@
         } else {
           return this.game.black === this.player.id
         }
-      },
-    },
-    methods: mapActions(['toggleFlat']),
+      }
+    }
   }
   </script>
 

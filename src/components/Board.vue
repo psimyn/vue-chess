@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="board" v-bind:class="{flat, playingAsBlack}">
+    <div class="board" v-bind:class="{playingAsBlack}">
       <div class="row" v-for="row in ranks">
         <square
           v-for="s of row"
@@ -48,8 +48,7 @@ export default {
       selected: 'selected',
       board: 'board',
       game: 'game',
-      players: 'players',
-      flat: 'flat',
+      players: 'players'
     }),
     // todo: determine, default to false
     playingAsBlack () {
@@ -81,13 +80,6 @@ export default {
     box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);
     position: relative;
     transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1);
-  }
-
-  .board:not(.flat) {
-    transform: rotate3d(1, 0, 0, 15deg);
-    perspective: 1600px;
-    transform: rotate3d(1, 0, 0, 25deg);
-    transform-style: preserve-3d;
   }
 
   .playingAsBlack {

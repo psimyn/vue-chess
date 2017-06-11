@@ -29,7 +29,6 @@ export const initialState = {
   moves: [],
 
   loading: true,
-  flat: true,
   selected: null,
   message: null,
 
@@ -50,14 +49,10 @@ export const ADD_MOVE = 'ADD_MOVE'
 export const SET_GAME_ID = 'SET_GAME_ID'
 export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
 export const SET_LOADING = 'SET_LOADING'
-export const SET_FLAT = 'SET_FLAT'
 
 export const mutations = {
   [SET_LOADING](state, val) {
     state.loading = val
-  },
-  [SET_FLAT](state, flat) {
-    state.flat = flat
   },
   [SET_GAME_ID](state, gameId) {
     state.gameId = gameId
@@ -106,9 +101,6 @@ export const mutations = {
 }
 
 export const actions = {
-  toggleFlat({commit, state}) {
-    commit(SET_FLAT, !state.flat)
-  },
   loadGame({commit, state}, gameId) {
     commit(SET_LOADING, true)
     // remove old listeners
@@ -300,7 +292,6 @@ export const store = new Vuex.Store({
   },
   getters: {
     loading: state => state.loading,
-    flat: state => state.flat,
     player: state => {
       return {
         ...state.player,
