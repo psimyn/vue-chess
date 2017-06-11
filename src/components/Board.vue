@@ -3,6 +3,7 @@
     <div class="board" v-bind:class="{playingAsBlack}">
       <div class="row" v-for="row in ranks">
         <square
+          key="`${s.file}${s.rank}`"
           v-for="s of row"
           v-bind:square="s"
           v-bind:selected="s == selected">
