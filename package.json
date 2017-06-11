@@ -23,6 +23,8 @@
     "chess": "^0.2.7",
     "cross-env": "^1.0.6",
     "css-loader": "^0.23.1",
+    "eslint": "^3.19.0",
+    "eslint-plugin-html": "^2.0.3",
     "file-loader": "^0.8.4",
     "firebase": "^3.3.0",
     "inject-loader": "^3.0.0-beta1",
