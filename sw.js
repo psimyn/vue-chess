@@ -1,10 +1,12 @@
+/* eslint-env serviceworker, browser */
+/* global localforage */
 importScripts('dist/localforage.min.js')
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', function (event) {
   self.skipWaiting()
 })
 
-self.addEventListener('push', function(event) {
+self.addEventListener('push', function (event) {
   const title = `It's your move!`
   const body = 'Click to go to game'
   const icon = 'https://psimyn.com/vue-chess/dist/white-pawn.png'
@@ -14,12 +16,12 @@ self.addEventListener('push', function(event) {
       body,
       icon,
       // todo: test for null
-      tag: 'chess!',
+      tag: 'chess!'
     })
   )
 })
 
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', function (event) {
   // android doesn't close notification - http://crbug.com/463146
   event.notification.close()
 
@@ -30,14 +32,13 @@ self.addEventListener('notificationclick', function(event) {
   .then((res) => {
     const playerId = res[0]
     const token = res[1]
-    const icon = 'https://psimyn.com/vue-chess/dist/white-pawn.png'
     return `https://chess-cfde8.firebaseio.com/players/${playerId}/currentGame.json?auth=${token}`
   })
   .then(url => fetch(url))
   .then(data => data.json())
   .then(gameId => clients.matchAll({
-      type: 'window'
-    })
+    type: 'window'
+  })
     .then((clientList) => {
       // todo: remove hardcoded path
       const target = `https://psimyn.com/vue-chess/#${gameId}`
@@ -50,14 +51,13 @@ self.addEventListener('notificationclick', function(event) {
     })
   )
   .catch(err => {
-    console.error('err'  + err)
+    console.error('err' + err)
   })
 
   event.waitUntil(promise)
-
 })
 
-self.addEventListener('message', function(event) {
+self.addEventListener('message', function (event) {
   var data = event.data
   if (data.command === 'setPlayerToken') {
     localforage.setItem('playerId', data.message.playerId)

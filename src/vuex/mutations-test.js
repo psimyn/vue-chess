@@ -1,14 +1,14 @@
+/* eslint-env mocha */
 import { expect } from 'chai'
-import chess from 'chess'
-import { mutations, initialState } from './store'
+import { mutations } from './store'
 
-const { JOIN_TEAM, SET_SELECTED_SQUARE, ADD_MOVE } = mutations
+const { JOIN_TEAM, SET_SELECTED_SQUARE, ADD_MOVE, SET_PLAYER_NAME } = mutations
 
-describe('mutations', () => {
+describe('mutations', function () {
   describe.skip('JOIN_TEAM', () => {
     beforeEach(() => {
       this.state = {
-        playerId: '131323sda5',
+        playerId: '12345678',
         teams: {
           black: null,
           white: null
@@ -46,14 +46,8 @@ describe('mutations', () => {
   describe('SET_SELECTED_SQUARE', () => {
     it('sets selected', () => {
       const state = {}
-      SET_SELECTED_SQUARE(state, 'g6')
-      expect(state.selected).to.equal('g6')
-    })
-
-    it('sets to null', () => {
-      const state = {selected: 'g6'}
-      SET_SELECTED_SQUARE(state, null)
-      expect(state.selected).to.be.a('null')
+      SET_SELECTED_SQUARE(state, 'b6')
+      expect(state.selected).to.equal('b6')
     })
   })
 
@@ -69,5 +63,13 @@ describe('mutations', () => {
       ADD_MOVE(state, null)
       expect(state.moves).to.deep.equal(['a4', 'a6'])
     })
+  })
+
+  describe('SET_PLAYER_NAME', () => {
+    const playerId = '1234'
+    const name = 'A Player'
+    const state = { players: {} }
+    SET_PLAYER_NAME(state, {name, playerId})
+    expect(state.players[playerId]).to.equal(name)
   })
 })

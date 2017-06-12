@@ -21,21 +21,26 @@ if (typeof window !== 'undefined') {
 }
 
 export const initialState = {
+  // game meta
   gameId,
-  gameClient: chess.create({PGN: true}),
   game: {white: null, black: null},
   players: {},
+
+  // game state
+  gameClient: chess.create({PGN: true}),
   moves: [],
 
-  loading: true,
-  selected: null,
-  message: null,
-
+  // player
   playerId: null,
   player: {
     id: null,
     games: {}
-  }
+  },
+
+  // ui
+  loading: true,
+  selected: null,
+  message: null
 }
 
 export const SET_PLAYER_NAME = 'SET_PLAYER_NAME'
@@ -53,6 +58,19 @@ export const mutations = {
   [SET_LOADING] (state, val) {
     state.loading = val
   },
+  [SET_MESSAGE] (state, message) {
+    state.message = message
+  },
+  [SET_SELECTED_SQUARE] (state, selection) {
+    state.selected = selection
+  },
+  [ADD_MOVE] (state, move) {
+    // todo: should this error instead?
+    if (move) {
+      state.moves = state.moves.concat(move)
+    }
+  },
+
   [SET_GAME_ID] (state, gameId) {
     state.gameId = gameId
   },
@@ -71,6 +89,7 @@ export const mutations = {
       ...players
     }
   },
+
   [SET_PLAYER] (state, {id, name}) {
     state.playerId = id
     state.player.name = name
@@ -78,18 +97,6 @@ export const mutations = {
   [UNSET_PLAYER] (state) {
     state.playerId = null
     state.playerGames = []
-  },
-  [SET_MESSAGE] (state, message) {
-    state.message = message
-  },
-  [SET_SELECTED_SQUARE] (state, selection) {
-    state.selected = selection
-  },
-  [ADD_MOVE] (state, move) {
-    // todo: should this error instead?
-    if (move) {
-      state.moves = state.moves.concat(move)
-    }
   },
   [SET_PLAYER_NAME] (state, {name, playerId}) {
     state.players = {
@@ -259,26 +266,13 @@ const playerActions = {
   signOut ({commit, state}) {
     Firebase.auth().signOut()
     database.ref(`players/${state.playerId}/games`).off('value')
-    commit(UNSET_PLAYER)
   },
-  signInWithGoogle ({state}) {
+  signInWithGoogle () {
     const provider = new Firebase.auth.GoogleAuthProvider()
     Firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      console.log(`logged in as ${result.user}`)
-    })
-    .catch((error) => {
-      console.warn(error)
-    })
   },
   signInAnonymously () {
-    Firebase.auth().signInAnonymously().then((result) => {
-      console.log(`logged in as ${result.uid}`)
-      this.setPlayerName('Guest')
-    })
-    .catch((error) => {
-      console.warn(error)
-    })
+    Firebase.auth().signInAnonymously()
   }
 }
 
@@ -322,6 +316,8 @@ if (typeof window !== 'undefined') {
   Firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       store.dispatch('setPlayer', user)
+    } else {
+      store.commit(UNSET_PLAYER)
     }
   })
 }

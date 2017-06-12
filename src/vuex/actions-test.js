@@ -1,11 +1,23 @@
+/* eslint-env mocha */
 import chess from 'chess'
 import { expect } from 'chai'
 import { initialState, SET_SELECTED_SQUARE, SET_MESSAGE, ADD_MOVE } from './store'
-const actionsInjector = require('inject!./store')
+const actionsInjector = require('inject-loader!./store')
+const fbdbMock = {
+  ref () {
+    return {
+      off () {},
+      on () {}
+    }
+  }
+}
 const actions = actionsInjector({
-  './api': {
-    on() {
-
+  'firebase': {
+    initializeApp (config) {
+      console.log(config)
+    },
+    database () {
+      return fbdbMock
     }
   }
 }).actions
@@ -46,16 +58,16 @@ const testAction = (action, arg, state, expectedMutations, expectedError) => {
   })
 }
 
-describe('actions', () => {
+describe.only('actions', function () {
   describe('joinTeam', () => {
     // todo: move mutations to here
   })
 
-  describe.only('loadGame', () => {
+  describe('loadGame', () => {
     it('remove refs', () => {
       const state = {
         gameId: 'oldtestgame',
-        game: {black: 123, white: 456},
+        game: {black: 123, white: 456}
       }
       return testAction(loadGame, 'testgame', state, [])
     })
@@ -69,7 +81,7 @@ describe('actions', () => {
         playerId,
         teams: {
           white: playerId,
-          black: 'otherguy',
+          black: 'otherguy'
         }
       }
     })
@@ -88,7 +100,7 @@ describe('actions', () => {
       const expectedMutations = [
         {
           name: SET_MESSAGE,
-          payload: 'Not your piece',
+          payload: 'Not your piece'
         }
       ]
       testAction(selectSquare, 'h8', this.state, expectedMutations)
@@ -101,7 +113,7 @@ describe('actions', () => {
       const expectedMutations = [
         {
           name: SET_MESSAGE,
-          payload: `It is black's move`,
+          payload: `It is black's move`
         }
       ]
       testAction(selectSquare, 'a1', state, expectedMutations)
@@ -112,7 +124,7 @@ describe('actions', () => {
     beforeEach(() => {
       this.state = {
         ...initialState,
-        gameClient: chess.create({PGN: true}),
+        gameClient: chess.create({PGN: true})
       }
     })
 
@@ -120,11 +132,11 @@ describe('actions', () => {
     it.skip('adds move to list', () => {
       const state = {
         ...initialState,
-        selected: 'c2',
+        selected: 'c2'
       }
       const expectedMutations = [{
         name: ADD_MOVE,
-        payload: 'c3',
+        payload: 'c3'
       }]
       return testAction(movePiece, 'c3', state, expectedMutations)
     })
@@ -133,9 +145,9 @@ describe('actions', () => {
       const expectedMutations = []
       const state = {
         ...initialState,
-        selected: null,
+        selected: null
       }
-      return testAction(movePiece, 'd4', state, [], 'no piece selected')
+      return testAction(movePiece, 'd4', state, expectedMutations, new Error('no piece selected'))
     })
 
     it.skip('clears selected after moving', () => {

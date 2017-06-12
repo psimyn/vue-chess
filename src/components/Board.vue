@@ -102,9 +102,10 @@ export default {
     left: 0;
     right: 0;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     background: rgba(33, 33, 33, 0.66);
     z-index: 2;
+    padding: 24px;
   }
 
   .button {
@@ -116,6 +117,7 @@ export default {
     color: white;
     box-shadow: 0 0 2px 2px rgba(24, 24, 24, 0.4);
     text-shadow: 0 0 1px #333;
+    margin: 0;
   }
 
   .white {
