@@ -2,7 +2,9 @@
     <div id="app">
       <loader v-if="loading" />
       <div v-if="!loading" class="container">
-        <board v-if="player.id && player.name" />
+        <transition name="slide">
+          <board v-if="player.id && player.name" />
+        </transition>
         <status v-if="player.id && player.name" />
         <move-history></move-history>
         <player />
@@ -63,7 +65,9 @@
     background: #f2f2f2;
   }
 
-  h3 {
+  /* todo: reset */
+  h3,
+  p {
     margin: 0;
   }
 
@@ -91,7 +95,16 @@
     border: solid 1px #222;
     border-bottom: solid 2px #888;
     background: white;
-    line-height: 2;
-    margin: 1em 0;
+  }
+
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .slide-enter,
+  .slide-leave-to {
+    opacity: 0;
+    transform: translate3d(0, -40%, 0);
   }
 </style>

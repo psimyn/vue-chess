@@ -34,6 +34,7 @@ export const initialState = {
   playerId: null,
   player: {
     id: null,
+    name: 'Guest',
     games: {}
   },
 
@@ -53,6 +54,7 @@ export const ADD_MOVE = 'ADD_MOVE'
 export const SET_GAME_ID = 'SET_GAME_ID'
 export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
 export const SET_LOADING = 'SET_LOADING'
+export const SHOW_PLAYER_NAME_CONFIRMATION = 'SHOW_PLAYER_NAME_CONFIRMATION'
 
 export const mutations = {
   [SET_LOADING] (state, val) {
@@ -90,19 +92,74 @@ export const mutations = {
     }
   },
 
-  [SET_PLAYER] (state, {id, name}) {
+  [SET_PLAYER] (
+    state,
+    {
+      id,
+      name,
+      games = []
+    } = {}) {
     state.playerId = id
-    state.player.name = name
-  },
-  [UNSET_PLAYER] (state) {
-    state.playerId = null
-    state.playerGames = []
+    Vue.set(state, 'player', {
+      ...state.player,
+      id,
+      name,
+      games
+    })
   },
   [SET_PLAYER_NAME] (state, {name, playerId}) {
+    state.player.name = name
     state.players = {
       ...state.players,
       [playerId]: name
     }
+  }
+}
+
+export const sw = {
+  setPlayerToken (player) {
+    player.getIdToken().then((token) => {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          command: 'setPlayerToken',
+          message: {
+            playerId: player.uid,
+            token
+          }
+        })
+      }
+    })
+  },
+  updatePlayerGames (player, {state, commit}) {
+    database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
+      const gameIds = snapshot.val() || {}
+      const games = Object.keys(gameIds).filter(i => gameIds[i])
+      games.forEach(gameId => {
+        database.ref(`games/${gameId}`).on('value', updateGames)
+
+        function updateGames (snapshot) {
+          const game = snapshot.val()
+          return Promise.all([
+            database.ref(`players/${game.white}/name`).once('value'),
+            database.ref(`players/${game.black}/name`).once('value')
+          ])
+          .then(([white, black]) => {
+            commit(UPDATE_PLAYER_NAMES, {
+              [game.white]: white.val(),
+              [game.black]: black.val()
+            })
+            commit(UPDATE_MY_GAMES, {
+              gameId,
+              white: white.val(),
+              black: black.val()
+            })
+            if (state.players.white && state.players.black) {
+              database.ref(`games/${gameId}`).off('value', updateGames)
+            }
+          })
+        }
+      })
+    })
   }
 }
 
@@ -140,10 +197,12 @@ export const actions = {
     document.location.hash = gameId
     commit(SET_GAME_ID, gameId)
   },
+
   joinTeam ({commit, state}, team) {
     database.ref(`games/${state.gameId}/${team}`).set(state.playerId)
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
+
   selectSquare ({commit, dispatch, state}, selection) {
     const status = state.gameClient.getStatus()
     const index = notationToIndex(selection)
@@ -212,55 +271,24 @@ const playerActions = {
     const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
     database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(false)
   },
-  setPlayer ({commit, state}, player) {
+  setPlayer ({commit, dispatch, state}, player = {}) {
     commit(SET_PLAYER, {
       id: player.uid,
-      name: player.displayName
+      // default from Firebase auth obj
+      name: player.name || player.displayName
     })
 
-    player.getIdToken().then((token) => {
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
-          command: 'setPlayerToken',
-          message: {
-            playerId: player.uid,
-            token
-          }
-        })
-      }
-    })
-
-    database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
-      const gameIds = snapshot.val() || {}
-      const games = Object.keys(gameIds).filter(i => gameIds[i])
-      games.forEach(gameId => {
-        database.ref(`games/${gameId}`).on('value', updateGames)
-
-        function updateGames (snapshot) {
-          const game = snapshot.val()
-          return Promise.all([
-            database.ref(`players/${game.white}/name`).once('value'),
-            database.ref(`players/${game.black}/name`).once('value')
-          ])
-          .then(([white, black]) => {
-            commit(UPDATE_PLAYER_NAMES, {
-              [game.white]: white.val(),
-              [game.black]: black.val()
-            })
-            commit(UPDATE_MY_GAMES, {
-              gameId,
-              white: white.val(),
-              black: black.val()
-            })
-            if (state.players.white && state.players.black) {
-              database.ref(`games/${gameId}`).off('value', updateGames)
-            }
-          })
-        }
-      })
-    })
+    if (player.uid) {
+      // commit('SHOW_PLAYER_NAME_CONFIRMATION')
+      sw.setPlayerToken(player)
+      sw.updatePlayerGames(player, {state, commit})
+    }
   },
   setPlayerName ({commit, state}, name) {
+    commit('SET_PLAYER_NAME', {
+      name,
+      playerId: state.playerId
+    })
     database.ref(`players/${state.playerId}/name`).set(name)
   },
   signOut ({commit, state}) {
@@ -291,7 +319,6 @@ export const store = new Vuex.Store({
         id: state.playerId
       }
     },
-    playerGames: state => state.playerGames,
     game: state => state.game,
     players: state => state.players,
     message: state => state.message,
@@ -315,9 +342,15 @@ if (typeof window !== 'undefined') {
   store.dispatch('loadGame', gameId)
   Firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-      store.dispatch('setPlayer', user)
+      database.ref(`players/${user.uid}`).on('value', (snapshot) => {
+        const DEFAULT_NAME = 'Guest'
+        const userInfo = snapshot.val() || {}
+        user.name = userInfo.name || DEFAULT_NAME
+        store.dispatch('setPlayer', user)
+      })
     } else {
-      store.commit(UNSET_PLAYER)
+      database.ref(`players/${store.getters.player.id}`).off('value')
+      store.dispatch('setPlayer')
     }
   })
 }

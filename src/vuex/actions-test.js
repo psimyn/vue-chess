@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import chess from 'chess'
 import { expect } from 'chai'
-import { initialState, SET_SELECTED_SQUARE, SET_MESSAGE, ADD_MOVE } from './store'
+import { initialState, SET_SELECTED_SQUARE, SET_LOADING, SET_MESSAGE, ADD_MOVE } from './store'
 const actionsInjector = require('inject-loader!./store')
 const fbdbMock = {
   ref () {
@@ -16,13 +16,20 @@ const actions = actionsInjector({
     initializeApp (config) {
       console.log(config)
     },
-    database () {
-      return fbdbMock
+    database: {
+      ref: () => {}
     }
   }
 }).actions
 
-const { joinTeam, selectSquare, movePiece, loadGame } = actions
+const {
+  selectSquare,
+  movePiece,
+
+  loadGame,
+
+  setPlayer
+} = actions
 
 // taken from https://github.com/vuejs/vuex/blob/master/docs/en/testing.md
 const testAction = (action, arg, state, expectedMutations, expectedError) => {
@@ -47,7 +54,7 @@ const testAction = (action, arg, state, expectedMutations, expectedError) => {
       action({commit, state}, arg)
     } catch (error) {
       if (!expectedError) throw error
-      expect(error).to.equal(expectedError)
+      expect(error.message).to.equal(expectedError)
     }
 
     // no mutations should have been dispatched
@@ -58,18 +65,52 @@ const testAction = (action, arg, state, expectedMutations, expectedError) => {
   })
 }
 
-describe.only('actions', function () {
+function * testVuexAction ({state, action}, args) {
+  yield '1234'
+}
+
+const createUser = ({
+  uid = '12345678',
+  name = 'Test Subject'
+}) => ({
+  uid,
+  name
+})
+
+describe.only('player actions', function () {
+  describe('guest', (done) => {
+    const initialState = {
+      id: null,
+      name: null
+    }
+
+    const mutations = testVuexAction({
+      state: initialState,
+      action: setPlayer
+    }, createUser())
+
+    const mutation = mutations.next()
+    expect(mutation).to.equal('1234')
+
+    expect(mutations.length).to.equal(1)
+  })
+})
+
+describe('actions', function () {
   describe('joinTeam', () => {
     // todo: move mutations to here
   })
 
-  describe('loadGame', () => {
+  describe.skip('loadGame', () => {
     it('remove refs', () => {
       const state = {
         gameId: 'oldtestgame',
         game: {black: 123, white: 456}
       }
-      return testAction(loadGame, 'testgame', state, [])
+      return testAction(loadGame, 'testgame', state, [
+        {name: SET_LOADING, payload: true},
+        {name: SET_LOADING, payload: false}
+      ])
     })
   })
 
@@ -147,7 +188,7 @@ describe.only('actions', function () {
         ...initialState,
         selected: null
       }
-      return testAction(movePiece, 'd4', state, expectedMutations, new Error('no piece selected'))
+      return testAction(movePiece, 'd4', state, expectedMutations, 'no piece selected')
     })
 
     it.skip('clears selected after moving', () => {

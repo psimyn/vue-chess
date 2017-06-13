@@ -1,17 +1,27 @@
 <template>
   <div>
-    <button class="button" v-on:click="signInWithGoogle()">
-      <img class="icon" v-bind:src="GoogleIcon" />
-      <span>Login with Google</span>
-    </button>
-    <button v-on:click="signInAnonymously">
-      Login as Guest
-    </button>
+    <div v-if="!player.id">
+      <button class="login-button" v-on:click="signInWithGoogle()">
+        <img class="icon" v-bind:src="GoogleIcon" />
+        <span>Login with Google</span>
+      </button>
+      <button class="login-button" v-on:click="signInAnonymously">
+        login as Guest
+      </button>
+    </div>
+    <div v-else>
+      <h3>your name</h3>
+      <div class="name-form">
+        <input type="text" v-model="name" />
+        <button v-on:click="setPlayerName(name)">save</button>
+      </div>
+      <p class="helptext">This is publicly visible</p>
+    </div>
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import GoogleIcon from '../assets/google.svg'
 
 export default {
@@ -19,30 +29,35 @@ export default {
     ...mapGetters({
       player: 'player',
       game: 'game',
-      playerId: 'playerId',
-    }),
+      playerId: 'playerId'
+    })
   },
   methods: {
-    ...mapActions(['signInWithGoogle', 'signInAnonymously']),
+    ...mapActions(['signInWithGoogle', 'signInAnonymously', 'setPlayerName'])
   },
   data () {
     return {
+      name: '',
       showUrl: false,
       showMenu: false,
       message: '',
-      GoogleIcon,
+      GoogleIcon
     }
-  },
+  }
 }
 </script>
 
 <style scoped>
-  button {
+  .login-button {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 240px;
     margin: 24px auto;
+  }
+
+  .name-form {
+    display: flex;
   }
 
   .icon {

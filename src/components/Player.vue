@@ -1,6 +1,5 @@
 <template>
   <div class="player-container">
-    <login v-if="!player || (!player.id && !player.name)" />
     <div v-if="player.id">
       <div class="games" v-if="player.name && myGames.length">
         <h3>My Games</h3>
@@ -9,12 +8,16 @@
         </p>
       </div>
       <hr />
-      <div class="player-stuff">
-        <div v-if="player.name">
-          <span>logged in as {{player.name}} </span>
-        </div>
+      <div class="player-current-info">
+        <span v-if="player.name">
+          playing as {{player.name}}
+        </span>
         <button v-on:click="signOut()">logout</button>
       </div>
+      <hr />
+    </div>
+    <div class="login-section">
+      <login />
     </div>
   </div>
 </template>
@@ -85,11 +88,13 @@ export default {
   .players {
     overflow: hidden;
   }
-  .player-stuff {
+  .player-current-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    overflow: hidden;
+    padding: 12px;
+  }
+  .login-section {
     padding: 12px;
   }
   label {
