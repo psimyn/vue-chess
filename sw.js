@@ -1,69 +1,92 @@
-/* eslint-env serviceworker, browser */
-/* global localforage */
-importScripts('dist/localforage.min.js')
+importScripts('workbox-sw.prod.v1.0.1.js');
 
-self.addEventListener('install', function (event) {
-  self.skipWaiting()
-})
-
-self.addEventListener('push', function (event) {
-  const title = `It's your move!`
-  const body = 'Click to go to game'
-  const icon = 'https://psimyn.com/vue-chess/dist/white-pawn.png'
-
-  event.waitUntil(
-    self.registration.showNotification(title, {
-      body,
-      icon,
-      // todo: test for null
-      tag: 'chess!'
-    })
-  )
-})
-
-self.addEventListener('notificationclick', function (event) {
-  // android doesn't close notification - http://crbug.com/463146
-  event.notification.close()
-
-  const promise = Promise.all([
-    localforage.getItem('playerId'),
-    localforage.getItem('token')
-  ])
-  .then((res) => {
-    const playerId = res[0]
-    const token = res[1]
-    return `https://chess-cfde8.firebaseio.com/players/${playerId}/currentGame.json?auth=${token}`
-  })
-  .then(url => fetch(url))
-  .then(data => data.json())
-  .then(gameId => clients.matchAll({
-    type: 'window'
-  })
-    .then((clientList) => {
-      // todo: remove hardcoded path
-      const target = `https://psimyn.com/vue-chess/#${gameId}`
-      const existingWindow = clientList.find(client => client.url === target && 'focus' in client)
-      if (existingWindow) {
-        existingWindow.focus()
-      } else {
-        clients.openWindow(target)
-      }
-    })
-  )
-  .catch(err => {
-    console.error('err' + err)
-  })
-
-  event.waitUntil(promise)
-})
-
-self.addEventListener('message', function (event) {
-  var data = event.data
-  if (data.command === 'setPlayerToken') {
-    localforage.setItem('playerId', data.message.playerId)
-    localforage.setItem('token', data.message.token)
+/**
+ * DO NOT EDIT THE FILE MANIFEST ENTRY
+ *
+ * The method precache() does the following:
+ * 1. Cache URLs in the manifest to a local cache.
+ * 2. When a network request is made for any of these URLs the response
+ *    will ALWAYS comes from the cache, NEVER the network.
+ * 3. When the service worker changes ONLY assets with a revision change are
+ *    updated, old cache entries are left as is.
+ *
+ * By changing the file manifest manually, your users may end up not receiving
+ * new versions of files because the revision hasn't changed.
+ *
+ * Please use workbox-build or some other tool / approach to generate the file
+ * manifest which accounts for changes to local files and update the revision
+ * accordingly.
+ */
+const fileManifest = [
+  {
+    "url": "/dist/black-bishop.svg",
+    "revision": "1f3b8d1a5879539b447e445f640b2c47"
+  },
+  {
+    "url": "/dist/black-king.svg",
+    "revision": "66e1bcad247d72c9e9737b71ce9e87cf"
+  },
+  {
+    "url": "/dist/black-knight.svg",
+    "revision": "d39f1d02cda5131fc4c815f276a0521d"
+  },
+  {
+    "url": "/dist/black-pawn.svg",
+    "revision": "1c52d8c48822d6d34d8930244159e6f3"
+  },
+  {
+    "url": "/dist/black-queen.svg",
+    "revision": "7b3e33e471081b583cef68ff12e4a0b7"
+  },
+  {
+    "url": "/dist/black-rook.svg",
+    "revision": "96872a66f1b7e639aa91bd133e17bb35"
+  },
+  {
+    "url": "/dist/build.js",
+    "revision": "9ba9dde74a06ce1cddb919dc74bd22bc"
+  },
+  {
+    "url": "/dist/google.svg",
+    "revision": "d5cc60037da1933018fd4046319a8228"
+  },
+  {
+    "url": "/dist/localforage.min.js",
+    "revision": "9d032ec6c6b5a0321a0485030109cb87"
+  },
+  {
+    "url": "/dist/white-bishop.svg",
+    "revision": "09004fd25a45b4c67f0bbc41a09062af"
+  },
+  {
+    "url": "/dist/white-king.svg",
+    "revision": "250510fffdafda4ad4ab5f5504f2af55"
+  },
+  {
+    "url": "/dist/white-knight.svg",
+    "revision": "e6294efee2d0786df7925c7a6cad4510"
+  },
+  {
+    "url": "/dist/white-pawn.svg",
+    "revision": "d69014fbb3f6e3da7b29d058477c1e9a"
+  },
+  {
+    "url": "/dist/white-queen.svg",
+    "revision": "4320a2dd26e5bc4ee9f550f3aecd737c"
+  },
+  {
+    "url": "/dist/white-rook.svg",
+    "revision": "095b1a06667a527afbd834e74f00edc9"
+  },
+  {
+    "url": "/favicon.png",
+    "revision": "04668195fd68dfefd22f38795d567e9b"
+  },
+  {
+    "url": "/index.html",
+    "revision": "94614e4a93a312b7d80a542404cc979f"
   }
-  if (data.command === 'setGameId') {
-    localforage.setItem('gameId', data.message.gameId)
-  }
-})
+];
+
+const workboxSW = new self.WorkboxSW();
+workboxSW.precache(fileManifest);
