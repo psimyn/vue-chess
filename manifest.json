@@ -1,4 +1,12 @@
 {
   "name": "chess",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "Chess",
+  "icons": [{
+    "src": "dist/white-pawn.svg",
+    "sizes": "512x512"
+  }],
   "gcm_sender_id": "204431620450"
 }

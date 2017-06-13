@@ -3,15 +3,15 @@ var webpack = require('webpack')
 
 module.exports = {
   entry: {
-    build: './src/main.js',
+    build: './src/main.js'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: '/vue-chess/dist/',
+    publicPath: '/dist/',
     filename: '[name].js'
   },
   resolveLoader: {
-    modules: [path.join(__dirname, 'node_modules')],
+    modules: [path.join(__dirname, 'node_modules')]
   },
   module: {
     loaders: [
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-        warnings: false,
+        warnings: false
       }
     })
   ])
