@@ -1,7 +1,7 @@
 <template>
   <div class="loader">
     <div class="loader-inner">
-      <img src="/vue-chess/dist/black-pawn.svg" width="32px" height="32px" class="loader-image back-and-forth"/>
+      <img src="/dist/black-pawn.svg" width="32px" height="32px" class="loader-image back-and-forth"/>
       <h3 class="loader-heading">Loading</h3>
     </div>
   </div>
