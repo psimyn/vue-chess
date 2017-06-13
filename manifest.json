@@ -3,7 +3,8 @@
   "short_name": "chess",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#fff",
+  "background_color": "#f2f2f2",
+  "theme_color": "#f2f2f2",
   "description": "Chess",
   "icons": [{
     "src": "dist/white-pawn.svg",

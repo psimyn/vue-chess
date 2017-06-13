@@ -54,6 +54,7 @@ export default {
     align-items: center;
     width: 240px;
     margin: 24px auto;
+    padding: 12px;
   }
 
   .name-form {

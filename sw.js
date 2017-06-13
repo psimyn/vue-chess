@@ -44,7 +44,7 @@ const fileManifest = [
   },
   {
     "url": "/dist/build.js",
-    "revision": "9ba9dde74a06ce1cddb919dc74bd22bc"
+    "revision": "dd8b6e7cea84ffbdcce2d94b523c57b1"
   },
   {
     "url": "/dist/google.svg",
@@ -84,7 +84,7 @@ const fileManifest = [
   },
   {
     "url": "/index.html",
-    "revision": "94614e4a93a312b7d80a542404cc979f"
+    "revision": "a9a7fbbbbd82f2f91b88153927da3aa3"
   }
 ];
 
