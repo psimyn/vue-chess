@@ -329,7 +329,15 @@ export const store = new Vuex.Store({
         id: state.playerId
       }
     },
-    game: state => state.game,
+    game: state => {
+      const { isCheck, isCheckmate, isStalemate } = state.gameClient.getStatus()
+      return {
+        ...state.game,
+        isCheck,
+        isCheckmate,
+        isStalemate
+      }
+    },
     players: state => state.players,
     message: state => state.message,
     moves: state => state.moves,

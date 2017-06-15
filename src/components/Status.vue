@@ -3,9 +3,12 @@
       <div class="row">
         <h3 v-if="!gameStarted">Waiting for players...</h3>
         <h3 class="status" v-if="gameStarted">
-          <span v-if="isCheck">Check!</span>
-          <span v-if="yourMove">Your move ({{turn}})</span>
-          <span v-if="!yourMove">{{turn}} to move</span>
+          <span v-if="game.isCheck">Check!</span>
+          <span v-if="game.isCheckmate">Checkmate!</span>
+          <span v-if="showTurn">
+            <span v-if="yourMove">Your move ({{turn}})</span>
+            <span v-if="!yourMove">{{turn}} to move</span>
+          </span>
           <span class="error" transition="slide" v-show="message">{{message}}</span>
         </h3>
         <span><strong>{{whiteName}}</strong> v <strong>{{blackName}}</strong></span>
@@ -25,17 +28,17 @@
         moves: 'moves',
         message: 'message'
       }),
-      gameStarted() {
+      gameStarted () {
         return this.game.white && this.game.black
       },
-      whiteName() {
+      whiteName () {
         return this.players[this.game.white]
       },
-      blackName() {
+      blackName () {
         return this.players[this.game.black]
       },
-      isCheck () {
-        return this.game.isCheck
+      showTurn () {
+        return !this.game.isCheckmate && this.game.isStalemate
       },
       turn () {
         return this.moves.length % 2 === 0 ? 'White' : 'Black'

@@ -27,9 +27,6 @@
           <span>Play as</span>&nbsp;<span>Black</span>
         </button>
       </div>
-      <div class="overlay" v-if="game.isCheckmate">
-        <h3 class="checkmate" v-if="game.isCheckmate">Checkmate</h3>
-      </div>
     </div>
   </div>
 </template>
