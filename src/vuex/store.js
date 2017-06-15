@@ -10,7 +10,7 @@ const config = {
   apiKey: 'AIzaSyDgo_wWAkKHmFxHMvDGFL4IUKfy0WNyJK4',
   authDomain: 'chess-cfde8.firebaseapp.com',
   databaseURL: 'https://chess-cfde8.firebaseio.com',
-  storageBucket: ''
+  messagingSenderId: '204431620450'
 }
 // todo: fake db for mocha tests
 let database = {}
@@ -271,16 +271,43 @@ export const actions = {
 }
 
 const playerActions = {
-  subscribe ({state}, subscription) {
-    if (!state.playerId) throw new Error('missing playerId')
-    const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
-    database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(true)
+  requestPermission ({dispatch}) {
+    Firebase.messaging().requestPermission().then(() => {
+      console.log('Notification permission granted.')
+      dispatch('saveToken')
+    }).catch((err) => {
+      console.error('Unable to get permission to notify.', err)
+    })
   },
-  unsubscribe ({state}, subscription) {
-    if (!state.playerId) throw new Error('missing playerId')
-    const endpoint = subscription.endpoint.split('https://android.googleapis.com/gcm/send/')[1] || subscription.endpoint
-    database.ref(`subscriptions/${state.playerId}/${endpoint}`).set(false)
+  saveToken ({dispatch, state}, subscription) {
+    // current defaults to firebase-messaging-sw
+    // Firebase.messaging().useServiceWorker(registration)
+    Firebase.messaging().getToken().then((currentToken) => {
+      if (currentToken) {
+        console.log(currentToken)
+        Firebase.database().ref(`notificationTokens/${state.playerId}/${currentToken}`).set(true)
+      } else {
+        dispatch('requestPermission')
+      }
+    }).catch((err) => {
+      console.error('Unable to get messaging token.', err)
+      if (err.code === 'messaging/permission-default') {
+        console.error('You have not enabled notifications on this browser. To enable notifications reload the page and allow notifications using the permission dialog.')
+      } else if (err.code === 'messaging/notifications-blocked') {
+        console.error('You have blocked notifications on this browser.')
+      }
+    })
   },
+  revokeToken ({state}, subscription) {
+    Firebase.messaging().getToken().then((currentToken) => {
+      if (currentToken) {
+        Firebase.database().ref(`notificationTokens/${state.playerId}/${currentToken}`).set(false)
+      } else {
+        console.warn('already unsubscribed')
+      }
+    })
+  },
+
   setPlayer ({commit, dispatch, state}, player = {}) {
     commit(SET_PLAYER, {
       id: player.uid,

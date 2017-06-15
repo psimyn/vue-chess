@@ -19,18 +19,24 @@
     <div class="login-section">
       <login />
     </div>
+    <div class="login-section">
+      <notification-button />
+    </div>
+    <hr />
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import GameLink from './GameLink.vue'
 import Login from './Login.vue'
+import NotificationButton from './NotificationButton.vue'
 
 export default {
   components: {
     GameLink,
     Login,
+    NotificationButton
   },
   computed: {
     ...mapGetters({
@@ -38,12 +44,12 @@ export default {
       game: 'game',
       playerId: 'playerId'
     }),
-    myGames() {
+    myGames () {
       if (!this.player.games) return []
       const games = Object.keys(this.player.games).map((gameId) => ({
         gameId,
         white: this.player.games[gameId].white,
-        black: this.player.games[gameId].black,
+        black: this.player.games[gameId].black
       }))
       return games
     },
@@ -57,17 +63,17 @@ export default {
       const url = new URL(document.location)
       url.search = `pid=${this.player.id}`
       return url.href
-    },
+    }
   },
   methods: {
-    ...mapActions(['signOut', 'loadGame',])
+    ...mapActions(['signOut', 'loadGame'])
   },
   data () {
     return {
       message: '',
       name: ''
     }
-  },
+  }
 }
 </script>
 
