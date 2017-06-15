@@ -203,6 +203,16 @@ export const actions = {
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
 
+  clickSquare ({commit, dispatch, state}, sq) {
+    const square = `${sq.file}${sq.rank}`
+    const myPiece = false // sq.piece && sq.piece.side.name ===
+
+    if (state.selected && !myPiece) {
+      dispatch('movePiece', square)
+    } else {
+      dispatch('selectSquare', square)
+    }
+  },
   selectSquare ({commit, dispatch, state}, selection) {
     const status = state.gameClient.getStatus()
     const index = notationToIndex(selection)

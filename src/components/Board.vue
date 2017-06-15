@@ -1,14 +1,12 @@
 <template>
   <div>
     <div class="board" v-bind:class="{playingAsBlack}">
-      <div class="row" v-for="row in ranks">
-        <square
-          :key="`${s.file}${s.rank}`"
-          v-for="s of row"
-          v-bind:square="s"
-          v-bind:selected="s == selected">
-        </square>
-      </div>
+      <square
+        :key="`${s.file}${s.rank}`"
+        v-for="s of board.squares"
+        v-bind:square="s"
+        v-bind:selected="s == selected">
+      </square>
       <div class="overlay" v-if="!gameStarted">
         <button
           class="button white"
@@ -38,11 +36,11 @@
 
 <script>
 import Square from './Square.vue'
-import {mapActions, mapGetters, mapState} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 
 export default {
   components: {
-    Square,
+    Square
   },
   computed: {
     ...mapGetters({
@@ -57,16 +55,9 @@ export default {
     },
     gameStarted () {
       return this.game.white && this.game.black
-    },
-    ranks () {
-      return this.board.squares.reduce((acc, item) => {
-        acc[item.rank] = acc[item.rank] || []
-        acc[item.rank].push(item)
-        return acc
-      }, [])
     }
   },
-  methods: mapActions(['joinTeam']),
+  methods: mapActions(['joinTeam'])
 }
 </script>
 
@@ -74,6 +65,7 @@ export default {
   .board {
     padding: 1em;
     background: rgba(88, 88, 88, 0.05);
+
     display: flex;
     flex-direction: column-reverse;
     margin: 0 auto;
@@ -81,6 +73,11 @@ export default {
     box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);
     position: relative;
     transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1);
+
+    display: grid;
+    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: repeat(8, 1fr);
+    align-items: stretch;
   }
 
   .playingAsBlack {

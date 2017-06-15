@@ -1,9 +1,8 @@
 <template>
   <span
     class="square"
-    v-on:click="handleClick(square)"
+    v-on:click="clickSquare(square)"
     v-bind:class="{
-      black,
       selected: selected === `${square.file}${square.rank}`
     }"
   >
@@ -21,22 +20,10 @@ export default {
   },
   props: ['square'],
   computed: {
-    ...mapGetters({selected: 'selected'}),
-    black() {
-      return !((this.square.rank % 2 == 1 && ['a', 'c', 'e', 'g'].includes(this.square.file))
-      || (this.square.rank % 2 == 0 && ['b', 'd', 'f', 'h'].includes(this.square.file)))
-    },
+    ...mapGetters({selected: 'selected'})
   },
   methods: {
-    ...mapActions(['selectSquare', 'movePiece']),
-    handleClick (square) {
-      square = `${square.file}${square.rank}`
-      if (this.selected) {
-        this.movePiece(square)
-      } else {
-        this.selectSquare(square)
-      }
-    }
+    ...mapActions(['clickSquare'])
   }
 }
 </script>
@@ -46,11 +33,11 @@ export default {
   cursor: pointer;
   text-align: center;
   flex: 1 1 auto;
-  padding: 0;
   display: inline-block;
   vertical-align: top;
   background: white;
   position: relative;
+  width: 100 / 8%;
 }
 
 .square:hover {
@@ -64,8 +51,15 @@ export default {
   height: 0;
 }
 
-.black {
-  background: #bbb;
+.square:nth-child(-2n + 8),
+.square:nth-child(8) ~ .square:nth-child(-2n+15),
+.square:nth-child(16) ~ .square:nth-child(-2n+24),
+.square:nth-child(24) ~ .square:nth-child(-2n+31),
+.square:nth-child(32) ~ .square:nth-child(-2n+40),
+.square:nth-child(40) ~ .square:nth-child(-2n+47),
+.square:nth-child(48) ~ .square:nth-child(-2n+56),
+.square:nth-child(56) ~ .square:nth-child(-2n+63) {
+  background: #aaa;
 }
 
 .selected {
