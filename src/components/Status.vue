@@ -5,7 +5,7 @@
         <h3 class="status" v-if="gameStarted">
           <span v-if="game.isCheck">Check!</span>
           <span v-if="game.isCheckmate">Checkmate!</span>
-          <span v-if="showTurn">
+          <span v-if="!gameOver">
             <span v-if="yourMove">Your move ({{turn}})</span>
             <span v-if="!yourMove">{{turn}} to move</span>
           </span>
@@ -17,7 +17,7 @@
   </template>
 
 <script>
-  import {mapActions, mapGetters, mapState} from 'vuex'
+  import {mapGetters} from 'vuex'
 
   export default {
     computed: {
@@ -37,8 +37,8 @@
       blackName () {
         return this.players[this.game.black]
       },
-      showTurn () {
-        return !this.game.isCheckmate && this.game.isStalemate
+      gameOver () {
+        return this.game.isCheckmate || this.game.isStalemate
       },
       turn () {
         return this.moves.length % 2 === 0 ? 'White' : 'Black'
