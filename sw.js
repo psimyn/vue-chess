@@ -19,6 +19,14 @@ importScripts('workbox-sw.prod.v1.0.1.js');
  */
 const fileManifest = [
   {
+    "url": "/build/sw.js",
+    "revision": "4aecd46715c12a5d1d12235ac28bb1e7"
+  },
+  {
+    "url": "/build/workbox-sw.prod.v1.0.1.js",
+    "revision": "3fbc93cd82283d7c3a2cb4dcaf36be91"
+  },
+  {
     "url": "/dist/black-bishop.svg",
     "revision": "1f3b8d1a5879539b447e445f640b2c47"
   },
@@ -44,7 +52,7 @@ const fileManifest = [
   },
   {
     "url": "/dist/build.js",
-    "revision": "80b31333b96fbeb96e08338277d77e0e"
+    "revision": "c4ee3691d280746916ace50cc4e6467f"
   },
   {
     "url": "/dist/google.svg",
