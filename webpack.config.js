@@ -25,11 +25,15 @@ module.exports = {
         exclude: /node_modules/
       },
       {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
         test: /\.json/,
         loader: 'json-loader'
       },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|gif|svg|woff|ttf)$/,
         loader: 'file-loader',
         query: {
           name: '[name].[ext]?[hash]'

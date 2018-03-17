@@ -1,14 +1,18 @@
 <template>
   <div>
-    <div v-if="!player.id">
-      <button class="login-button" v-on:click="signInWithGoogle()">
-        <img class="icon" v-bind:src="GoogleIcon" />
+    <el-row  v-if="!player.id">
+      <el-button
+        icon="icon-google"
+        class="login-button"
+        @click="signInWithGoogle()"
+      >
         <span>Login with Google</span>
-      </button>
-      <button class="login-button" v-on:click="signInAnonymously">
-        login as Guest
-      </button>
-    </div>
+      </el-button>
+      <el-button class="login-button" v-on:click="signInAnonymously">
+        Login as Guest
+      </el-button>
+    </el-row>
+
     <div v-else>
       <h3>your name</h3>
       <div class="name-form">
@@ -19,6 +23,15 @@
     </div>
   </div>
 </template>
+
+<style>
+  .icon-google {
+     background-image: url(../assets/google.svg);
+     margin-right: 8px;
+     height: 24px;
+     width: 24px;
+  }
+</style>
 
 <script>
 import {mapActions, mapGetters} from 'vuex'
