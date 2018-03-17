@@ -6,6 +6,7 @@
         v-for="s of board.squares"
         v-bind:square="s"
         v-bind:selected="s == selected">
+        :key="s.file + s.rank"
       </square>
       <div class="overlay" v-if="!gameStarted">
         <button
