@@ -25,6 +25,7 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@firebase/app-types": "^0.1.2",
     "ava": "^0.19.1",
     "babel-core": "^6.0.0",
     "babel-eslint": "^7.2.3",
@@ -41,6 +42,7 @@
     "eslint-plugin-html": "^2.0.3",
     "file-loader": "^0.11.2",
     "firebase": "^4.1.2",
+    "firebaseui": "^2.6.3",
     "inject-loader": "^3.0.0-beta1",
     "json-loader": "^0.5.4",
     "localforage": "^1.4.2",
