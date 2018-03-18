@@ -97,6 +97,7 @@ export const mutations = {
     {
       id,
       name,
+      isAnonymous,
       games = []
     } = {}) {
     state.playerId = id
@@ -104,6 +105,7 @@ export const mutations = {
       ...state.player,
       id,
       name,
+      isAnonymous,
       games
     })
   },
@@ -312,7 +314,8 @@ const playerActions = {
     commit(SET_PLAYER, {
       id: player.uid,
       // default from Firebase auth obj
-      name: player.name || player.displayName
+      name: player.name || player.displayName,
+      isAnonymous: player.isAnonymous
     })
 
     if (player.uid) {
@@ -396,6 +399,7 @@ if (typeof window !== 'undefined') {
     } else {
       database.ref(`players/${store.getters.player.id}`).off('value')
       store.dispatch('setPlayer')
+      store.dispatch('signInAnonymously')
     }
   })
 }

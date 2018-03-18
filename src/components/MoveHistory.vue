@@ -107,8 +107,6 @@
     padding: 24px 16px 24px 12px;
     margin-bottom: 0;
     background: white;
-    border-top: solid 1px #ddd;
-    border-bottom: solid 1px #ddd;
   }
 
   .move-history-list {

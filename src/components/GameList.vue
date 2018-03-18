@@ -1,23 +1,11 @@
 <template>
   <div class="player-container">
     <div v-if="player.id">
-      <div class="player-current-info">
-        <span v-if="player.name">
-          playing as {{player.name}}
-        </span>
-        <el-button
-          v-if="!player.isAnonymous"
-          v-on:click="signOut()"
-        >
-          Logout
-        </el-button>
+      <div class="games" v-if="player.name && myGames.length">
+        <p class="link" v-for="game in myGames" v-on:click="loadGame(game.gameId)">
+          {{game.white}} v {{game.black}}
+        </p>
       </div>
-    </div>
-    <div class="login-section">
-      <login />
-    </div>
-    <div class="login-section">
-      <notification-button />
     </div>
   </div>
 </template>
@@ -25,14 +13,10 @@
 <script>
 import {mapActions, mapGetters} from 'vuex'
 import GameLink from './GameLink.vue'
-import Login from './Login.vue'
-import NotificationButton from './NotificationButton.vue'
 
 export default {
   components: {
     GameLink,
-    Login,
-    NotificationButton
   },
   computed: {
     ...mapGetters({
@@ -40,6 +24,18 @@ export default {
       game: 'game',
       playerId: 'playerId'
     }),
+    myGames () {
+      if (!this.player.games) return []
+      const games = Object.keys(this.player.games).map((gameId) => ({
+        gameId,
+        white: this.player.games[gameId].white,
+        black: this.player.games[gameId].black
+      }))
+      return games
+    },
+    opponent () {
+      return this.game.players
+    },
     playerName () {
       return this.player.name
     },
@@ -77,21 +73,5 @@ export default {
   }
   .players {
     overflow: hidden;
-  }
-  .player-current-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-  }
-  .login-section {
-    padding: 12px;
-  }
-  label {
-    display: block;
-  }
-  .hide {
-    height: 0;
-    width: 0;
   }
 </style>

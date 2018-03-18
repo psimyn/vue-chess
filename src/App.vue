@@ -1,13 +1,31 @@
   <template>
     <div id="app">
       <loader v-if="loading" />
-      <div v-if="!loading" class="container">
+      <div
+        v-else
+        class="container"
+      >
         <transition name="slide">
-          <board v-if="player.id && player.name" />
+          <board />
         </transition>
-        <status v-if="player.id && player.name" />
-        <move-history></move-history>
-        <player />
+
+        <el-tabs
+          type="border-card"
+        >
+          <el-tab-pane label="Play">
+            <status />
+            <move-history></move-history>
+          </el-tab-pane>
+          <el-tab-pane label="Analyze">
+            <move-history></move-history>
+          </el-tab-pane>
+          <el-tab-pane label="My Games">
+            <game-list />
+          </el-tab-pane>
+          <el-tab-pane label="Settings">
+            <player />
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </div>
   </template>
@@ -16,6 +34,7 @@
   import Board from './components/Board.vue'
   import Status from './components/Status.vue'
   import Player from './components/Player.vue'
+  import GameList from './components/GameList.vue'
   import MoveHistory from './components/MoveHistory.vue'
   import Loader from './components/Loader.vue'
   import {mapActions, mapGetters, mapState} from 'vuex'
@@ -23,6 +42,7 @@
   export default {
     components: {
       Board,
+      GameList,
       Loader,
       MoveHistory,
       Player,

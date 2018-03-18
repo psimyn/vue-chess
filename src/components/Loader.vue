@@ -1,10 +1,10 @@
 <template>
-  <div class="loader">
+  <el-card class="box-card loader">
     <div class="loader-inner">
       <img src="/dist/black-pawn.svg" width="32px" height="32px" class="loader-image back-and-forth"/>
       <h3 class="loader-heading">Loading</h3>
     </div>
-  </div>
+  </el-card>
 </template>
 
 <style>
@@ -112,12 +112,6 @@
 
 .loader--hide {
   opacity: 0;
-}
-
-.loader-inner {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 4px 1px rgba(44, 44, 44, 0.4);
-  padding: 1.5em;
 }
 
 .loader-image {

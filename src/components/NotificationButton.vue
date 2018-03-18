@@ -1,7 +1,10 @@
 <template>
-  <button v-if="player.id" v-on:click="toggleSubscribe">
-    {{verb}} push notifications
-  </button>
+  <el-switch
+    v-if="player.id"
+    v-model="enabled"
+    @change="toggleSubscribe"
+    active-text="Move Notifications"
+  />
 </template>
 
 <script>
@@ -34,11 +37,9 @@
       ...mapActions(['saveToken', 'revokeToken']),
       toggleSubscribe () {
         if (this.enabled) {
-          this.revokeToken()
-          this.enabled = false
-        } else {
           this.saveToken()
-          this.enabled = true
+        } else {
+          this.revokeToken()
         }
       }
     }
