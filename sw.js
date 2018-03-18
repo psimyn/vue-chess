@@ -44,7 +44,7 @@ const fileManifest = [
   },
   {
     "url": "/dist/build.js",
-    "revision": "21262756ef340ee766a67ddf3e8286f7"
+    "revision": "b41f12b420a4d459d756776a66e9ed08"
   },
   {
     "url": "/dist/google.svg",
