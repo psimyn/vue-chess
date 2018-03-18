@@ -1,6 +1,21 @@
 <template>
   <div>
-    <el-row  v-if="!player.id">
+{{ player.id }}
+
+    <div>
+      <h3>your name</h3>
+      <div class="name-form">
+        <input type="text" v-model="name" />
+        <el-button
+          v-on:click="setPlayerName(name)"
+        >
+          Save
+        </el-button>
+      </div>
+      <p class="helptext">This is publicly visible</p>
+    </div>
+
+    <el-row v-if="player.isAnonymous">
       <el-button
         icon="icon-google"
         class="login-button"
@@ -8,19 +23,7 @@
       >
         <span>Login with Google</span>
       </el-button>
-      <el-button class="login-button" v-on:click="signInAnonymously">
-        Login as Guest
-      </el-button>
     </el-row>
-
-    <div v-else>
-      <h3>your name</h3>
-      <div class="name-form">
-        <input type="text" v-model="name" />
-        <button v-on:click="setPlayerName(name)">save</button>
-      </div>
-      <p class="helptext">This is publicly visible</p>
-    </div>
   </div>
 </template>
 
