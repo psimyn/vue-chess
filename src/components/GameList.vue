@@ -2,8 +2,13 @@
   <div class="player-container">
     <div v-if="player.id">
       <div class="games" v-if="player.name && myGames.length">
-        <p class="link" v-for="game in myGames" v-on:click="loadGame(game.gameId)">
-          {{game.white}} v {{game.black}}
+        <p
+          class="link"
+          v-for="game in myGames"
+          v-on:click="loadGame(game.gameId)"
+        >
+          <span>{{game.white}} v {{game.black}}</span>
+          <small>|&nbsp;&nbsp;{{game.gameId}}</small>
         </p>
       </div>
     </div>
@@ -57,10 +62,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .games {
     padding: 16px 12px;
   }
+
+  small {
+    font-size: 0.7em;
+  }
+
   .link {
     color: #2a7ae2;
     cursor: pointer;

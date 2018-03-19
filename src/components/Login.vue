@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div v-if="DEVELOPMENT">
-      {{ player.id }}
-    </div>
-
     <div>
       <h3>your name</h3>
       <div class="name-form">
@@ -38,9 +34,6 @@ export default {
       game: 'game',
       playerId: 'playerId'
     }),
-    DEVELOPMENT() {
-      return true
-    }
   },
   mounted() {
     this.initLogins()
