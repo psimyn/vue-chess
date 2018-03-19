@@ -1,24 +1,13 @@
 {
-  "name": "vue-chess",
-  "description": "A Vue.js experiment",
+  "name": "airchess",
+  "description": "Chess",
   "author": "psimyn",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --content-base ./ --inline --hot",
+    "prebuild": "mkdir -p dist && xargs -a pages-files cp -p -t dist",
+    "dev": "webpack-dev-server --content-base ./dist --inline --hot",
     "build": "NODE_ENV=production webpack --progress --hide-modules",
-    "deploy": "gh-pages -d dist",
-    "test": "mocha-webpack --webpack-config webpack.test.js \"src/**/*test.js\" && ava",
-    "test:watch": "ava --watch"
-  },
-  "ava": {
-    "files": [
-      "src/**/*-test.js"
-    ],
-    "require": [
-      "babel-polyfill",
-      "babel-register"
-    ],
-    "babel": "inherit"
+    "deploy": "gh-pages -d . --remove node_modules"
   },
   "dependencies": {
     "element-ui": "^2.2.2",

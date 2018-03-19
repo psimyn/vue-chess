@@ -6,12 +6,9 @@ module.exports = {
     build: './src/main.js'
   },
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
+    path: path.resolve(__dirname, './dist/static'),
+    publicPath: '/static',
     filename: '[name].js'
-  },
-  resolveLoader: {
-    modules: [path.join(__dirname, 'node_modules')]
   },
   module: {
     loaders: [
@@ -40,12 +37,7 @@ module.exports = {
         }
       }
     ]
-  },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true
-  },
-  devtool: '#eval-source-map'
+  }
 }
 
 if (process.env.NODE_ENV === 'production') {
