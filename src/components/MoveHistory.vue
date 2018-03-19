@@ -1,7 +1,7 @@
   <template>
     <div>
       <div
-        v-if="moves.length > 1"
+        v-if="moves.length > 0"
         class="moveHistory"
       >
         <h3>Move History</h3>
@@ -28,7 +28,7 @@
     },
     data () {
       return {
-        current: 0,
+        current: 0
       }
     },
     methods: mapActions(['setCurrentMove']),
@@ -38,7 +38,7 @@
         game: 'game',
         moves: 'moves',
         message: 'message',
-        currentMove: 'currentMove',
+        currentMove: 'currentMove'
       }),
       top () {
         const value = this.currentMove / this.moves.length * 100
@@ -67,12 +67,12 @@
           if (index % 2 === 0) {
             moveList[moveIndex].white = {
               pge: move,
-              active: index === this.currentMove,
+              active: index === this.currentMove
             }
           } else {
             moveList[moveIndex].black = {
               pge: move,
-              active: index === this.currentMove,
+              active: index === this.currentMove
             }
           }
           return moveList
@@ -84,8 +84,8 @@
         } else {
           return this.players.black === this.player.id
         }
-      },
-    },
+      }
+    }
   }
   </script>
 
