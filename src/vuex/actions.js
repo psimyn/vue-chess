@@ -244,6 +244,8 @@ export const playerActions = {
   },
 
   initLogins () {
+    window.CLIENT_ID = '204431620450-27i4skt44d4k1flmhkdn7kf5vn425h9f.apps.googleusercontent.com'
+
     const firebaseuiConfig = {
       autoUpgradeAnonymousUsers: true,
       callbacks: {
@@ -263,19 +265,17 @@ export const playerActions = {
           .then((user) => {
             // TODO: filter inactive (value; false)
             let teamUpdates = []
-            const gameUpdates = Object.keys(data.games).map((gameId) => {
+            const gameIds = Object.keys(data.games || {})
+            const gameUpdates = gameIds.map((gameId) => {
               return db().ref(`games/${gameId}`).once('value').then((snapshot) => {
                 const { black, white } = snapshot.val()
-                if (black === id) {
-                  teamUpdates.push(
-                    db().ref(`games/${gameId}/black`).set(user.uid)
-                  )
-                }
-                if (white === id) {
-                  teamUpdates.push(
-                    db().ref(`games/${gameId}/white`).set(user.uid)
-                  )
-                }
+                Object.entries({ black, white }).map(([color, playerId]) => {
+                  if (playerId === id) {
+                    teamUpdates.push(
+                      db().ref(`games/${gameId}/${color}`).set(user.uid)
+                    )
+                  }
+                })
                 return db().ref(`players/${user.uid}/games/${gameId}`).set(true)
               })
             })
@@ -307,7 +307,7 @@ export const playerActions = {
           provider: Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
           // Required to enable this provider in one-tap sign-up
           authMethod: 'https://accounts.google.com',
-          clientId: '204431620450-27i4skt44d4k1flmhkdn7kf5vn425h9f.apps.googleusercontent.com'
+          clientId: window.CLIENT_ID
         },
         Firebase.auth.FacebookAuthProvider.PROVIDER_ID
       ],
