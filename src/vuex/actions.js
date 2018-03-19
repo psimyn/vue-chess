@@ -177,7 +177,7 @@ export const actions = {
 }
 
 // temp value to hold user data
-let data
+let anonymousUser
 
 export const playerActions = {
   requestPermission ({dispatch}) {
@@ -252,17 +252,38 @@ export const playerActions = {
             return Promise.resolve()
           }
 
+          let data
           const cred = error.credential
-          const app = Firebase.app()
+          const id = auth().currentUser.uid
 
-          return app.database.ref(`users/${firebase.auth().currentUser.uid}`)
-            .once('value')
-            .then((snapshot) => {
-              data = snapshot.val()
-              return Firebase.auth().signInWithCredential(cred)
-            })
+          return db().ref(`players/${id}`).once('value').then((snapshot) => {
+            data = snapshot.val()
+            return auth().signInWithCredential(cred)
+          })
           .then((user) => {
-            return app.database().ref(`users/${user.uid}`).set(data)
+            // TODO: filter inactive (value; false)
+            let teamUpdates = []
+            const gameUpdates = Object.keys(data.games).map((gameId) => {
+              return db().ref(`games/${gameId}`).once('value').then((snapshot) => {
+                const { black, white } = snapshot.val()
+                if (black === id) {
+                  teamUpdates.push(
+                    db().ref(`games/${gameId}/black`).set(user.uid)
+                  )
+                }
+                if (white === id) {
+                  teamUpdates.push(
+                    db().ref(`games/${gameId}/white`).set(user.uid)
+                  )
+                }
+                return db().ref(`players/${user.uid}/games/${gameId}`).set(true)
+              })
+            })
+
+            return Promise.all([
+              ...gameUpdates,
+              ...teamUpdates
+            ])
           })
           .then(() => {
             return anonymousUser.delete();
@@ -271,7 +292,14 @@ export const playerActions = {
             data = null
             // TODO trigger sign in success logic
           })
+          .catch((error) => {
+            debugger
+            console.error(error)
+          })
         },
+        signInSuccess(currentUser, credential, redirectUrl) {
+          return false
+        }
       },
       signInFlow: 'popup',
       signInOptions: [
@@ -289,7 +317,12 @@ export const playerActions = {
     }
 
     const ui = new firebaseui.auth.AuthUI(auth())
-    ui.start('#firebaseui-auth-container', firebaseuiConfig)
+    const currentUser = auth().currentUser
+
+    if (currentUser.isAnonymous) {
+      anonymousUser = currentUser
+      ui.start('#firebaseui-auth-container', firebaseuiConfig)
+    }
     ui.disableAutoSignIn()
   },
   signInAnonymously () {
@@ -299,6 +332,5 @@ export const playerActions = {
 
 window.onGoogleYoloLoad = (googleyolo) => {
   // The 'googleyolo' object is ready for use.
-  debugger
   console.log(googleyolo)
 };
