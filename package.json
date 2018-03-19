@@ -7,7 +7,7 @@
     "prebuild": "mkdir -p dist && xargs -a pages-files cp -p -t dist",
     "dev": "webpack-dev-server --content-base ./dist --inline --hot",
     "build": "NODE_ENV=production webpack --progress --hide-modules",
-    "deploy": "gh-pages -d . --remove node_modules"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "element-ui": "^2.2.2",
