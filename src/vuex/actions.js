@@ -252,12 +252,12 @@ export const playerActions = {
             return Promise.resolve()
           }
 
-          let data
+          let data = {}
           const cred = error.credential
           const id = auth().currentUser.uid
 
           return db().ref(`players/${id}`).once('value').then((snapshot) => {
-            data = snapshot.val()
+            data = snapshot.val() || {}
             return auth().signInWithCredential(cred)
           })
           .then((user) => {
@@ -286,10 +286,10 @@ export const playerActions = {
             ])
           })
           .then(() => {
-            return anonymousUser.delete();
+            return anonymousUser.delete()
           })
           .then(() => {
-            data = null
+            data = {}
             // TODO trigger sign in success logic
           })
           .catch((error) => {
@@ -297,7 +297,7 @@ export const playerActions = {
             console.error(error)
           })
         },
-        signInSuccess(currentUser, credential, redirectUrl) {
+        signInSuccess (currentUser, credential, redirectUrl) {
           return false
         }
       },
@@ -329,8 +329,3 @@ export const playerActions = {
     Firebase.auth().signInAnonymously()
   }
 }
-
-window.onGoogleYoloLoad = (googleyolo) => {
-  // The 'googleyolo' object is ready for use.
-  console.log(googleyolo)
-};
