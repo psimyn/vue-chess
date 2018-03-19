@@ -35,6 +35,7 @@ export const sw = {
     })
   },
   updatePlayerGames (player, {state, commit}) {
+    console.log(state.playerId)
     db().ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
       const gameIds = snapshot.val() || {}
       const games = Object.keys(gameIds).filter(i => gameIds[i])
@@ -256,29 +257,18 @@ export const playerActions = {
 
           let data = {}
           const cred = error.credential
-          const id = auth().currentUser.uid
+          const prevId = auth().currentUser.uid
 
-          return db().ref(`players/${id}`).once('value').then((snapshot) => {
+          return db().ref(`players/${prevId}`).once('value').then((snapshot) => {
             data = snapshot.val() || {}
             return auth().signInWithCredential(cred)
           })
           .then((user) => {
             // TODO: filter inactive (value; false)
-            let teamUpdates = []
+            const newId = user.uid
             const gameIds = Object.keys(data.games || {})
-            const gameUpdates = gameIds.map((gameId) => {
-              return db().ref(`games/${gameId}`).once('value').then((snapshot) => {
-                const { black, white } = snapshot.val()
-                Object.entries({ black, white }).map(([color, playerId]) => {
-                  if (playerId === id) {
-                    teamUpdates.push(
-                      db().ref(`games/${gameId}/${color}`).set(user.uid)
-                    )
-                  }
-                })
-                return db().ref(`players/${user.uid}/games/${gameId}`).set(true)
-              })
-            })
+            const gameUpdates = updateGamesForPlayer(gameIds, prevId, newId)
+            const teamUpdates = updatePlayersForGame(gameIds, prevId, newId)
 
             return Promise.all([
               ...gameUpdates,
@@ -328,4 +318,33 @@ export const playerActions = {
   signInAnonymously () {
     Firebase.auth().signInAnonymously()
   }
+}
+
+function gameById (gameId) {
+  return db().ref(`games/${gameId}`).once('value').then(s => s.val())
+}
+
+function updateGamesForPlayer (gameIds, oldPlayerId, newPlayerId) {
+  return gameIds.map((gameId) => {
+    return db().ref(`players/${newPlayerId}/games/${gameId}`).set(true)
+    return db().ref(`players/${oldPlayerId}/games/${gameId}`).set(false)
+  })
+}
+
+function updatePlayersForGame (gameIds, oldPlayerId, newPlayerId) {
+  return Promise.all(
+    gameIds.map((gameId) => {
+      return gameById(gameId).then((game) => {
+        const { black, white } = game
+        return Promise.all(
+          Object.entries({ black, white }).map(([color, playerId]) => {
+            if (playerId === oldPlayerId) {
+              return db().ref(`games/${gameId}/${color}`).set(newPlayerId)
+            }
+            return Promise.resolve()
+          })
+        )
+      })
+    })
+  )
 }
