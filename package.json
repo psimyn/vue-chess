@@ -7,6 +7,7 @@
     "prebuild": "mkdir -p dist && xargs -a pages-files cp -p -t dist",
     "dev": "webpack-dev-server --content-base ./dist --inline --hot",
     "build": "NODE_ENV=production webpack --progress --hide-modules",
+    "build:all": "npm run prebuild && npm run build && workbox generateSW",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
