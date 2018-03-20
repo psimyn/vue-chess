@@ -4,10 +4,8 @@
       <square
         :key="`${s.file}${s.rank}`"
         v-for="s of board.squares"
-        v-bind:square="s"
-        v-bind:selected="s == selected">
-        :key="s.file + s.rank"
-      </square>
+        :square="s"
+      />
       <div class="overlay" v-if="!gameStarted">
         <button
           class="button white"
@@ -45,7 +43,8 @@ export default {
       selected: 'selected',
       board: 'board',
       game: 'game',
-      players: 'players'
+      players: 'players',
+      previousMove: 'previousMove'
     }),
     // todo: determine, default to false
     playingAsBlack () {

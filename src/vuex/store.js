@@ -12,7 +12,7 @@ const config = {
   authDomain: 'chess-cfde8.firebaseapp.com',
   databaseURL: 'https://chess-cfde8.firebaseio.com',
   messagingSenderId: '204431620450',
-  projectId: "chess-cfde8"
+  projectId: 'chess-cfde8'
 }
 
 let database = {}
@@ -194,13 +194,29 @@ export const store = new Vuex.Store({
     players: state => state.players,
     message: state => state.message,
     moves: state => state.moves,
-    currentMove: state => state.currentMove,
+    currentMove: state => state.moves.length || 0,
+    previousMove: state => {
+      const gameClient = chess.create({PGN: true})
+      const prevMove = state.moves.reduce((acc, moveTo, index, arr) => {
+        const { move } = gameClient.move(moveTo)
+
+        if (index === arr.length - 1) {
+          return {
+            src: move.prevSquare,
+            dest: move.postSquare,
+            captured: move.capturedPiece
+          }
+        }
+        return acc
+      }, {})
+      return prevMove
+    },
     selected: state => state.selected,
     board: state => {
       state.gameClient = chess.create({PGN: true})
-      state.moves.forEach((move, index) => {
+      state.moves.forEach((moveTo, index) => {
         if (index > state.currentMove) return
-        state.gameClient.move(move)
+        state.gameClient.move(moveTo)
       })
       return state.gameClient.getStatus().board
     }
@@ -225,5 +241,4 @@ if (typeof window !== 'undefined') {
       store.dispatch('signInAnonymously')
     }
   })
-
 }

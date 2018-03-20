@@ -14,7 +14,7 @@
         >
           <el-tab-pane label="Play">
             <status />
-            <move-history></move-history>
+            <move-history />
           </el-tab-pane>
           <el-tab-pane label="Analyze">
             <move-history></move-history>
@@ -46,7 +46,7 @@
       Loader,
       MoveHistory,
       Player,
-      Status,
+      Status
     },
     computed: {
       ...mapGetters({
@@ -55,6 +55,7 @@
         gameId: 'gameId',
         moves: 'moves',
         loading: 'loading',
+        previousMove: 'previousMove'
       }),
       players () {
         return this.game.players
@@ -68,11 +69,11 @@
         } else {
           return this.players.black === this.player.id
         }
-      },
+      }
     },
     created () {
 
-    },
+    }
   }
   </script>
 

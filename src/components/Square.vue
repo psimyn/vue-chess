@@ -2,8 +2,8 @@
   <span
     class="square"
     v-on:click="clickSquare(square)"
-    v-bind:class="{
-      selected: selected === `${square.file}${square.rank}`
+    :style="{
+      backgroundColor
     }"
   >
     <piece v-bind:piece="square.piece" />
@@ -14,16 +14,50 @@
 import {mapActions, mapGetters} from 'vuex'
 import Piece from './Piece.vue'
 
+const bg = {
+  selected: '#55bbee',
+  previousSrc: '#ffedab',
+  previousDest: '#ffed4b'
+}
+
 export default {
   components: {
     Piece
   },
-  props: ['square'],
+  props: {
+    square: {
+      type: Object
+    }
+  },
   computed: {
-    ...mapGetters({selected: 'selected'})
+    ...mapGetters({
+      previousMove: 'previousMove',
+      selected: 'selected'
+    }),
+    previousSrc () {
+      return this.matches(this.previousMove.src)
+    },
+    previousDest () {
+      return this.matches(this.previousMove.dest)
+    },
+    backgroundColor () {
+      if (this.selected === `${this.square.file}${this.square.rank}`) {
+        return bg.selected
+      }
+      if (this.previousSrc) {
+        return bg.previousSrc
+      }
+      if (this.previousDest) {
+        return bg.previousDest
+      }
+    }
   },
   methods: {
-    ...mapActions(['clickSquare'])
+    ...mapActions(['clickSquare']),
+    matches (square) {
+      const { file, rank } = square
+      return this.square.file === file && this.square.rank === rank
+    }
   }
 }
 </script>
@@ -41,7 +75,7 @@ export default {
 }
 
 .square:hover {
-  box-shadow: 0 0 3px 2px #2288bb inset;
+  background: #88ccff !important;
 }
 
 .square:after {
@@ -62,7 +96,4 @@ export default {
   background: #aaa;
 }
 
-.selected {
-  box-shadow: 0 0 4px 2px #2288bb inset;
-}
 </style>
