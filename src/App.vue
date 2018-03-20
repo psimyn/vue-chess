@@ -81,8 +81,6 @@
   body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    overflow-y: hidden;
-    height: 100vh;
     background: #f2f2f2;
   }
 
@@ -95,11 +93,6 @@
   body * {
     font-family: 'Roboto', sans-serif;
     font-size: 1em;
-  }
-
-  #app {
-    max-height: 100vh;
-    overflow-y: scroll;
   }
 
   .container {
