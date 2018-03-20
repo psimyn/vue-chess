@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     ...mapActions(['clickSquare']),
-    matches (square) {
+    matches (square = {}) {
       const { file, rank } = square
       return this.square.file === file && this.square.rank === rank
     }
