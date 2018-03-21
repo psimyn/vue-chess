@@ -171,8 +171,8 @@ export const actions = {
       commit(SET_MESSAGE, null)
       commit(SET_SELECTED_SQUARE, null)
     } else {
-      dispatch('timedMessage', {message: 'Invalid move'})
       commit(SET_SELECTED_SQUARE, null)
+      dispatch('selectSquare', to)
     }
   }
 }
