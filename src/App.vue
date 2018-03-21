@@ -9,13 +9,12 @@
           <board />
         </transition>
 
-        <captured-pieces />
         <el-tabs
           type="border-card"
         >
           <el-tab-pane label="Play">
             <status />
-            <move-history />
+            <captured-pieces />
           </el-tab-pane>
           <el-tab-pane label="Analyze">
             <move-history></move-history>

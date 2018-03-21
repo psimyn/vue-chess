@@ -1,5 +1,5 @@
   <template>
-    <div class="wrapper" id="currentGame">
+    <div>
       <div class="row">
         <h3 v-if="!gameStarted">Waiting for players...</h3>
         <h3 class="status" v-if="gameStarted">
@@ -55,10 +55,6 @@
   </script>
 
 <style scoped>
-  .wrapper {
-    padding: 24px 12px 12px;
-  }
-
   .row {
     display: flex;
     align-items: center;
