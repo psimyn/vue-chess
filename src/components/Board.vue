@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import Piece from './Piece.vue'
 import Square from './Square.vue'
 import {mapActions, mapGetters} from 'vuex'
 

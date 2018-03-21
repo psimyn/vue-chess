@@ -198,13 +198,14 @@ export const store = new Vuex.Store({
     previousMove: state => {
       const gameClient = chess.create({PGN: true})
       const prevMove = state.moves.reduce((acc, moveTo, index, arr) => {
+        // todo: enable undo
         const { move } = gameClient.move(moveTo)
 
         if (index === arr.length - 1) {
           return {
             src: move.prevSquare,
             dest: move.postSquare,
-            captured: move.capturedPiece
+            capturedPiece: move.capturedPiece
           }
         }
         return acc
@@ -212,6 +213,21 @@ export const store = new Vuex.Store({
       return prevMove
     },
     selected: state => state.selected,
+    capturedPieces: state => {
+      const gameClient = chess.create({PGN: true})
+      const capturedPieces = state.moves.reduce((acc, moveTo) => {
+        const { move } = gameClient.move(moveTo)
+        const { capturedPiece } = move
+        if (capturedPiece) {
+          acc[capturedPiece.side.name].push(capturedPiece)
+        }
+        return acc
+      }, {
+        white: [],
+        black: []
+      })
+      return capturedPieces
+    },
     board: state => {
       state.gameClient = chess.create({PGN: true})
       state.moves.forEach((moveTo, index) => {

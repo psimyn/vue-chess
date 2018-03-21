@@ -9,6 +9,7 @@
           <board />
         </transition>
 
+        <captured-pieces />
         <el-tabs
           type="border-card"
         >
@@ -32,6 +33,7 @@
 
 <script>
   import Board from './components/Board.vue'
+  import CapturedPieces from './components/CapturedPieces.vue'
   import Status from './components/Status.vue'
   import Player from './components/Player.vue'
   import GameList from './components/GameList.vue'
@@ -42,6 +44,7 @@
   export default {
     components: {
       Board,
+      CapturedPieces,
       GameList,
       Loader,
       MoveHistory,
