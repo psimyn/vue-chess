@@ -25,7 +25,15 @@
     methods: {
       ...mapActions(['setCurrentMove']),
       captured (color) {
-        return this.capturedPieces[color]
+        const order = ['queen', 'rook', 'bishop', 'knight', 'pawn']
+        const pieces = this.capturedPieces[color]
+
+        const orderedPieces = order.reduce((acc, type) => {
+          const captured = pieces.filter(p => p.type === type)
+          return acc.concat(...captured)
+        }, [])
+
+        return orderedPieces
       }
     },
     computed: {
