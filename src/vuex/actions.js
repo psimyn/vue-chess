@@ -110,17 +110,25 @@ export const actions = {
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
 
-  clickSquare ({commit, dispatch, state}, sq) {
-    const square = `${sq.file}${sq.rank}`
-    const myPiece = false // sq.piece && sq.piece.side.name ===
+  clickSquare ({commit, dispatch, state}, square) {
+    const index = notationToIndex(square)
+    const { piece } = state.gameClient.getStatus().board.squares[index]
+    const myPiece = piece && piece.side.name === 'black'
 
     if (state.selected && !myPiece) {
       dispatch('movePiece', square)
-    } else {
+    } else if (state.selected != square) {
       dispatch('selectSquare', square)
+    } else {
+      dispatch('selectSquare')
     }
   },
   selectSquare ({commit, dispatch, state}, selection) {
+    if (!selection) {
+      commit(SET_SELECTED_SQUARE, null)
+      return
+    }
+
     const status = state.gameClient.getStatus()
     const index = notationToIndex(selection)
     const square = status.board.squares[index]
