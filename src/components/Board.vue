@@ -1,10 +1,19 @@
 <template>
   <div>
-    <div class="board" v-bind:class="{playingAsBlack}">
+    <div
+      class="board"
+      v-on:mousedown="handlePointerDown"
+      v-on:mousemove="handlePointerMove"
+      v-on:mouseup="handlePointerUp"
+      :class="{
+        playingAsBlack
+      }"
+    >
       <square
         :key="`${s.file}${s.rank}`"
         v-for="s of board.squares"
         :square="s"
+        :transform-selected="transform"
       />
       <div class="overlay" v-if="!gameStarted">
         <button
@@ -35,9 +44,19 @@ import Piece from './Piece.vue'
 import Square from './Square.vue'
 import {mapActions, mapGetters} from 'vuex'
 
+let updating
+
 export default {
   components: {
     Square
+  },
+  data () {
+    return {
+      x: 0,
+      y: 0,
+      startX: 0,
+      startY: 0
+    }
   },
   computed: {
     ...mapGetters({
@@ -53,9 +72,38 @@ export default {
     },
     gameStarted () {
       return this.game.white && this.game.black
+    },
+    transform () {
+      return {
+        x: this.x,
+        y: this.y
+      }
     }
   },
-  methods: mapActions(['joinTeam'])
+  methods: {
+    ...mapActions(['joinTeam']),
+    handlePointerDown (evt) {
+      const position = evt.target.getBoundingClientRect()
+      this.startX = position.left + (position.width / 2)
+      this.startY = position.top + (position.height / 2)
+      this.x = 0
+      this.y = 0
+    },
+    handlePointerMove (evt) {
+      if (updating) return
+
+      updating = true
+      requestAnimationFrame(() => {
+        this.x = evt.clientX - this.startX
+        this.y = evt.clientY - this.startY
+        updating = false
+      })
+    },
+    handlePointerUp (evt) {
+      this.x = 0
+      this.y = 0
+    }
+  }
 }
 </script>
 
@@ -129,3 +177,4 @@ export default {
   }
 
 </style>
+

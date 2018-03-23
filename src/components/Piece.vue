@@ -3,7 +3,10 @@
     v-if="piece"
     v-bind:class="{side}"
     class="piece"
-    v-bind:style="{'background-image': `url(${img})`}"
+    v-bind:style="{
+      'background-image': `url(${img})`,
+      transform: `translate(${transform.x}px, ${transform.y}px)`
+    }"
   >
   </span>
 </template>
@@ -12,12 +15,21 @@
 import {mapGetters} from 'vuex'
 
 export default {
-  props: ['piece'],
+  props: {
+    piece: {
+      type: Object
+    },
+    transform: {
+      type: Object,
+      required: false,
+      default: () => ({})
+    }
+  },
   computed: {
-    side() {
+    side () {
       return this.piece.side.name
     },
-    img() {
+    img () {
       const color = this.piece.side.name
       return require(`../assets/${color}-${this.piece.type.toLowerCase()}.svg`)
     }
@@ -36,8 +48,8 @@ export default {
   top: 0;
   bottom: 0;
   background-size: cover;
+  pointer-events: none;
   z-index: 2;
-  transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1) 0.2s;
 }
 
 .white {

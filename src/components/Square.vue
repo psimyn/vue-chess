@@ -1,12 +1,19 @@
 <template>
   <span
     class="square"
-    v-on:click="clickSquare(square)"
+    :data-coord="`${square.file}${square.rank}`"
+    v-on:mousedown="handlePointerDown"
+    v-on:touchstart="handlePointerDown"
+    v-on:mouseup="handlePointerUp"
+    v-on:touchend="handlePointerUp"
     :style="{
       backgroundColor
     }"
   >
-    <piece v-bind:piece="square.piece" />
+    <piece
+      v-bind:piece="square.piece"
+      :transform="transform"
+    />
   </span>
 </template>
 
@@ -27,6 +34,18 @@ export default {
   props: {
     square: {
       type: Object
+    },
+    transformSelected: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  data () {
+    return {
+      x: 0,
+      y: 0,
+      startX: 0,
+      startY: 0
     }
   },
   computed: {
@@ -34,6 +53,19 @@ export default {
       previousMove: 'previousMove',
       selected: 'selected'
     }),
+    transform () {
+      if (this.isSelected) {
+        return this.transformSelected
+      } else {
+        return {
+          x: 0,
+          y: 0
+        }
+      }
+    },
+    isSelected () {
+      return this.selected === `${this.square.file}${this.square.rank}`
+    },
     previousSrc () {
       return this.matches(this.previousMove.src)
     },
@@ -41,7 +73,7 @@ export default {
       return this.matches(this.previousMove.dest)
     },
     backgroundColor () {
-      if (this.selected === `${this.square.file}${this.square.rank}`) {
+      if (this.isSelected) {
         return bg.selected
       }
       if (this.previousSrc) {
@@ -53,7 +85,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['clickSquare']),
+    ...mapActions([
+      'clickSquare',
+      'selectSquare'
+    ]),
+    handlePointerDown (evt) {
+      const square = evt.currentTarget.getAttribute('data-coord')
+      const position = evt.currentTarget.getBoundingClientRect()
+      this.selectSquare(square)
+    },
+    handlePointerUp (evt) {
+      const square = evt.currentTarget.getAttribute('data-coord')
+      this.clickSquare(square)
+    },
     matches (square = {}) {
       const { file, rank } = square
       return this.square.file === file && this.square.rank === rank

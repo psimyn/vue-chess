@@ -35,7 +35,6 @@ export const sw = {
     })
   },
   updatePlayerGames (player, {state, commit}) {
-    console.log(state.playerId)
     db().ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
       const gameIds = snapshot.val() || {}
       const games = Object.keys(gameIds).filter(i => gameIds[i])
@@ -113,14 +112,20 @@ export const actions = {
   clickSquare ({commit, dispatch, state}, square) {
     const index = notationToIndex(square)
     const { piece } = state.gameClient.getStatus().board.squares[index]
-    const myPiece = piece && piece.side.name === 'black'
+    const side = piece && piece.side.name
 
-    if (state.selected && !myPiece) {
+    if (state.selected) {
+      var selectedIndex = notationToIndex(state.selected)
+      var { piece: selectedPiece } = state.gameClient.getStatus().board.squares[selectedIndex]
+      var selectedSide = selectedPiece && selectedPiece.side.name
+    }
+
+    const sameTeam = side === selectedSide
+
+    if (state.selected && !sameTeam) {
       dispatch('movePiece', square)
     } else if (state.selected != square) {
       dispatch('selectSquare', square)
-    } else {
-      dispatch('selectSquare')
     }
   },
   selectSquare ({commit, dispatch, state}, selection) {
