@@ -2,10 +2,6 @@
   <span
     class="square"
     :data-coord="`${square.file}${square.rank}`"
-    v-on:mousedown="handlePointerDown"
-    v-on:touchstart="handlePointerDown"
-    v-on:mouseup="handlePointerUp"
-    v-on:touchend="handlePointerUp"
     :style="{
       backgroundColor
     }"
@@ -38,14 +34,6 @@ export default {
     transformSelected: {
       type: Object,
       default: () => ({})
-    }
-  },
-  data () {
-    return {
-      x: 0,
-      y: 0,
-      startX: 0,
-      startY: 0
     }
   },
   computed: {
@@ -89,15 +77,6 @@ export default {
       'clickSquare',
       'selectSquare'
     ]),
-    handlePointerDown (evt) {
-      const square = evt.currentTarget.getAttribute('data-coord')
-      const position = evt.currentTarget.getBoundingClientRect()
-      this.selectSquare(square)
-    },
-    handlePointerUp (evt) {
-      const square = evt.currentTarget.getAttribute('data-coord')
-      this.clickSquare(square)
-    },
     matches (square = {}) {
       const { file, rank } = square
       return this.square.file === file && this.square.rank === rank

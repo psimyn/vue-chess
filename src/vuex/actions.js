@@ -67,6 +67,10 @@ export const sw = {
   }
 }
 
+function sameSquare(a, b) {
+  return a.file === b.file && a.rank === b.rank
+}
+
 export const actions = {
   loadGame ({commit, state}, gameId) {
     const database = Firebase.database()
@@ -83,7 +87,11 @@ export const actions = {
 
     database.ref(`moves/${gameId}`).on('child_added', (snapshot) => {
       const move = snapshot.val()
-      commit(ADD_MOVE, move)
+      const lastMove = state.moves[state.moves.length - 1]
+      if (move !== lastMove) {
+        commit(ADD_MOVE, move)
+        commit(SET_SELECTED_SQUARE, null)
+      }
       commit(SET_LOADING, false)
     })
 
@@ -110,22 +118,22 @@ export const actions = {
   },
 
   clickSquare ({commit, dispatch, state}, square) {
+    if (!state.selected) {
+      throw new Error('no square selected. Clicked: ', square)
+    }
+
     const index = notationToIndex(square)
     const { piece } = state.gameClient.getStatus().board.squares[index]
     const side = piece && piece.side.name
 
-    if (state.selected) {
-      var selectedIndex = notationToIndex(state.selected)
-      var { piece: selectedPiece } = state.gameClient.getStatus().board.squares[selectedIndex]
-      var selectedSide = selectedPiece && selectedPiece.side.name
-    }
+    const selectedIndex = notationToIndex(state.selected)
+    const { piece: selectedPiece } = state.gameClient.getStatus().board.squares[selectedIndex]
+    const selectedSide = selectedPiece && selectedPiece.side.name
 
     const sameTeam = side === selectedSide
 
-    if (state.selected && !sameTeam) {
+    if (state.selected !== square) {
       dispatch('movePiece', square)
-    } else if (state.selected != square) {
-      dispatch('selectSquare', square)
     }
   },
   selectSquare ({commit, dispatch, state}, selection) {
@@ -159,7 +167,10 @@ export const actions = {
     }, timeout)
   },
   movePiece ({commit, dispatch, state}, to) {
-    if (!state.selected) throw new Error('no piece selected')
+    if (!state.selected) {
+      throw new Error('no piece selected')
+    }
+
     const fromIndex = notationToIndex(state.selected)
     const toIndex = notationToIndex(to)
 
@@ -169,18 +180,18 @@ export const actions = {
       from: squares[fromIndex],
       to: squares[toIndex]
     }
-    // const move = moveAsPGNFromSquares(fromSquare, toSquare)
-    // const validMove = Object.keys(game.notatedMoves).indexOf(move) > -1
     const validMove = Object.keys(game.notatedMoves).find((key) => {
       const notatedMove = game.notatedMoves[key]
-      return notatedMove.src.file === move.from.file &&
-        notatedMove.src.rank === move.from.rank &&
-        notatedMove.dest.file === move.to.file &&
-        notatedMove.dest.rank === move.to.rank
+      return (
+        sameSquare(notatedMove.src, move.from) &&
+        sameSquare(notatedMove.dest, move.to)
+      )
     })
 
     if (validMove) {
+      console.log(validMove)
       db().ref(`moves/${state.gameId}`).push(validMove)
+      // ``commit(ADD_MOVE, validMove)
       commit(SET_MESSAGE, null)
       commit(SET_SELECTED_SQUARE, null)
     } else {

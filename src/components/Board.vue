@@ -3,8 +3,11 @@
     <div
       class="board"
       v-on:mousedown="handlePointerDown"
+      v-on:touchstart="handlePointerDown"
       v-on:mousemove="handlePointerMove"
+      v-on:touchmove="handlePointerMove"
       v-on:mouseup="handlePointerUp"
+      v-on:touchend="handlePointerUp"
       :class="{
         playingAsBlack
       }"
@@ -46,6 +49,23 @@ import {mapActions, mapGetters} from 'vuex'
 
 let updating
 
+function coords(evt) {
+  let clientX = evt.clientX
+  let clientY = evt.clientY
+
+  const touchPoint = (evt.touches && evt.touches[0]) ||
+    (evt.changedTouches && evt.changedTouches[0])
+  if (touchPoint) {
+    clientX = touchPoint.clientX
+    clientY = touchPoint.clientY
+  }
+
+  return {
+    clientX,
+    clientY
+  }
+}
+
 export default {
   components: {
     Square
@@ -81,27 +101,45 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['joinTeam']),
+    ...mapActions([
+      'joinTeam',
+      'clickSquare',
+      'selectSquare'
+    ]),
     handlePointerDown (evt) {
-      const position = evt.target.getBoundingClientRect()
-      this.startX = position.left + (position.width / 2)
-      this.startY = position.top + (position.height / 2)
+      const { clientX, clientY } = coords(evt)
+
+      this.startX = clientX
+      this.startY = clientY
+
       this.x = 0
       this.y = 0
+
+      const square = evt.target.getAttribute('data-coord')
+      this.selectSquare(square)
     },
     handlePointerMove (evt) {
       if (updating) return
 
+      const { clientX, clientY } = coords(evt)
+
       updating = true
       requestAnimationFrame(() => {
-        this.x = evt.clientX - this.startX
-        this.y = evt.clientY - this.startY
+        this.x = clientX - this.startX
+        this.y = clientY - this.startY
         updating = false
       })
     },
     handlePointerUp (evt) {
       this.x = 0
       this.y = 0
+
+      const { clientX, clientY } = coords(evt)
+
+      const el = document.elementFromPoint(clientX, clientY)
+      const square = el.getAttribute('data-coord')
+
+      this.clickSquare(square)
     }
   }
 }

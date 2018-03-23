@@ -49,6 +49,7 @@ export default {
   bottom: 0;
   background-size: cover;
   pointer-events: none;
+  touch-events: none;
   z-index: 2;
 }
 
