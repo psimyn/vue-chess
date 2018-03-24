@@ -120,7 +120,7 @@ export const actions = {
 
   clickSquare ({commit, dispatch, state}, square) {
     if (!state.selected) {
-      throw new Error('no square selected. Clicked: ', square)
+      return
     }
 
     const index = notationToIndex(square)
@@ -154,8 +154,6 @@ export const actions = {
     if (state.game[selectionTeam] === state.playerId) {
       if (turn === selectionTeam) {
         commit(SET_SELECTED_SQUARE, selection)
-      } else {
-        dispatch('timedMessage', {message: `It is ${turn}'s move`})
       }
     } else {
       dispatch('timedMessage', {message: 'Not your piece'})
