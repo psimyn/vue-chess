@@ -67,7 +67,7 @@ export const sw = {
   }
 }
 
-function sameSquare(a, b) {
+function sameSquare (a, b) {
   return a.file === b.file && a.rank === b.rank
 }
 
@@ -88,6 +88,7 @@ export const actions = {
     database.ref(`moves/${gameId}`).on('child_added', (snapshot) => {
       const move = snapshot.val()
       const lastMove = state.moves[state.moves.length - 1]
+      // from preemptive UI update
       if (move !== lastMove) {
         commit(ADD_MOVE, move)
         commit(SET_SELECTED_SQUARE, null)
@@ -189,11 +190,10 @@ export const actions = {
     })
 
     if (validMove) {
-      console.log(validMove)
-      db().ref(`moves/${state.gameId}`).push(validMove)
-      // ``commit(ADD_MOVE, validMove)
-      commit(SET_MESSAGE, null)
+      commit(ADD_MOVE, validMove)
       commit(SET_SELECTED_SQUARE, null)
+      commit(SET_MESSAGE, null)
+      db().ref(`moves/${state.gameId}`).push(validMove)
     } else {
       commit(SET_SELECTED_SQUARE, null)
       dispatch('selectSquare', to)
