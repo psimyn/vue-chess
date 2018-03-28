@@ -12,6 +12,7 @@ const UPDATE_PLAYER_NAMES = 'UPDATE_PLAYER_NAMES'
 const SET_MESSAGE = 'SET_MESSAGE'
 const SET_SELECTED_SQUARE = 'SET_SELECTED_SQUARE'
 const ADD_MOVE = 'ADD_MOVE'
+const SET_CURRENT_MOVE = 'SET_CURRENT_MOVE'
 const SET_GAME_ID = 'SET_GAME_ID'
 const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
 const SET_LOADING = 'SET_LOADING'
@@ -85,14 +86,11 @@ export const actions = {
     state.gameClient = chess.create({PGN: true})
     state.moves = []
 
-    database.ref(`moves/${gameId}`).on('child_added', (snapshot) => {
+    database.ref(`moves/${gameId}`).on('child_added', (snapshot, prevKey) => {
       const move = snapshot.val()
       const lastMove = state.moves[state.moves.length - 1]
-      // from preemptive UI update
-      if (move !== lastMove) {
-        commit(ADD_MOVE, move)
-        commit(SET_SELECTED_SQUARE, null)
-      }
+      commit(ADD_MOVE, move)
+      commit(SET_SELECTED_SQUARE, null)
       commit(SET_LOADING, false)
     })
 
@@ -188,7 +186,7 @@ export const actions = {
     })
 
     if (validMove) {
-      commit(ADD_MOVE, validMove)
+      // commit(ADD_MOVE, validMove)
       commit(SET_SELECTED_SQUARE, null)
       commit(SET_MESSAGE, null)
       db().ref(`moves/${state.gameId}`).push(validMove)
