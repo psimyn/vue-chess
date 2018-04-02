@@ -8,7 +8,8 @@
     "dev": "webpack-dev-server --content-base ./dist --inline --hot",
     "build": "NODE_ENV=production webpack --progress --hide-modules",
     "build:all": "npm run prebuild && npm run build && workbox generateSW",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "stats": "webpack --profile --json > stats.json"
   },
   "dependencies": {
     "element-ui": "^2.2.2",
@@ -48,6 +49,7 @@
     "vuex-devtools": "^0.1.0",
     "vuexfire": "^2.1.3",
     "webpack": "^2.1.0-beta.20",
+    "webpack-bundle-analyzer": "^2.11.1",
     "webpack-dev-server": "^2.1.0-beta.0",
     "webpack-node-externals": "^1.4.3"
   }
