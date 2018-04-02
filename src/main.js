@@ -2,6 +2,7 @@ import Vue from 'vue'
 import {
   Button,
   Card,
+  Loading,
   Row,
   Switch,
   Tabs,
@@ -16,6 +17,10 @@ Vue.use(Row)
 Vue.use(Switch)
 Vue.use(Tabs)
 Vue.use(TabPane)
+
+Vue.use(Loading.directive)
+
+Vue.prototype.$loading = Loading.service
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')

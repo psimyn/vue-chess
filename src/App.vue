@@ -1,8 +1,6 @@
   <template>
     <div id="app">
-      <loader v-if="loading" />
       <div
-        v-else
         class="container"
       >
         <transition name="slide">
@@ -23,7 +21,9 @@
             <game-list />
           </el-tab-pane>
           <el-tab-pane label="Settings">
-            <player />
+            <player
+              v-if="!loading"
+            />
           </el-tab-pane>
         </el-tabs>
       </div>

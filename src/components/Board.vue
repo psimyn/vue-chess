@@ -2,6 +2,7 @@
   <div>
     <div
       class="board"
+      v-loading="loading"
       v-on:mousedown="handlePointerDown"
       v-on:touchstart="handlePointerDown"
       v-on:mousemove="handlePointerMove"
@@ -18,7 +19,10 @@
         :square="s"
         :transform-selected="transform"
       />
-      <div class="overlay" v-if="!gameStarted">
+      <div
+        v-if="!gameStarted && !loading"
+        class="overlay"
+      >
         <button
           class="button white"
           v-bind:class="{
@@ -49,7 +53,7 @@ import {mapActions, mapGetters} from 'vuex'
 
 let updating
 
-function coords(evt) {
+function coords (evt) {
   let clientX = evt.clientX
   let clientY = evt.clientY
 
@@ -84,7 +88,8 @@ export default {
       board: 'board',
       game: 'game',
       players: 'players',
-      previousMove: 'previousMove'
+      previousMove: 'previousMove',
+      loading: 'loading'
     }),
     // todo: determine, default to false
     playingAsBlack () {
@@ -147,7 +152,6 @@ export default {
 
 <style scoped>
   .board {
-    padding: 1em;
     background: rgba(88, 88, 88, 0.05);
 
     display: flex;
@@ -215,4 +219,3 @@ export default {
   }
 
 </style>
-
