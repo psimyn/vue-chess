@@ -105,23 +105,29 @@ export default {
       }
     }
   },
+  created () {
+    window.addEventListener('resize', (evt) => {
+      this.setSquareSize()
+    })
+  },
   methods: {
     ...mapActions([
       'joinTeam',
       'clickSquare',
       'selectSquare'
     ]),
+    setSquareSize () {
+      const { top, left, width } = this.$el.getBoundingClientRect()
+      const squareSize = width / 8
+      this.startX = left + (squareSize / 2)
+      this.startY = top + (squareSize / 2)
+    },
     handlePointerDown (evt) {
       const square = evt.target.getAttribute('data-coord')
       this.selectSquare(square)
 
-      const { top, left, width } = this.$el.getBoundingClientRect()
+      this.setSquareSize()
       const { clientX, clientY } = coords(evt)
-
-      const squareSize = width / 8
-      this.startX = left + (squareSize / 2)
-      this.startY = top + (squareSize / 2)
-
       this.x = clientX - this.startX
       this.y = clientY - this.startY
     },
@@ -152,19 +158,11 @@ export default {
 <style scoped>
   .board {
     background: rgba(88, 88, 88, 0.05);
-
-    display: flex;
-    flex-direction: column-reverse;
     margin: 0 auto;
     max-width: 600px;
     box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);
     position: relative;
     transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1);
-
-    display: grid;
-    grid-template-rows: repeat(8, 1fr);
-    grid-template-columns: repeat(8, 1fr);
-    align-items: stretch;
   }
 
   .playingAsBlack {

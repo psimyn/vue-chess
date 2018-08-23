@@ -37,17 +37,21 @@ export default {
       default: () => ({})
     }
   },
+  data () {
+    return {
+      squareWidth: this.getSquareWidth()
+    }
+  },
   computed: {
     ...mapGetters({
       previousMove: 'previousMove',
       selected: 'selected'
     }),
-    transform ({ square }) {
+    transform ({ square, squareWidth }) {
       if (this.isSelected) {
         return this.transformSelected
       }
 
-      const squareWidth = Math.min(window.innerWidth, 600) / 8
       const { rank, file } = square
       const yIndex = rank - 1
       const xIndex = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].indexOf(file)
@@ -81,6 +85,11 @@ export default {
       }
     }
   },
+  created () {
+    window.addEventListener('resize', (evt) => {
+      this.updateSquareSize()
+    })
+  },
   methods: {
     ...mapActions([
       'clickSquare',
@@ -89,6 +98,12 @@ export default {
     matches (square = {}) {
       const { file, rank } = square
       return this.square.file === file && this.square.rank === rank
+    },
+    getSquareWidth () {
+      return Math.min(window.innerWidth, 600) / 8
+    },
+    updateSquareSize () {
+      this.squareWidth = this.getSquareWidth()
     }
   }
 }
@@ -102,7 +117,7 @@ export default {
   display: inline-block;
   vertical-align: top;
   background: white;
-  width: 100 / 8%;
+  width: 12.5%;
 }
 
 .square:hover {
