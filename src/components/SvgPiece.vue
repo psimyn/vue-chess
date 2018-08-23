@@ -1,17 +1,8 @@
 <template>
   <span
-    v-if="piece"
-    v-bind:class="side"
-  >
-    <span
-      v-html="svg"
-      class="piece"
-      :class="{ selected }"
-      v-bind:style="{
-        transform: `translate(${transform.x}px, ${transform.y}px)`
-      }"
-    ></span>
-  </span>
+    v-html="svg"
+    class="piece"
+  ></span>
 </template>
 
 <script>
@@ -20,33 +11,15 @@ import {mapGetters} from 'vuex'
 export default {
   props: {
     piece: {
-      type: Object
+      type: String
     },
-    transform: {
-      type: Object,
-      required: false,
-      default: () => ({})
-    },
-    selected: {
-      type: Boolean
+    side: {
+      type: String
     }
   },
   computed: {
-    side ({ piece }) {
-      return piece.side.name
-    },
     svg ({ piece, side }) {
-      return require(`../assets/${side}-${piece.type.toLowerCase()}.svg`)
-    },
-    pieceScale ({ piece }) {
-      return {
-        pawn: 1,
-        knight: 1.2,
-        rook: 1.2,
-        bishop: 1.2,
-        queen: 1.25,
-        king: 1.35
-      }[piece.type] || 1
+      return require(`../assets/${side}-${piece}.svg`)
     }
   }
 }

@@ -23,6 +23,8 @@
         v-if="!gameStarted && !loading"
         class="overlay"
       >
+        <svg-piece class="mascot white" side="white" piece="pawn" />
+        <svg-piece class="mascot black" side="black" piece="pawn" />
         <button
           class="button white"
           v-bind:class="{
@@ -47,6 +49,7 @@
 </template>
 
 <script>
+import SvgPiece from './SvgPiece.vue'
 import Piece from './Piece.vue'
 import Square from './Square.vue'
 import {mapActions, mapGetters} from 'vuex'
@@ -72,7 +75,8 @@ function coords (evt) {
 
 export default {
   components: {
-    Square
+    Square,
+    SvgPiece
   },
   data () {
     return {
@@ -183,29 +187,25 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
-    display: flex;
-    justify-content: space-between;
-    background: rgba(33, 33, 33, 0.66);
+    background: rgba(233, 233, 233, 0.9);
     z-index: 2;
     padding: 24px;
+    display: flex;
+    align-items: flex-start;
   }
 
   .button {
+    color: #333;
     border: none;
     font-size: calc(1em + 1vw);
     font-weight: bold;
-    padding: 0 1em;
-    background: rgba(20, 20, 20, 0.77);
-    color: white;
+    padding: 0.5em 1em;
     box-shadow: 0 0 2px 2px rgba(24, 24, 24, 0.4);
-    text-shadow: 0 0 1px #333;
-    margin: 0;
+    margin: auto 0 0;
   }
 
-  .white {
-    background: rgba(240, 240, 240, 0.9);
-    color: #333;
-    box-shadow: 0 0 2px 2px rgba(24, 24, 24, 0.4);
+  .black {
+    margin-left: auto;
   }
 
   .checkmate {
@@ -213,6 +213,20 @@ export default {
     font-size: 3em;
     color: white;
     text-align: center;
+  }
+
+  .mascot {
+    transform: scale(4) translate(0, 100%) rotate(10deg);
+    margin-left: 0;
+  }
+
+  .mascot.white {
+    transform: scale(4) translate(0, 100%) rotate(-10deg);
+    text-align: right;
+  }
+
+  .mascot.black {
+    left: auto;
   }
 
 </style>
