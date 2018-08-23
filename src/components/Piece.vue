@@ -1,13 +1,15 @@
 <template>
   <span
     v-if="piece"
-    v-bind:class="{side}"
-    class="piece"
-    v-bind:style="{
-      'background-image': `url(${img})`,
-      transform: `translate(${transform.x}px, ${transform.y}px)`
-    }"
+    v-bind:class="side"
   >
+    <span
+      v-html="svg"
+      class="piece"
+      v-bind:style="{
+        transform: `translate(${transform.x}px, ${transform.y}px) scale(${scale})`
+      }"
+    ></span>
   </span>
 </template>
 
@@ -23,15 +25,30 @@ export default {
       type: Object,
       required: false,
       default: () => ({})
+    },
+    selected: {
+      type: Boolean
     }
   },
   computed: {
-    side () {
-      return this.piece.side.name
+    side ({ piece }) {
+      return piece.side.name
     },
-    img () {
-      const color = this.piece.side.name
-      return require(`../assets/${color}-${this.piece.type.toLowerCase()}.svg`)
+    svg ({ piece, side }) {
+      return require(`../assets/${side}-${piece.type.toLowerCase()}.svg`)
+    },
+    pieceScale ({ piece }) {
+      return {
+        pawn: 1,
+        knight: 1.2,
+        rook: 1.2,
+        bishop: 1.2,
+        queen: 1.25,
+        king: 1.35
+      }[piece.type] || 1
+    },
+    scale ({ selected }) {
+      return this.pieceScale * (selected ? 1.5 : 1.2)
     }
   }
 }
@@ -51,11 +68,17 @@ export default {
   pointer-events: none;
   touch-events: none;
   z-index: 2;
+  stroke-width: 6px;
+  transition: transform 0.1s;
+}
+
+svg {
+  transform: scale(1.2) translate(0, 25%);
 }
 
 .white {
   color: white;
+  stroke: black;
   text-shadow: 0 1px 1px black;
 }
-
 </style>

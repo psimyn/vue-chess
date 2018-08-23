@@ -9,6 +9,7 @@
     <piece
       v-bind:piece="square.piece"
       :transform="transform"
+      :selected="isSelected"
     />
   </span>
 </template>
