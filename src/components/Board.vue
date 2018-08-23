@@ -112,16 +112,17 @@ export default {
       'selectSquare'
     ]),
     handlePointerDown (evt) {
-      const { clientX, clientY } = coords(evt)
-
-      this.startX = clientX
-      this.startY = clientY
-
-      this.x = 0
-      this.y = 0
-
       const square = evt.target.getAttribute('data-coord')
       this.selectSquare(square)
+
+      const { top, left } = this.$el.getBoundingClientRect()
+      const { clientX, clientY } = coords(evt)
+
+      this.startX = left + 37.5
+      this.startY = top + 37.5
+
+      this.x = clientX - this.startX
+      this.y = clientY - this.startY
     },
     handlePointerMove (evt) {
       if (updating) return
@@ -136,9 +137,6 @@ export default {
       })
     },
     handlePointerUp (evt) {
-      this.x = 0
-      this.y = 0
-
       const { clientX, clientY } = coords(evt)
 
       const el = document.elementFromPoint(clientX, clientY)

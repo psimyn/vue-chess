@@ -42,14 +42,22 @@ export default {
       previousMove: 'previousMove',
       selected: 'selected'
     }),
-    transform () {
+    transform ({ square }) {
       if (this.isSelected) {
         return this.transformSelected
-      } else {
-        return {
-          x: 0,
-          y: 0
-        }
+      }
+
+      const squareWidth = 75
+      const { rank, file } = square
+      const yIndex = rank - 1
+      const xIndex = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].indexOf(file)
+
+      const x = xIndex * squareWidth
+      const y = yIndex * squareWidth
+
+      return {
+        x,
+        y
       }
     },
     isSelected () {
@@ -94,7 +102,6 @@ export default {
   display: inline-block;
   vertical-align: top;
   background: white;
-  position: relative;
   width: 100 / 8%;
 }
 

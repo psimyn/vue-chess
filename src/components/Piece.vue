@@ -48,6 +48,7 @@ export default {
       }[piece.type] || 1
     },
     scale ({ selected }) {
+      return 1
       return this.pieceScale * (selected ? 1.5 : 1.2)
     }
   }
@@ -56,6 +57,8 @@ export default {
 
 <style>
 .piece {
+  width: 75px;
+  height: 75px;
   font-weight: bold;
   font-size: 16px;
   text-shadow: 0 2px 2px white;
