@@ -54,8 +54,8 @@ export default {
 
 <style>
 .piece {
-  width: 75px;
-  height: 75px;
+  width: 12.5%;
+  height: 12.5%;
   font-weight: bold;
   font-size: 16px;
   text-shadow: 0 2px 2px white;
