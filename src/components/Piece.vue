@@ -76,12 +76,14 @@ export default {
   z-index: 4;
 }
 
-svg {
-  transform: scale(1.2) translate(0, 25%);
+@media (min-width: 600px) {
+  svg {
+    transform: scale(1.2) translate(0, 25%);
+  }
 }
 
 .selected svg {
-  transform: scale(1.4) translate(0, 25%);
+  transform: scale(1.4) translate(0, 0);
 }
 
 .white {

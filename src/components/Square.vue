@@ -47,7 +47,7 @@ export default {
         return this.transformSelected
       }
 
-      const squareWidth = 75
+      const squareWidth = Math.min(window.innerWidth, 600) / 8
       const { rank, file } = square
       const yIndex = rank - 1
       const xIndex = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].indexOf(file)
