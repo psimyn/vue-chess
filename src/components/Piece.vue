@@ -6,8 +6,9 @@
     <span
       v-html="svg"
       class="piece"
+      :class="{ selected }"
       v-bind:style="{
-        transform: `translate(${transform.x}px, ${transform.y}px) scale(${scale})`
+        transform: `translate(${transform.x}px, ${transform.y}px)`
       }"
     ></span>
   </span>
@@ -46,10 +47,6 @@ export default {
         queen: 1.25,
         king: 1.35
       }[piece.type] || 1
-    },
-    scale ({ selected }) {
-      return 1
-      return this.pieceScale * (selected ? 1.5 : 1.2)
     }
   }
 }
@@ -67,7 +64,6 @@ export default {
   right: 0;
   top: 0;
   bottom: 0;
-  background-size: cover;
   pointer-events: none;
   touch-events: none;
   z-index: 2;
@@ -75,8 +71,17 @@ export default {
   transition: transform 0.1s;
 }
 
+.selected {
+  transition: none;
+  z-index: 4;
+}
+
 svg {
   transform: scale(1.2) translate(0, 25%);
+}
+
+.selected svg {
+  transform: scale(1.4) translate(0, 25%);
 }
 
 .white {

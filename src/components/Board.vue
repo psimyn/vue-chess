@@ -115,11 +115,12 @@ export default {
       const square = evt.target.getAttribute('data-coord')
       this.selectSquare(square)
 
-      const { top, left } = this.$el.getBoundingClientRect()
+      const { top, left, width } = this.$el.getBoundingClientRect()
       const { clientX, clientY } = coords(evt)
 
-      this.startX = left + 37.5
-      this.startY = top + 37.5
+      const squareSize = width / 8
+      this.startX = left + (squareSize / 2)
+      this.startY = top + (squareSize / 2)
 
       this.x = clientX - this.startX
       this.y = clientY - this.startY
