@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "element-ui": "^2.2.2",
+    "raw-loader": "^0.5.1",
     "vue": "^2.5.16",
     "vuex": "^3.0.1"
   },

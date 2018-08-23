@@ -31,7 +31,11 @@ module.exports = {
         loader: 'json-loader'
       },
       {
-        test: /\.(png|jpg|gif|svg|woff|ttf)$/,
+        test: /\.svg/,
+        loader: 'raw-loader'
+      },
+      {
+        test: /\.(png|jpg|gif|woff|ttf)$/,
         loader: 'file-loader',
         query: {
           name: '[name].[ext]?[hash]'
