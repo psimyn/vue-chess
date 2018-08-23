@@ -45,7 +45,7 @@ self.__precacheManifest = [
   },
   {
     "url": "build.js",
-    "revision": "a12e251fcc3140e86a1efb0f8a62aa8f"
+    "revision": "2b61c144ab6e484514aa357cbb1aa5c0"
   },
   {
     "url": "google.svg",
