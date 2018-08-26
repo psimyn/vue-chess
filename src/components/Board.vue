@@ -23,8 +23,8 @@
         v-if="!gameStarted && !loading"
         class="overlay"
       >
-        <svg-piece class="mascot white" side="white" piece="pawn" />
-        <svg-piece class="mascot black" side="black" piece="pawn" />
+        <svg-piece class="mascot white" side="white" piece="knight" />
+        <svg-piece class="mascot black" side="black" piece="knight" />
         <button
           class="button white"
           v-bind:class="{
@@ -216,17 +216,23 @@ export default {
   }
 
   .mascot {
-    transform: scale(4) translate(0, 100%) rotate(10deg);
+    transform: scale(4) translate(0, 0) rotate(10deg);
     margin-left: 0;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -25%;
   }
 
   .mascot.white {
-    transform: scale(4) translate(0, 100%) rotate(-10deg);
-    text-align: right;
+    transform: scale(10) rotate(25deg) rotateY(180deg) ;
+    margin-left: -50%;
   }
 
   .mascot.black {
     left: auto;
+    transform: scale(10) rotateZ(-25deg);
   }
 
 </style>
