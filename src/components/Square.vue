@@ -87,7 +87,11 @@ export default {
   },
   created () {
     window.addEventListener('resize', (evt) => {
-      this.updateSquareSize()
+      // wait for resize events to stop before updating size
+      clearTimeout(this.resizeTimer)
+      this.resizeTimer = setTimeout(() => {
+        this.updateSquareSize()
+      }, 200)
     })
   },
   methods: {

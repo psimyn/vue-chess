@@ -76,10 +76,8 @@ export default {
   z-index: 4;
 }
 
-@media (min-width: 600px) {
-  svg {
-    transform: scale(1.2) translate(0, 25%);
-  }
+svg {
+  transform: scale(1) translate(0, 25%);
 }
 
 .selected svg {
