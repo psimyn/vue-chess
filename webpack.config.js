@@ -7,7 +7,7 @@ module.exports = {
   entry: {
     build: './src/main.js'
   },
-  mode: 'development',
+  mode: process.env.NODE_ENV || 'development',
   output: {
     path: path.resolve(__dirname, './dist/static'),
     publicPath: '/static/',
