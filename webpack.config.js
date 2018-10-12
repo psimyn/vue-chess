@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
   entry: {
@@ -27,10 +28,6 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
       {
-        test: /\.json/,
-        loader: 'json-loader'
-      },
-      {
         test: /\.svg/,
         loader: 'raw-loader'
       },
@@ -42,7 +39,10 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [
+    new VueLoaderPlugin()
+  ]
 }
 
 if (process.env.NODE_ENV === 'production') {
