@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import chess from 'chess'
-import * as firebaseui from 'firebaseui'
 import { firebase, auth, database, messaging } from './firebase'
+import * as firebaseui from 'firebaseui'
 import { notationToIndex } from './chess'
 
 export const SET_PLAYER_NAME = 'SET_PLAYER_NAME'
@@ -196,6 +196,7 @@ let anonymousUser
 
 export const playerActions = {
   requestPermission({ dispatch }) {
+    debugger
     messaging.requestPermission().then(() => {
       console.log('Notification permission granted.')
       dispatch('saveToken')
@@ -271,11 +272,11 @@ export const playerActions = {
 
           let data = {}
           const cred = error.credential
-          const prevId = auth().currentUser.uid
+          const prevId = auth.currentUser.uid
 
           return database.ref(`players/${prevId}`).once('value').then((snapshot) => {
             data = snapshot.val() || {}
-            return auth().signInWithCredential(cred)
+            return auth.signInWithCredential(cred)
           })
             .then((user) => {
               // TODO: filter inactive (value; false)
@@ -320,8 +321,9 @@ export const playerActions = {
       tosUrl: 'TODO'
     }
 
-    const ui = new firebaseui.auth.AuthUI(auth())
-    const currentUser = auth().currentUser
+    debugger
+    const ui = new firebaseui.auth.AuthUI(auth)
+    const currentUser = auth.currentUser
 
     if (currentUser.isAnonymous) {
       anonymousUser = currentUser
