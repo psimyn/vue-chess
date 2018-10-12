@@ -10,7 +10,7 @@
 <script>
   // eslint-env browser
   import {mapActions, mapGetters} from 'vuex'
-  import Firebase from 'firebase'
+  import Firebase from 'firebase/app'
 
   export default {
     data () {

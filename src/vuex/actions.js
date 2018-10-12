@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import chess from 'chess'
-import Firebase from 'firebase'
+import Firebase from 'firebase/app'
 import * as firebaseui from 'firebaseui'
 import { notationToIndex } from './chess'
 
