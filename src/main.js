@@ -9,6 +9,7 @@ import {
   Tabs,
   TabPane
 } from 'element-ui'
+import querystring from 'querystring'
 import App from './App.vue'
 import storeConfig from './store/store'
 import { auth, database } from './store/firebase'
@@ -38,10 +39,14 @@ new Vue({
   render: h => h(App)
 })
 
-// todo: move this to created in App.vue or something
 if (process.env.NODE_ENV !== 'test') {
   const gameId = document.location.hash.slice(1) || database.ref('games').push().key
   store.dispatch('loadGame', gameId)
+
+  const query = window.location.search.slice(1)
+  let { moves = '' } = querystring.parse(query)
+  store.dispatch('addMoves', moves.split(','))
+
   auth.onAuthStateChanged((user) => {
     if (user) {
       database.ref(`players/${user.uid}`).on('value', (snapshot) => {

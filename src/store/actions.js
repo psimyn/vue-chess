@@ -69,6 +69,10 @@ function sameSquare(a, b) {
 }
 
 export const actions = {
+  addMoves({ commit }, moves) {
+    moves.forEach(move => commit(ADD_MOVE, move))
+  },
+
   loadGame({ commit, state }, gameId) {
     commit(SET_LOADING, true)
     // remove old listeners
