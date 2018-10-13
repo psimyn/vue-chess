@@ -10,8 +10,8 @@ import {
   TabPane
 } from 'element-ui'
 import App from './App.vue'
-import storeConfig from './vuex/store'
-import { auth, database } from './vuex/firebase'
+import storeConfig from './store/store'
+import { auth, database } from './store/firebase'
 
 Vue.use(Button)
 Vue.use(Card)

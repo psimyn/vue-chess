@@ -8,40 +8,43 @@
 </template>
 
 <script>
-  // eslint-env browser
-  import {mapActions, mapGetters} from 'vuex'
-  import Firebase from 'firebase/app'
+// eslint-env browser
+import { mapActions, mapGetters } from "vuex";
+import Firebase from "firebase/app";
+// import { messaging } from 'src/vuex/'
 
-  export default {
-    data () {
-      return {
-        enabled: false
-      }
-    },
-    created () {
-      Firebase.messaging().getToken().then((currentToken) => {
+export default {
+  data() {
+    return {
+      enabled: false
+    };
+  },
+  created() {
+    Firebase.messaging()
+      .getToken()
+      .then(currentToken => {
         if (currentToken) {
-          this.enabled = true
+          this.enabled = true;
         }
-      })
-    },
-    computed: {
-      ...mapGetters({
-        player: 'player'
-      }),
-      verb () {
-        return this.enabled ? 'Disable' : 'Enable'
-      }
-    },
-    methods: {
-      ...mapActions(['saveToken', 'revokeToken']),
-      toggleSubscribe () {
-        if (this.enabled) {
-          this.saveToken()
-        } else {
-          this.revokeToken()
-        }
+      });
+  },
+  computed: {
+    ...mapGetters({
+      player: "player"
+    }),
+    verb() {
+      return this.enabled ? "Disable" : "Enable";
+    }
+  },
+  methods: {
+    ...mapActions(["saveToken", "revokeToken"]),
+    toggleSubscribe() {
+      if (this.enabled) {
+        this.saveToken();
+      } else {
+        this.revokeToken();
       }
     }
   }
+};
 </script>
