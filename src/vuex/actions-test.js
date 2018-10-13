@@ -1,8 +1,6 @@
-/* eslint-env mocha */
 import chess from 'chess'
-import { expect } from 'chai'
 import { initialState, SET_SELECTED_SQUARE, SET_LOADING, SET_MESSAGE, ADD_MOVE } from './store'
-const actionsInjector = require('inject-loader!./store')
+const actionsInjector = require('./store')
 const fbdbMock = {
   ref () {
     return {

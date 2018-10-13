@@ -1,5 +1,6 @@
 import { createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import firebase from './firebase'
 import storeConfig from './store'
 import { cloneDeep } from 'lodash'
 
@@ -34,17 +35,13 @@ jest.mock('./firebase', () => {
     }
   )
 
-  const firebase = mocksdk.initializeApp()
-
   return {
-    firebase,
+    firebase: mocksdk.initializeApp(),
     database: mockdatabase,
     auth: mockauth,
     messaging: mockmessaging
   }
 })
-
-// mocksdk.database().flush()
 
 function createStore() {
   return new Vuex.Store(cloneDeep(storeConfig))
@@ -63,7 +60,6 @@ describe('store', function () {
     expect(store.getters.game.isCheckmate).toBe(false)
     expect(store.getters.game.isStalemate).toBe(false)
     expect(store.state.moves.length).toEqual(0)
-
   })
 
   test('add move', function () {
@@ -73,12 +69,5 @@ describe('store', function () {
 
     expect(store.state.moves.length).toEqual(1)
     expect(store.state.moves).toEqual(['d3'])
-  })
-
-  test('request noti permission', function () {
-    // store.dispatch('requestPermission')
-
-    // expect()
-
   })
 })

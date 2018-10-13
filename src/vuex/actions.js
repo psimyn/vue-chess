@@ -196,7 +196,6 @@ let anonymousUser
 
 export const playerActions = {
   requestPermission({ dispatch }) {
-    debugger
     messaging.requestPermission().then(() => {
       console.log('Notification permission granted.')
       dispatch('saveToken')
@@ -298,7 +297,6 @@ export const playerActions = {
               // TODO trigger sign in success logic
             })
             .catch((error) => {
-              debugger
               console.error(error)
             })
         },
@@ -321,7 +319,6 @@ export const playerActions = {
       tosUrl: 'TODO'
     }
 
-    debugger
     const ui = new firebaseui.auth.AuthUI(auth)
     const currentUser = auth.currentUser
 
