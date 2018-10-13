@@ -10,8 +10,7 @@
 <script>
 // eslint-env browser
 import { mapActions, mapGetters } from "vuex";
-import Firebase from "firebase/app";
-// import { messaging } from 'src/vuex/'
+import { messaging } from "../store/firebase";
 
 export default {
   data() {
@@ -20,13 +19,11 @@ export default {
     };
   },
   created() {
-    Firebase.messaging()
-      .getToken()
-      .then(currentToken => {
-        if (currentToken) {
-          this.enabled = true;
-        }
-      });
+    messaging.getToken().then(currentToken => {
+      if (currentToken) {
+        this.enabled = true;
+      }
+    });
   },
   computed: {
     ...mapGetters({
