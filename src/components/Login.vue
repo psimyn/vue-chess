@@ -21,39 +21,37 @@
 </template>
 
 <style>
-  @import "../../node_modules/firebaseui/dist/firebaseui.css";
+@import "../../node_modules/firebaseui/dist/firebaseui.css";
 </style>
 
 <script>
-import {mapActions, mapGetters} from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   computed: {
     ...mapGetters({
-      player: 'player',
-      game: 'game',
-      playerId: 'playerId'
-    }),
+      player: "player"
+    })
   },
   mounted() {
-    this.initLogins()
+    this.initLogins();
   },
   methods: {
-    ...mapActions(['initLogins', 'setPlayerName'])
+    ...mapActions(["initLogins", "setPlayerName"])
   },
-  data () {
+  data() {
     return {
-      name: '',
+      name: "",
       showUrl: false,
       showMenu: false,
-      message: '',
-    }
+      message: ""
+    };
   }
-}
+};
 </script>
 
 <style scoped>
-  .name-form {
-    display: flex;
-  }
+.name-form {
+  display: flex;
+}
 </style>

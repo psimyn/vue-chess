@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex'
-import GameLink from './GameLink.vue'
-import Login from './Login.vue'
-import NotificationButton from './NotificationButton.vue'
+import { mapActions, mapGetters } from "vuex";
+import GameLink from "./GameLink.vue";
+import Login from "./Login.vue";
+import NotificationButton from "./NotificationButton.vue";
 
 export default {
   components: {
@@ -36,62 +36,61 @@ export default {
   },
   computed: {
     ...mapGetters({
-      player: 'player',
-      game: 'game',
-      playerId: 'playerId'
+      player: "player",
+      game: "game"
     }),
-    playerName () {
-      return this.player.name
+    playerName() {
+      return this.player.name;
     },
-    playerUrl () {
-      const url = new URL(document.location)
-      url.search = `pid=${this.player.id}`
-      return url.href
+    playerUrl() {
+      const url = new URL(document.location);
+      url.search = `pid=${this.player.id}`;
+      return url.href;
     }
   },
   methods: {
-    ...mapActions(['signOut', 'loadGame'])
+    ...mapActions(["signOut", "loadGame"])
   },
-  data () {
+  data() {
     return {
-      message: '',
-      name: ''
-    }
+      message: "",
+      name: ""
+    };
   }
-}
+};
 </script>
 
 <style>
-  .games {
-    padding: 16px 12px;
-  }
-  .link {
-    color: #2a7ae2;
-    cursor: pointer;
-    text-decoration: none;
-    background-image: linear-gradient(transparent 0,#2a7ae2 1px,#2a7ae2 4px);
-    background-size: 4px 2px;
-    background-repeat: repeat-x;
-    background-position-y: 1.3125em;
-    margin: 8px 0;
-  }
-  .players {
-    overflow: hidden;
-  }
-  .player-current-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-  }
-  .login-section {
-    padding: 12px;
-  }
-  label {
-    display: block;
-  }
-  .hide {
-    height: 0;
-    width: 0;
-  }
+.games {
+  padding: 16px 12px;
+}
+.link {
+  color: #2a7ae2;
+  cursor: pointer;
+  text-decoration: none;
+  background-image: linear-gradient(transparent 0, #2a7ae2 1px, #2a7ae2 4px);
+  background-size: 4px 2px;
+  background-repeat: repeat-x;
+  background-position-y: 1.3125em;
+  margin: 8px 0;
+}
+.players {
+  overflow: hidden;
+}
+.player-current-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+}
+.login-section {
+  padding: 12px;
+}
+label {
+  display: block;
+}
+.hide {
+  height: 0;
+  width: 0;
+}
 </style>

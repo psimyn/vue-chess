@@ -6,6 +6,7 @@
           class="link"
           v-for="game in myGames"
           v-on:click="loadGame(game.gameId)"
+          :key="game.gameId"
         >
           <span>{{game.white}} v {{game.black}}</span>
           <small>|&nbsp;&nbsp;{{game.gameId}}</small>
@@ -16,72 +17,63 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex'
-import GameLink from './GameLink.vue'
+import { mapActions, mapGetters } from "vuex";
+import GameLink from "./GameLink.vue";
 
 export default {
   components: {
-    GameLink,
+    GameLink
   },
   computed: {
     ...mapGetters({
-      player: 'player',
-      game: 'game',
-      playerId: 'playerId'
+      player: "player",
+      game: "game"
     }),
-    myGames () {
-      if (!this.player.games) return []
-      const games = Object.keys(this.player.games).map((gameId) => ({
+    myGames() {
+      if (!this.player.games) return [];
+      const games = Object.keys(this.player.games).map(gameId => ({
         gameId,
         white: this.player.games[gameId].white,
         black: this.player.games[gameId].black
-      }))
-      return games
+      }));
+      return games;
     },
-    opponent () {
-      return this.game.players
-    },
-    playerName () {
-      return this.player.name
-    },
-    playerUrl () {
-      const url = new URL(document.location)
-      url.search = `pid=${this.player.id}`
-      return url.href
+    playerName() {
+      return this.player.name;
     }
   },
   methods: {
-    ...mapActions(['signOut', 'loadGame'])
+    ...mapActions(["signOut", "loadGame"])
   },
-  data () {
+  data() {
     return {
-      message: '',
-      name: ''
-    }
+      message: "",
+      name: ""
+    };
   }
-}
+};
 </script>
 
 <style scoped>
-  .games {
-    padding: 16px 12px;
-  }
+.games {
+  padding: 16px 12px;
+}
 
-  small {
-    font-size: 0.7em;
-  }
+small {
+  font-size: 0.7em;
+}
 
-  .link {
-    color: #2a7ae2;
-    cursor: pointer;
-    text-decoration: none;
-    background-image: linear-gradient(transparent 0,#2a7ae2 1px,#2a7ae2 4px);
-    background-size: 4px 2px;
-    background-repeat: repeat-x;
-    background-position-y: 1.3125em;
-    margin: 8px 0;
-  }
-  .players {
-    overflow: hidden;
-  }
+.link {
+  color: #2a7ae2;
+  cursor: pointer;
+  text-decoration: none;
+  background-image: linear-gradient(transparent 0, #2a7ae2 1px, #2a7ae2 4px);
+  background-size: 4px 2px;
+  background-repeat: repeat-x;
+  background-position-y: 1.3125em;
+  margin: 8px 0;
+}
+.players {
+  overflow: hidden;
+}
 </style>
