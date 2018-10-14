@@ -60,7 +60,7 @@ export default {
     },
     showLabel: {
       type: Boolean,
-      default: true
+      default: process.env.NODE_ENV !== "production"
     }
   },
   data() {
@@ -148,11 +148,15 @@ export default {
     },
     addEventListeners() {
       window.addEventListener("mousemove", this.handlePointerMove);
+      window.addEventListener("touchmove", this.handlePointerMove);
       window.addEventListener("mouseup", this.handlePointerUp);
+      window.addEventListener("touchend", this.handlePointerUp);
     },
     removeEventListeners() {
       window.removeEventListener("mousemove", this.handlePointerMove);
+      window.removeEventListener("touchmove", this.handlePointerMove);
       window.removeEventListener("mouseup", this.handlePointerUp);
+      window.removeEventListener("touchend", this.handlePointerUp);
     }
   }
 };
