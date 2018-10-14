@@ -5,6 +5,8 @@
     :style="{
       backgroundColor
     }"
+    v-on:mousedown="handlePointerDown"
+    v-on:touchstart="handlePointerDown"
   >
     <div
       v-if="showLabel"
@@ -15,6 +17,7 @@
     <piece
       v-bind:piece="square.piece"
       :selected="isSelected"
+      :transform="transform"
     />
   </span>
 </template>
@@ -29,6 +32,24 @@ const bg = {
   previousDest: "#ffed4b"
 };
 
+function coords(evt) {
+  let clientX = evt.clientX;
+  let clientY = evt.clientY;
+
+  const touchPoint =
+    (evt.touches && evt.touches[0]) ||
+    (evt.changedTouches && evt.changedTouches[0]);
+  if (touchPoint) {
+    clientX = touchPoint.clientX;
+    clientY = touchPoint.clientY;
+  }
+
+  return {
+    clientX,
+    clientY
+  };
+}
+
 export default {
   components: {
     Piece
@@ -42,11 +63,25 @@ export default {
       default: true
     }
   },
+  data() {
+    return {
+      x: 0,
+      y: 0,
+      startX: 0,
+      startY: 0
+    };
+  },
   computed: {
     ...mapGetters({
       previousMove: "previousMove",
       selected: "selected"
     }),
+    transform() {
+      return {
+        x: this.x,
+        y: this.y
+      };
+    },
     isSelected() {
       return this.selected === `${this.square.file}${this.square.rank}`;
     },
@@ -73,6 +108,49 @@ export default {
     matches(square = {}) {
       const { file, rank } = square;
       return this.square.file === file && this.square.rank === rank;
+    },
+    handlePointerDown(evt) {
+      const square = evt.currentTarget.getAttribute("data-coord");
+
+      this.selectSquare(square);
+
+      this.addEventListeners();
+
+      const { clientX, clientY } = coords(evt);
+      this.x = this.startX = clientX;
+      this.y = this.startY = clientY;
+    },
+    handlePointerMove(evt) {
+      if (this.isUpdating) return;
+
+      const { clientX, clientY } = coords(evt);
+
+      this.isUpdating = true;
+      requestAnimationFrame(() => {
+        this.x = clientX - this.startX;
+        this.y = clientY - this.startY;
+        this.isUpdating = false;
+      });
+    },
+    handlePointerUp(evt) {
+      const { clientX, clientY } = coords(evt);
+
+      const el = document.elementFromPoint(clientX, clientY);
+      const square = el.getAttribute("data-coord");
+
+      this.x = 0;
+      this.y = 0;
+
+      this.clickSquare(square);
+      this.removeEventListeners();
+    },
+    addEventListeners() {
+      window.addEventListener("mousemove", this.handlePointerMove);
+      window.addEventListener("mouseup", this.handlePointerUp);
+    },
+    removeEventListeners() {
+      window.removeEventListener("mousemove", this.handlePointerMove);
+      window.removeEventListener("mouseup", this.handlePointerUp);
     }
   }
 };
@@ -82,8 +160,9 @@ export default {
 .square {
   cursor: pointer;
   text-align: center;
-  vertical-align: top;
-  background: white;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-start;
 }
 
 .square:hover {
@@ -104,5 +183,6 @@ export default {
 .square-label {
   position: absolute;
   opacity: 0.6;
+  user-select: none;
 }
 </style>

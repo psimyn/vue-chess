@@ -1,7 +1,7 @@
 <template>
   <span
     v-html="svg"
-    class="piece"
+    class="svg-piece"
   ></span>
 </template>
 
@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style>
-.piece {
+.svg-piece {
   font-weight: bold;
   font-size: 16px;
   text-shadow: 0 2px 2px white;
