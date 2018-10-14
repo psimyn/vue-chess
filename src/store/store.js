@@ -15,7 +15,7 @@ const initialState = {
   // game state
   gameClient: chess.create({ PGN: true }),
   moves: [],
-  currentMove: 1,
+  currentMove: 0,
 
   // player
   playerId: null,
@@ -61,7 +61,8 @@ export default {
     moves: state => state.moves,
     previousMove: state => {
       const gameClient = chess.create({ PGN: true })
-      const prevMove = state.moves.reduce((acc, moveTo, index, arr) => {
+      const movesToCurrent = state.moves.slice(0, state.currentMove + 1)
+      const prevMove = movesToCurrent.reduce((acc, moveTo, index, arr) => {
         // todo: enable undo
         const { move } = gameClient.move(moveTo)
 
