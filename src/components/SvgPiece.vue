@@ -27,9 +27,12 @@ export default {
 
 <style>
 .svg-piece {
+  width: 12.5%;
+  height: 12.5%;
   font-weight: bold;
   font-size: 16px;
   text-shadow: 0 2px 2px white;
+  position: absolute;
   left: 0;
   right: 0;
   top: 0;
@@ -39,25 +42,6 @@ export default {
   z-index: 2;
   stroke-width: 6px;
   transition: transform 0.1s;
-}
-
-.piece:active {
-  position: absolute;
-}
-
-.selected {
-  transition: none;
-  z-index: 4;
-}
-
-@media (min-width: 600px) {
-  svg {
-    transform: scale(1.2) translate(0, 25%);
-  }
-}
-
-.selected svg {
-  transform: scale(1.4) translate(0, 0);
 }
 
 .white {

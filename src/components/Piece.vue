@@ -6,6 +6,8 @@
   >
     <span
       v-html="svg"
+      width="20"
+      height="20"
       class="piece"
       :class="{ selected }"
       v-bind:style="{
@@ -74,10 +76,6 @@ export default {
 .selected {
   transition: none;
   z-index: 4;
-}
-
-svg {
-  transform: scale(1) translate(0, 25%);
 }
 
 .selected svg {

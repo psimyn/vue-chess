@@ -117,8 +117,10 @@ export default {
       this.addEventListeners();
 
       const { clientX, clientY } = coords(evt);
-      this.x = this.startX = clientX;
-      this.y = this.startY = clientY;
+      this.x = 0;
+      this.y = 0;
+      this.startX = clientX;
+      this.startY = clientY;
     },
     handlePointerMove(evt) {
       if (this.isUpdating) return;
@@ -162,7 +164,7 @@ export default {
   text-align: center;
   display: flex;
   flex: 1 1 auto;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .square:hover {
@@ -184,5 +186,6 @@ export default {
   position: absolute;
   opacity: 0.6;
   user-select: none;
+  align-self: flex-start;
 }
 </style>

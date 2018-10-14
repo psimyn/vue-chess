@@ -78,14 +78,17 @@ export default {
 
 <style scoped>
 .board {
+  --square-size: calc(600px / 8);
   background: rgba(88, 88, 88, 0.05);
   margin: 0 auto;
   max-width: 600px;
-  max-height: 100vw;
-  width: 100vw;
+  max-height: 600px;
+  width: 100vmin;
+  height: 100vmin;
   display: grid;
-  grid-template-rows: repeat(8, 12.5vmin);
-  grid-template-columns: repeat(8, 12.5vmin);
+  grid-gap: 0;
+  grid-template-rows: repeat(8, minmax(40px, 1fr));
+  grid-template-columns: repeat(8, 1fr);
   box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);
   position: relative;
   transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1);
