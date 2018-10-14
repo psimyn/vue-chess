@@ -15,6 +15,7 @@ const initialState = {
   // game state
   gameClient: chess.create({ PGN: true }),
   moves: [],
+  currentMove: 1,
 
   // player
   playerId: null,
@@ -54,10 +55,10 @@ export default {
         isStalemate
       }
     },
+    currentMove: state => state.currentMove,
     players: state => state.players,
     message: state => state.message,
     moves: state => state.moves,
-    currentMove: state => state.moves.length || 0,
     previousMove: state => {
       const gameClient = chess.create({ PGN: true })
       const prevMove = state.moves.reduce((acc, moveTo, index, arr) => {

@@ -7,6 +7,7 @@ export const UPDATE_PLAYER_NAMES = 'UPDATE_PLAYER_NAMES'
 export const SET_MESSAGE = 'SET_MESSAGE'
 export const SET_SELECTED_SQUARE = 'SET_SELECTED_SQUARE'
 export const ADD_MOVE = 'ADD_MOVE'
+export const SET_CURRENT_MOVE = 'SET_CURRENT_MOVE'
 export const SET_GAME_ID = 'SET_GAME_ID'
 export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
 export const SET_LOADING = 'SET_LOADING'
@@ -26,7 +27,12 @@ export default {
     // todo: should this error instead?
     if (move) {
       state.moves = state.moves.concat(move)
+      state.currentMove = state.moves.length
     }
+  },
+  [SET_CURRENT_MOVE](state, val) {
+    debugger
+    state.currentMove = val
   },
 
   [SET_GAME_ID](state, gameId) {
