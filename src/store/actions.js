@@ -93,8 +93,10 @@ export const actions = {
     database.ref(`moves/${gameId}`).on('child_added', (snapshot, prevKey) => {
       const move = snapshot.val()
       const lastMove = state.moves[state.moves.length - 1]
-      commit(ADD_MOVE, move)
-      commit(SET_SELECTED_SQUARE, null)
+      if (lastMove !== move) {
+        commit(ADD_MOVE, move)
+        commit(SET_SELECTED_SQUARE, null)
+      }
       commit(SET_LOADING, false)
     })
 
@@ -114,13 +116,17 @@ export const actions = {
     commit(SET_GAME_ID, gameId)
   },
 
-  joinTeam({ commit, state }, team) {
+  joinTeam({ state }, team) {
     database.ref(`games/${state.gameId}/${team}`).set(state.playerId)
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
 
-  clickSquare({ commit, dispatch, state }, square) {
+  clickSquare({ dispatch, state }, square) {
     if (!state.selected) {
+      return
+    }
+
+    if (!square) {
       return
     }
 
@@ -189,7 +195,7 @@ export const actions = {
     })
 
     if (validMove) {
-      // commit(ADD_MOVE, validMove)
+      commit(ADD_MOVE, validMove)
       commit(SET_SELECTED_SQUARE, null)
       commit(SET_MESSAGE, null)
       database.ref(`moves/${state.gameId}`).push(validMove)
