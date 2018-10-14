@@ -19,5 +19,6 @@ npm test
 
 - Forward/back moves
 - New Game from Analyze tab
+- add dateStarted and lastMove fields
 - Move anims
 - Offline support
