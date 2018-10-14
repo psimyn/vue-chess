@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
   props: {
@@ -18,21 +18,18 @@ export default {
     }
   },
   computed: {
-    svg ({ piece, side }) {
-      return require(`../assets/${side}-${piece}.svg`)
+    svg({ piece, side }) {
+      return require(`../assets/${side}-${piece}.svg`);
     }
   }
-}
+};
 </script>
 
 <style>
 .piece {
-  width: 12.5%;
-  height: 12.5%;
   font-weight: bold;
   font-size: 16px;
   text-shadow: 0 2px 2px white;
-  position: absolute;
   left: 0;
   right: 0;
   top: 0;
@@ -42,6 +39,10 @@ export default {
   z-index: 2;
   stroke-width: 6px;
   transition: transform 0.1s;
+}
+
+.piece:active {
+  position: absolute;
 }
 
 .selected {
