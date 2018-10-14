@@ -20,10 +20,24 @@
           title="Previous Move"
           data-test="prevMove"
           @click.native="setCurrentMove(currentMove - 1)"
+          :disabled="currentMove === 0"
         />
         <el-button
-          type="secondary" icon="el-icon-arrow-right"></el-button>
-        <el-button type="secondary" icon="el-icon-d-arrow-right"></el-button>
+          type="secondary"
+          icon="el-icon-arrow-right"
+          title="Next Move"
+          data-test="nextMove"
+          @click.native="setCurrentMove(currentMove + 1)"
+          :disabled="currentMove === moves.length - 1"
+        />
+        <el-button
+          type="secondary"
+          icon="el-icon-d-arrow-right"
+          title="Last Move"
+          data-test="lastMove"
+          @click.native="setCurrentMove(moves.length - 1)"
+          :disabled="currentMove === moves.length - 1"
+        />
 
         <a :href="newGameUrl">New game from here</a>
         <div class="move-history-list">

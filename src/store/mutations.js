@@ -31,7 +31,6 @@ export default {
     }
   },
   [SET_CURRENT_MOVE](state, val) {
-    debugger
     state.currentMove = val
   },
 

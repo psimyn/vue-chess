@@ -49,10 +49,51 @@ describe('MoveHistory.vue', () => {
     })
   })
 
-  it('dispatches setCurrentMove when clicking Previous', () => {
-    const wrapper = shallowMount(MoveHistory, { store, localVue })
-    const button = wrapper.find(prevMoveButton)
-    button.trigger('click')
-    expect(actions.setCurrentMove).toHaveBeenCalled()
+  describe('Previous move', () => {
+    it('dispatches setCurrentMove', () => {
+      const wrapper = shallowMount(MoveHistory, { store, localVue })
+      const button = wrapper.find(prevMoveButton)
+      button.trigger('click')
+      expect(actions.setCurrentMove).toHaveBeenCalled()
+    })
+
+    it('is disabled when currentMove is 1', () => {
+      store.state.currentMove = 0
+      const wrapper = shallowMount(MoveHistory, { store, localVue })
+      const button = wrapper.find(prevMoveButton)
+      expect(button.attributes('disabled')).toBeTruthy()
+    })
+  })
+
+  describe('Next move', () => {
+    it('dispatches setCurrentMove', () => {
+      const wrapper = shallowMount(MoveHistory, { store, localVue })
+      const button = wrapper.find(nextMoveButton)
+      button.trigger('click')
+      expect(actions.setCurrentMove).toHaveBeenCalled()
+    })
+
+    it('is disabled when currentMove is last', () => {
+      store.state.currentMove = store.getters.moves.length - 1
+      const wrapper = shallowMount(MoveHistory, { store, localVue })
+      const button = wrapper.find(nextMoveButton)
+      expect(button.attributes('disabled')).toBeTruthy()
+    })
+  })
+
+  describe('Last move', () => {
+    it('dispatches setCurrentMove', () => {
+      const wrapper = shallowMount(MoveHistory, { store, localVue })
+      const button = wrapper.find(lastMoveButton)
+      button.trigger('click')
+      expect(actions.setCurrentMove).toHaveBeenCalled()
+    })
+
+    it('is disabled when currentMove is last', () => {
+      store.state.currentMove = store.getters.moves.length - 1
+      const wrapper = shallowMount(MoveHistory, { store, localVue })
+      const button = wrapper.find(lastMoveButton)
+      expect(button.attributes('disabled')).toBeTruthy()
+    })
   })
 })
