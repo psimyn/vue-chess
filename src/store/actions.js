@@ -343,14 +343,16 @@ export const playerActions = {
       tosUrl: 'TODO'
     }
 
-    const ui = new firebaseui.auth.AuthUI(auth)
+    if (!this.ui) {
+      this.ui = new firebaseui.auth.AuthUI(auth)
+    }
     const currentUser = auth.currentUser
 
     if (currentUser.isAnonymous) {
       anonymousUser = currentUser
-      ui.start('#firebaseui-auth-container', firebaseuiConfig)
+      this.ui.start('#firebaseui-auth-container', firebaseuiConfig)
     }
-    ui.disableAutoSignIn()
+    this.ui.disableAutoSignIn()
   },
   signInAnonymously() {
     auth.signInAnonymously()
