@@ -56,7 +56,6 @@ export const actions = {
       database.ref(`players/${state.game.black}/name`).off('value')
     }
 
-    const gameClient = chess.create({ PGN: true })
     state.moves = []
 
     database.ref(`moves/${gameId}`).on('child_added', (snapshot, prevKey) => {
@@ -88,7 +87,8 @@ export const actions = {
   updateGame() {
 
   },
-  updatePlayerGames({ state, commit }, playerId) {
+  updatePlayerGames({ state, commit }) {
+    state.loadingGames = true;
     database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
       const gameIds = snapshot.val() || {}
       const games = Object.keys(gameIds).filter(i => gameIds[i])
@@ -111,6 +111,7 @@ export const actions = {
                 white: white.val(),
                 black: black.val()
               })
+              state.loadingGames = false;
               if (state.players.white && state.players.black) {
                 database.ref(`games/${gameId}`).off('value', updateGames)
               }
@@ -262,7 +263,6 @@ export const playerActions = {
     if (player.uid) {
       // commit('SHOW_PLAYER_NAME_CONFIRMATION')
       sw.setPlayerToken(player)
-      // dispatch('updatePlayerGames', player.uid)
     }
   },
   setPlayerName({ commit, state }, name) {

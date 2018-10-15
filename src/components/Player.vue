@@ -49,7 +49,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["signOut", "loadGame"])
+    ...mapActions(["signOut"])
   },
   data() {
     return {

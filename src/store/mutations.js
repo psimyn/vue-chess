@@ -11,11 +11,15 @@ export const SET_CURRENT_MOVE = 'SET_CURRENT_MOVE'
 export const SET_GAME_ID = 'SET_GAME_ID'
 export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
 export const SET_LOADING = 'SET_LOADING'
+export const SET_LOADING_GAMES = 'SET_LOADING_GAMES'
 export const SHOW_PLAYER_NAME_CONFIRMATION = 'SHOW_PLAYER_NAME_CONFIRMATION'
 
 export default {
   [SET_LOADING](state, val) {
     state.loading = val
+  },
+  [SET_LOADING_GAMES](state, val) {
+    state.loadingGames = val
   },
   [SET_MESSAGE](state, message) {
     state.message = message

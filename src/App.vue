@@ -30,7 +30,10 @@
             <el-tab-pane label="Analyze">
               <move-history></move-history>
             </el-tab-pane>
-            <el-tab-pane label="My Games">
+            <el-tab-pane
+              label="My Games"
+              lazy
+            >
               <game-list />
             </el-tab-pane>
             <el-tab-pane label="Settings">

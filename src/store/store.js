@@ -30,6 +30,7 @@ const initialState = {
 
   // ui
   loading: true,
+  loadingGames: true,
   selected: null,
   message: null
 }

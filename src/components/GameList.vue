@@ -1,7 +1,13 @@
 <template>
-  <div class="player-container">
+  <div
+    class="player-container"
+    v-loading="loadingGames"
+  >
     <div v-if="player.id">
-      <div class="games" v-if="player.name && myGames.length">
+      <div
+        v-if="player.name && myGames.length"
+        class="games"
+      >
         <p
           class="link"
           v-for="game in myGames"
@@ -17,7 +23,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import GameLink from "./GameLink.vue";
 
 export default {
@@ -25,6 +31,9 @@ export default {
     GameLink
   },
   computed: {
+    ...mapState({
+      loadingGames: "loadingGames"
+    }),
     ...mapGetters({
       player: "player",
       game: "game"
@@ -43,7 +52,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["signOut", "loadGame"])
+    ...mapActions(["signOut", "loadGame", "updatePlayerGames"])
+  },
+  created() {
+    this.updatePlayerGames(this.player.id);
   },
   data() {
     return {
