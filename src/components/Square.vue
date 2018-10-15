@@ -146,11 +146,7 @@ export default {
       const { clientX, clientY } = coords(evt);
 
       const el = document.elementFromPoint(clientX, clientY);
-      const square = el && el.getAttribute("data-coord");
-
-      if (el && !square) {
-        console.error("touchend on: ", el.className);
-      }
+      const square = el && el.closest(".square").getAttribute("data-coord");
 
       this.x = 0;
       this.y = 0;
