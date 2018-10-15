@@ -159,12 +159,14 @@ export default {
       window.addEventListener("touchmove", this.handlePointerMove);
       window.addEventListener("mouseup", this.handlePointerUp);
       window.addEventListener("touchend", this.handlePointerUp);
+      window.addEventListener("touchcancel", this.handlePointerUp);
     },
     removeEventListeners() {
       window.removeEventListener("mousemove", this.handlePointerMove);
       window.removeEventListener("touchmove", this.handlePointerMove);
       window.removeEventListener("mouseup", this.handlePointerUp);
       window.removeEventListener("touchend", this.handlePointerUp);
+      window.removeEventListener("touchcancel", this.handlePointerUp);
     }
   }
 };
