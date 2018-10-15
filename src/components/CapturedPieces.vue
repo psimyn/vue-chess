@@ -3,10 +3,12 @@
       <div
         v-for="color in ['white', 'black']"
         class="captureRow"
+        :key="color"
       >
         <div
-          v-for="piece in captured(color)"
+          v-for="(piece, index) in captured(color)"
           class="pen"
+          :key="index"
         >
           <el-piece :piece="piece" />
         </div>

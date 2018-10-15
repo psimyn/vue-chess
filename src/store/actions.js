@@ -31,37 +31,6 @@ export const sw = {
         })
       }
     })
-  },
-  updatePlayerGames(player, { state, commit }) {
-    database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
-      const gameIds = snapshot.val() || {}
-      const games = Object.keys(gameIds).filter(i => gameIds[i])
-      games.forEach((gameId) => {
-        database.ref(`games/${gameId}`).on('value', updateGames)
-
-        function updateGames(snapshot) {
-          const game = snapshot.val()
-          return Promise.all([
-            database.ref(`players/${game.white}/name`).once('value'),
-            database.ref(`players/${game.black}/name`).once('value')
-          ])
-            .then(([white, black]) => {
-              commit(UPDATE_PLAYER_NAMES, {
-                [game.white]: white.val(),
-                [game.black]: black.val()
-              })
-              commit(UPDATE_MY_GAMES, {
-                gameId,
-                white: white.val(),
-                black: black.val()
-              })
-              if (state.players.white && state.players.black) {
-                database.ref(`games/${gameId}`).off('value', updateGames)
-              }
-            })
-        }
-      })
-    })
   }
 }
 
@@ -114,6 +83,41 @@ export const actions = {
 
     document.location.hash = gameId
     commit(SET_GAME_ID, gameId)
+  },
+
+  updateGame() {
+
+  },
+  updatePlayerGames({ state, commit }, playerId) {
+    database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
+      const gameIds = snapshot.val() || {}
+      const games = Object.keys(gameIds).filter(i => gameIds[i])
+      games.forEach((gameId) => {
+        database.ref(`games/${gameId}`).on('value', updateGames)
+
+        function updateGames(snapshot) {
+          const game = snapshot.val()
+          return Promise.all([
+            database.ref(`players/${game.white}/name`).once('value'),
+            database.ref(`players/${game.black}/name`).once('value')
+          ])
+            .then(([white, black]) => {
+              commit(UPDATE_PLAYER_NAMES, {
+                [game.white]: white.val(),
+                [game.black]: black.val()
+              })
+              commit(UPDATE_MY_GAMES, {
+                gameId,
+                white: white.val(),
+                black: black.val()
+              })
+              if (state.players.white && state.players.black) {
+                database.ref(`games/${gameId}`).off('value', updateGames)
+              }
+            })
+        }
+      })
+    })
   },
 
   joinTeam({ state }, team) {
@@ -258,7 +262,7 @@ export const playerActions = {
     if (player.uid) {
       // commit('SHOW_PLAYER_NAME_CONFIRMATION')
       sw.setPlayerToken(player)
-      sw.updatePlayerGames(player, { state, commit })
+      // dispatch('updatePlayerGames', player.uid)
     }
   },
   setPlayerName({ commit, state }, name) {
