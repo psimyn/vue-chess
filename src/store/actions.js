@@ -49,8 +49,9 @@ export const actions = {
     commit(SET_CURRENT_MOVE, index)
   },
 
-  loadGame({ commit, state }, gameId) {
+  loadGame({ commit, dispatch, state }, gameId) {
     commit(SET_LOADING, true)
+
     // remove old listeners
     if (state.gameId) {
       database.ref(`moves/${state.gameId}`).off('child_added')
@@ -62,10 +63,12 @@ export const actions = {
 
     database.ref(`moves/${gameId}`).on('child_added', (snapshot, prevKey) => {
       const move = snapshot.val()
-      const lastMove = state.moves[state.moves.length - 1]
+      const lastIndex = Math.max(0, state.moves.length - 1)
+      const lastMove = state.moves[lastIndex]
       if (lastMove !== move) {
         commit(ADD_MOVE, move)
         commit(SET_SELECTED_SQUARE, null)
+        dispatch('setCurrentMove', state.moves.length)
       }
       commit(SET_LOADING, false)
     })

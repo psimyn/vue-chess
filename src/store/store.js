@@ -66,14 +66,22 @@ export default {
     currentMoves: (state, getters) => {
       const gameClient = chess.create({ PGN: true })
       return getters.currentMovesPgn.map(m => {
-        return gameClient.move(m)
+        try {
+          return gameClient.move(m)
+        } catch (e) {
+          console.error(e)
+        }
       })
     },
     currentMovesPgn: state => state.moves.slice(0, state.currentMove + 1),
     gameStatus: (state, getters) => {
       const gameClient = chess.create({ PGN: true })
       getters.currentMovesPgn.forEach(m => {
-        gameClient.move(m)
+        try {
+          return gameClient.move(m)
+        } catch (e) {
+          console.error(e)
+        }
       })
       return gameClient.getStatus()
     },
