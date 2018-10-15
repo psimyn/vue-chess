@@ -109,8 +109,6 @@ body {
   background: #f2f2f2;
   /* disabled pull-to-refresh */
   overscroll-behavior-y: none;
-  height: 100vh;
-  overflow: hidden;
 }
 
 /* todo: reset */
@@ -170,7 +168,6 @@ button {
 }
 
 .el-tabs__content {
-  max-height: calc(100vh - 40px);
   overflow: auto;
 }
 
@@ -189,6 +186,6 @@ button {
 }
 
 .expanded .el-tabs {
-  height: 100vh;
+  min-height: 100vh;
 }
 </style>

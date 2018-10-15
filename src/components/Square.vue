@@ -5,8 +5,8 @@
     :style="{
       backgroundColor
     }"
-    v-on:mousedown="handlePointerDown"
-    v-on:touchstart="handlePointerDown"
+    v-on:mousedown.prevent="handlePointerDown"
+    v-on:touchstart.prevent="handlePointerDown"
   >
     <div
       v-if="showLabel"
