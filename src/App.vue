@@ -81,6 +81,8 @@ body {
   font-family: "Roboto", sans-serif;
   margin: 0;
   background: #f2f2f2;
+  /* disabled pull-to-refresh */
+  overscroll-behavior-y: none;
 }
 
 /* todo: reset */
