@@ -4,19 +4,21 @@ import chess from 'chess'
 import { firebase, auth, database, messaging } from './firebase'
 import * as firebaseui from 'firebaseui'
 import { notationToIndex } from './chess'
-
-export const SET_PLAYER_NAME = 'SET_PLAYER_NAME'
-export const SET_PLAYER = 'SET_PLAYER'
-export const UNSET_PLAYER = 'UNSET_PLAYER'
-export const UPDATE_PLAYER_NAMES = 'UPDATE_PLAYER_NAMES'
-export const SET_MESSAGE = 'SET_MESSAGE'
-export const SET_SELECTED_SQUARE = 'SET_SELECTED_SQUARE'
-export const ADD_MOVE = 'ADD_MOVE'
-export const SET_CURRENT_MOVE = 'SET_CURRENT_MOVE'
-export const SET_GAME_ID = 'SET_GAME_ID'
-export const UPDATE_MY_GAMES = 'UPDATE_MY_GAMES'
-export const SET_LOADING = 'SET_LOADING'
-export const SHOW_PLAYER_NAME_CONFIRMATION = 'SHOW_PLAYER_NAME_CONFIRMATION'
+import {
+  SET_PLAYER_NAME,
+  SET_PLAYER,
+  UNSET_PLAYER,
+  UPDATE_PLAYER_NAMES,
+  SET_MESSAGE,
+  SET_SELECTED_SQUARE,
+  ADD_MOVE,
+  SET_CURRENT_MOVE,
+  SET_GAME_ID,
+  UPDATE_MY_GAMES,
+  SET_LOADING,
+  SET_LOADING_GAMES,
+  SHOW_PLAYER_NAME_CONFIRMATION
+} from './mutation-types';
 
 export const sw = {
   setPlayerToken(player) {
@@ -88,7 +90,7 @@ export const actions = {
 
   },
   updatePlayerGames({ state, commit }) {
-    state.loadingGames = true;
+    commit(SET_LOADING_GAMES, true)
     database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
       const gameIds = snapshot.val() || {}
       const games = Object.keys(gameIds).filter(i => gameIds[i])
@@ -111,7 +113,7 @@ export const actions = {
                 white: white.val(),
                 black: black.val()
               })
-              state.loadingGames = false;
+              commit(SET_LOADING_GAMES, false)
               if (state.players.white && state.players.black) {
                 database.ref(`games/${gameId}`).off('value', updateGames)
               }
