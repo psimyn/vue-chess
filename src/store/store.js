@@ -88,6 +88,9 @@ export default {
     previousMove: (state, getters) => {
       if (getters.currentMoves.length === 0) return {};
       const move = getters.currentMoves[getters.currentMoves.length - 1]
+      if (!move) {
+        console.error('invalid moves for game: ', state.gameId)
+      }
       return {
         src: move.prevSquare,
         dest: move.postSquare,
