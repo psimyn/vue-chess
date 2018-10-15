@@ -9,7 +9,7 @@
     "start": "npm run dev",
     "build": "NODE_ENV=production webpack --progress --hide-modules",
     "build:all": "npm run prebuild && npm run build && workbox generateSW",
-    "deploy": "gh-pages -d dist",
+    "deploy": "npm run build:all && gh-pages -d dist",
     "stats": "webpack --profile --json > stats.json",
     "test": "jest"
   },
