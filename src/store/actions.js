@@ -87,7 +87,7 @@ export const actions = {
       database.ref(`players/${state.game.black}/name`).off('value')
     }
 
-    state.gameClient = chess.create({ PGN: true })
+    const gameClient = chess.create({ PGN: true })
     state.moves = []
 
     database.ref(`moves/${gameId}`).on('child_added', (snapshot, prevKey) => {
@@ -121,7 +121,7 @@ export const actions = {
     database.ref(`players/${state.playerId}/games/${state.gameId}`).set(true)
   },
 
-  clickSquare({ dispatch, state }, square) {
+  clickSquare({ dispatch, state, getters }, square) {
     if (!state.selected) {
       return
     }
@@ -131,11 +131,11 @@ export const actions = {
     }
 
     const index = notationToIndex(square)
-    const { piece } = state.gameClient.getStatus().board.squares[index]
+    const { piece } = getters.gameStatus.board.squares[index]
     const side = piece && piece.side.name
 
     const selectedIndex = notationToIndex(state.selected)
-    const { piece: selectedPiece } = state.gameClient.getStatus().board.squares[selectedIndex]
+    const { piece: selectedPiece } = getters.gameStatus.board.squares[selectedIndex]
     const selectedSide = selectedPiece && selectedPiece.side.name
 
     const sameTeam = side === selectedSide
@@ -144,13 +144,13 @@ export const actions = {
       dispatch('movePiece', square)
     }
   },
-  selectSquare({ commit, dispatch, state }, selection) {
+  selectSquare({ commit, dispatch, state, getters }, selection) {
     if (!selection) {
       commit(SET_SELECTED_SQUARE, null)
       return
     }
 
-    const status = state.gameClient.getStatus()
+    const status = getters.gameStatus
     const index = notationToIndex(selection)
     const square = status.board.squares[index]
     if (!square.piece) return
@@ -172,7 +172,7 @@ export const actions = {
       commit(SET_MESSAGE, null)
     }, timeout)
   },
-  movePiece({ commit, dispatch, state }, to) {
+  movePiece({ commit, dispatch, state, getters }, to) {
     if (!state.selected) {
       throw new Error('no piece selected')
     }
@@ -180,7 +180,7 @@ export const actions = {
     const fromIndex = notationToIndex(state.selected)
     const toIndex = notationToIndex(to)
 
-    const game = state.gameClient.getStatus()
+    const game = getters.gameStatus
     const squares = game.board.squares
     const move = {
       from: squares[fromIndex],

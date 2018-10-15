@@ -1,7 +1,7 @@
 <template>
   <span
     class="square"
-    :data-coord="`${square.file}${square.rank}`"
+    :data-coord="`${file}${rank}`"
     :style="{
       backgroundColor
     }"
@@ -12,10 +12,11 @@
       v-if="showLabel"
       class="square-label"
     >
-      {{ square.rank }}{{ square.file }}
+      {{ rank }}{{ file }}
     </div>
     <piece
-      v-bind:piece="square.piece"
+      v-show="piece"
+      v-bind:piece="piece"
       :selected="isSelected"
       :transform="transform"
     />
@@ -24,6 +25,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { isEqual } from "lodash";
 import Piece from "./Piece.vue";
 
 const bg = {
@@ -55,8 +57,14 @@ export default {
     Piece
   },
   props: {
-    square: {
+    piece: {
       type: Object
+    },
+    rank: {
+      type: Number
+    },
+    file: {
+      type: String
     },
     showLabel: {
       type: Boolean,
@@ -83,7 +91,7 @@ export default {
       };
     },
     isSelected() {
-      return this.selected === `${this.square.file}${this.square.rank}`;
+      return this.selected === `${this.file}${this.rank}`;
     },
     previousSrc() {
       return this.matches(this.previousMove.src);
@@ -107,7 +115,7 @@ export default {
     ...mapActions(["clickSquare", "selectSquare"]),
     matches(square = {}) {
       const { file, rank } = square;
-      return this.square.file === file && this.square.rank === rank;
+      return this.file === file && this.rank === rank;
     },
     handlePointerDown(evt) {
       const square = evt.currentTarget.getAttribute("data-coord");
@@ -135,6 +143,7 @@ export default {
       });
     },
     handlePointerUp(evt) {
+      console.log("reset!");
       const { clientX, clientY } = coords(evt);
 
       const el = document.elementFromPoint(clientX, clientY);

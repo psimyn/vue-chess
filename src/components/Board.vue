@@ -10,7 +10,9 @@
       <square
         :key="`${s.file}${s.rank}`"
         v-for="s of board.squares"
-        :square="s"
+        :piece="s.piece"
+        :rank="s.rank"
+        :file="s.file"
       />
       <div
         v-if="!gameStarted && !loading"
@@ -57,7 +59,7 @@ export default {
   computed: {
     ...mapGetters({
       selected: "selected",
-      board: "board",
+      gameStatus: "gameStatus",
       game: "game",
       players: "players",
       loading: "loading"
@@ -68,6 +70,9 @@ export default {
     },
     gameStarted() {
       return this.game.white && this.game.black;
+    },
+    board() {
+      return this.gameStatus.board;
     }
   },
   methods: {
@@ -92,6 +97,7 @@ export default {
   box-shadow: 0 1px 2px rgba(22, 22, 22, 0.2);
   position: relative;
   transition: transform 0.4s cubic-bezier(0, 0.99, 0.3, 1);
+  user-select: none;
 }
 
 .playingAsBlack {
