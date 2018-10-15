@@ -42,6 +42,7 @@ function sameSquare(a, b) {
 
 export const actions = {
   addMoves({ commit }, moves) {
+    3
     moves.forEach(move => commit(ADD_MOVE, move))
   },
 
@@ -314,7 +315,9 @@ export const playerActions = {
               ])
             })
             .then(() => {
-              return anonymousUser.delete()
+              if (anonymousUser) {
+                return anonymousUser.delete()
+              }
             })
             .then(() => {
               data = {}
@@ -325,6 +328,9 @@ export const playerActions = {
             })
         },
         signInSuccess(currentUser, credential, redirectUrl) {
+          if (currentUser.isAnonymous) {
+            anonymousUser = currentUser
+          }
           return false
         }
       },
@@ -346,13 +352,8 @@ export const playerActions = {
     if (!this.ui) {
       this.ui = new firebaseui.auth.AuthUI(auth)
     }
-    const currentUser = auth.currentUser
 
-    if (currentUser.isAnonymous) {
-      anonymousUser = currentUser
-      this.ui.start('#firebaseui-auth-container', firebaseuiConfig)
-    }
-    this.ui.disableAutoSignIn()
+    this.ui.start('#firebaseui-auth-container', firebaseuiConfig)
   },
   signInAnonymously() {
     auth.signInAnonymously()
