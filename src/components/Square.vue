@@ -143,7 +143,6 @@ export default {
       });
     },
     handlePointerUp(evt) {
-      console.log("reset!");
       const { clientX, clientY } = coords(evt);
 
       const el = document.elementFromPoint(clientX, clientY);
