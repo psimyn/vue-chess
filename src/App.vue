@@ -7,36 +7,39 @@
           <board />
         </transition>
 
-        <el-button
-          type="text"
-          round
-          class="float-right"
-          :class="{ top0: expanded }"
-          :icon="expandIcon"
-          @click="toggleExpanded"
-        />
-
-        <el-tabs
-          type="border-card"
+        <div
+          class="collapse"
           :class="{ expanded }"
-          class="chess-tabs"
         >
-          <el-tab-pane label="Play">
-            <status />
-            <captured-pieces />
-          </el-tab-pane>
-          <el-tab-pane label="Analyze">
-            <move-history></move-history>
-          </el-tab-pane>
-          <el-tab-pane label="My Games">
-            <game-list />
-          </el-tab-pane>
-          <el-tab-pane label="Settings">
-            <player
-              v-if="!loading"
-            />
-          </el-tab-pane>
-        </el-tabs>
+          <el-button
+            type="text"
+            round
+            class="float-right"
+            :icon="expandIcon"
+            @click="toggleExpanded"
+          />
+
+          <el-tabs
+            type="border-card"
+            class="chess-tabs"
+          >
+            <el-tab-pane label="Play">
+              <status />
+              <captured-pieces />
+            </el-tab-pane>
+            <el-tab-pane label="Analyze">
+              <move-history></move-history>
+            </el-tab-pane>
+            <el-tab-pane label="My Games">
+              <game-list />
+            </el-tab-pane>
+            <el-tab-pane label="Settings">
+              <player
+                v-if="!loading"
+              />
+            </el-tab-pane>
+          </el-tabs>
+        </div>
       </div>
     </div>
   </template>
@@ -131,14 +134,14 @@ body * {
   display: flex;
 }
 
+.collapse {
+  position: relative;
+}
+
 .float-right {
   position: absolute;
   right: 0;
-  z-index: 8;
-}
-
-.top0 {
-  top: 0;
+  z-index: 1;
 }
 
 button {
@@ -158,7 +161,7 @@ button {
   transform: translate3d(0, -40%, 0);
 }
 
-.chess-tabs {
+.collapse {
   margin-top: 0;
   transition: max-height 0.1s ease-out, transform 0.1s ease-out;
   z-index: 7;
@@ -167,18 +170,25 @@ button {
 }
 
 .el-tabs__content {
+  max-height: calc(100vh - 40px);
   overflow: auto;
 }
 
 .expanded {
   position: absolute;
-  transform: translateY(calc(-100vw + 72px));
+  transform: translateY(calc(-100vmin + 40px));
   left: 0;
   right: 0;
   z-index: 7;
 }
 
-.expanded .button {
-  top: 0;
+@media (min-width: 600px) and (min-height: 600px) {
+  .expanded {
+    transform: translateY(calc(-600px));
+  }
+}
+
+.expanded .el-tabs {
+  height: 100vh;
 }
 </style>

@@ -89,7 +89,7 @@ export default {
   max-width: 600px;
   max-height: 600px;
   width: 100vmin;
-  height: 100vmin;
+  height: calc(100vmin - 40px);
   display: grid;
   grid-gap: 0;
   grid-template-rows: repeat(8, minmax(40px, 1fr));
