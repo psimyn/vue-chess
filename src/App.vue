@@ -7,8 +7,19 @@
           <board />
         </transition>
 
+        <el-button
+          type="text"
+          round
+          class="float-right"
+          :class="{ top0: expanded }"
+          :icon="expandIcon"
+          @click="toggleExpanded"
+        />
+
         <el-tabs
           type="border-card"
+          :class="{ expanded }"
+          class="chess-tabs"
         >
           <el-tab-pane label="Play">
             <status />
@@ -50,6 +61,11 @@ export default {
     Player,
     Status
   },
+  data() {
+    return {
+      expanded: false
+    };
+  },
   computed: {
     ...mapGetters({
       player: "player",
@@ -70,9 +86,16 @@ export default {
       } else {
         return this.players.black === this.player.id;
       }
+    },
+    expandIcon() {
+      return this.expanded ? "el-icon-arrow-down" : "el-icon-arrow-up";
     }
   },
-  created() {}
+  methods: {
+    toggleExpanded() {
+      this.expanded = !this.expanded;
+    }
+  }
 };
 </script>
 
@@ -83,6 +106,8 @@ body {
   background: #f2f2f2;
   /* disabled pull-to-refresh */
   overscroll-behavior-y: none;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* todo: reset */
@@ -106,6 +131,16 @@ body * {
   display: flex;
 }
 
+.float-right {
+  position: absolute;
+  right: 0;
+  z-index: 8;
+}
+
+.top0 {
+  top: 0;
+}
+
 button {
   border: solid 1px #222;
   border-bottom: solid 2px #888;
@@ -121,5 +156,29 @@ button {
 .slide-leave-to {
   opacity: 0;
   transform: translate3d(0, -40%, 0);
+}
+
+.chess-tabs {
+  margin-top: 0;
+  transition: max-height 0.1s ease-out, transform 0.1s ease-out;
+  z-index: 7;
+  position: absolute;
+  width: 100%;
+}
+
+.el-tabs__content {
+  overflow: auto;
+}
+
+.expanded {
+  position: absolute;
+  transform: translateY(calc(-100vw + 72px));
+  left: 0;
+  right: 0;
+  z-index: 7;
+}
+
+.expanded .button {
+  top: 0;
 }
 </style>
