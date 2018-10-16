@@ -1,6 +1,7 @@
 0.4.0
 
 - lazy load player's games to speed up initial load
+- Disable moving pieces when navigating HIstory
 
 0.3.0
 
