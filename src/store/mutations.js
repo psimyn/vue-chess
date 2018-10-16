@@ -33,7 +33,7 @@ export default {
     // todo: should this error instead?
     if (move) {
       state.moves = state.moves.concat(move)
-      state.currentMove = state.moves.length
+      state.currentMove = state.moves.length - 1
     }
   },
   [SET_CURRENT_MOVE](state, index) {

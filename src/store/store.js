@@ -14,7 +14,7 @@ const initialState = {
 
   // game state
   moves: [],
-  currentMove: 0,
+  currentMove: -1,
   capturedPieces: {
     white: [],
     black: []
