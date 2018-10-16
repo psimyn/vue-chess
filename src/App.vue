@@ -105,6 +105,7 @@ body {
   background: #f2f2f2;
   /* disabled pull-to-refresh */
   overscroll-behavior-y: none;
+  overflow-x: hidden;
 }
 
 /* todo: reset */
