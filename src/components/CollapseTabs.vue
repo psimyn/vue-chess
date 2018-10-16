@@ -27,7 +27,7 @@
       <el-tab-pane
         label="Analyze"
         name="analyze"
-        :disabled="!gameStarted"
+        :disabled="moves.length === 0"
       >
         <move-history></move-history>
       </el-tab-pane>
@@ -79,7 +79,7 @@ export default {
       version: "version"
     }),
     ...mapGetters({
-      gameStarted: "gameStarted"
+      moves: "moves"
     }),
     expandIcon() {
       return this.expanded ? "el-icon-arrow-down" : "el-icon-arrow-up";
