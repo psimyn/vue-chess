@@ -41,6 +41,7 @@
               lazy
             >
               <player />
+              <h3>About</h3>
               Version: {{ version }}
             </el-tab-pane>
           </el-tabs>

@@ -3,20 +3,45 @@
     <div v-if="player.id">
       <div class="player-current-info">
         <span v-if="player.name">
-          playing as {{player.name}}
+          Playing as {{player.name}} 
+          <el-button
+            type="text"
+            @click="editName = true"
+          >
+            edit name
+          </el-button>
         </span>
         <el-button
           v-if="!player.isAnonymous"
-          v-on:click="signOut()"
+          @click="signOut()"
         >
           Logout
         </el-button>
       </div>
     </div>
+    <div v-if="editName">
+      <h3>Display Name</h3>
+      <div class="name-form">
+        <input type="text" v-model="name" />
+        <el-button
+          type="primary"
+          @click="setName(name)"
+        >
+          Save
+        </el-button>
+        <el-button
+          @click="editName = false"
+        >
+          Cancel
+        </el-button>
+      </div>
+      <p class="helptext">This is publicly visible</p>
+    </div>
     <div class="login-section">
       <login />
     </div>
     <div class="login-section">
+      <h3>Notifications</h3>
       <notification-button />
     </div>
   </div>
@@ -49,13 +74,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["signOut"])
+    ...mapActions(["setPlayerName", "signOut"]),
+    setName() {
+      this.setPlayerName(this.name);
+      this.editName = false;
+    }
   },
   data() {
     return {
       message: "",
-      name: ""
+      name: "",
+      editName: false
     };
+  },
+  mounted() {
+    this.name = this.$store.getters.player.name;
   }
 };
 </script>
@@ -81,10 +114,10 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  padding: 24px 0;
 }
 .login-section {
-  padding: 12px;
+  margin: 24px 0;
 }
 label {
   display: block;
