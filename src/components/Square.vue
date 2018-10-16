@@ -81,6 +81,8 @@ export default {
   },
   computed: {
     ...mapGetters({
+      currentMove: "currentMove",
+      moves: "moves",
       previousMove: "previousMove",
       selected: "selected"
     }),
@@ -118,6 +120,10 @@ export default {
       return this.file === file && this.rank === rank;
     },
     handlePointerDown(evt) {
+      if (this.currentMove !== this.moves.length - 1) {
+        return;
+      }
+
       const square = evt.currentTarget.getAttribute("data-coord");
 
       this.selectSquare(square);
@@ -146,12 +152,13 @@ export default {
       const { clientX, clientY } = coords(evt);
 
       const el = document.elementFromPoint(clientX, clientY);
-      const square = el && el.closest(".square").getAttribute("data-coord");
+      const square = el && el.closest(".square");
+      const coord = square && square.getAttribute("data-coord");
 
       this.x = 0;
       this.y = 0;
 
-      this.clickSquare(square);
+      this.clickSquare(coord);
       this.removeEventListeners();
     },
     addEventListeners() {
