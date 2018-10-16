@@ -22,18 +22,7 @@ new Vue({
   render: h => h(App)
 })
 
-function generateGameId() {
-  return (Math.random() * new Date().getTime()).toString(36).slice(0, 6)
-}
-
 if (process.env.NODE_ENV !== 'test') {
-  const gameId = document.location.hash.slice(1) || generateGameId()
-  store.dispatch('loadGame', gameId)
-
-  const query = window.location.search.slice(1)
-  let { moves = '' } = querystring.parse(query)
-  store.dispatch('addMoves', moves.split(','))
-
   auth.onAuthStateChanged((user) => {
     if (user) {
       database.ref(`players/${user.uid}`).on('value', (snapshot) => {

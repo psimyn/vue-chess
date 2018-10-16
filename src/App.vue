@@ -59,6 +59,11 @@ import GameList from "./components/GameList.vue";
 import MoveHistory from "./components/MoveHistory.vue";
 import Loader from "./components/Loader.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
+import querystring from "querystring";
+
+function generateGameId() {
+  return (Math.random() * new Date().getTime()).toString(36).slice(0, 6);
+}
 
 export default {
   components: {
@@ -91,8 +96,26 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["loadGame", "addMoves"]),
     toggleExpanded() {
       this.expanded = !this.expanded;
+    }
+  },
+  mounted() {
+    let isNewGame;
+    let gameId = document.location.hash.slice(1);
+
+    if (!gameId) {
+      gameId = generateGameId();
+      isNewGame = true;
+    }
+
+    this.loadGame(gameId);
+
+    if (isNewGame) {
+      const query = window.location.search.slice(1);
+      let { moves = "" } = querystring.parse(query);
+      store.dispatch("addMoves", moves.split(","));
     }
   }
 };
