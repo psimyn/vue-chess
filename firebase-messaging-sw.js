@@ -10,4 +10,8 @@ firebase.initializeApp({
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-const messaging = firebase.messaging()
+try {
+  const messaging = firebase.messaging()
+} catch (e) {
+  console.warn('No messaging', e)
+}

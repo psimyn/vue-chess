@@ -19,11 +19,15 @@ export default {
     };
   },
   created() {
-    messaging.getToken().then(currentToken => {
-      if (currentToken) {
-        this.enabled = true;
-      }
-    });
+    try {
+      messaging.getToken().then(currentToken => {
+        if (currentToken) {
+          this.enabled = true;
+        }
+      });
+    } catch (e) {
+      console.warn("No messaging", e);
+    }
   },
   computed: {
     ...mapGetters({
@@ -36,10 +40,14 @@ export default {
   methods: {
     ...mapActions(["saveToken", "revokeToken"]),
     toggleSubscribe() {
-      if (this.enabled) {
-        this.saveToken();
-      } else {
-        this.revokeToken();
+      try {
+        if (this.enabled) {
+          this.saveToken();
+        } else {
+          this.revokeToken();
+        }
+      } catch (e) {
+        console.warn("No messaging", e);
       }
     }
   }

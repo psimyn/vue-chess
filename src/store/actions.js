@@ -24,7 +24,7 @@ import {
 export const sw = {
   setPlayerToken(player) {
     player.getIdToken().then((token) => {
-      if (navigator.serviceWorker.controller) {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           command: 'setPlayerToken',
           message: {

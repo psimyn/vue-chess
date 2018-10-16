@@ -15,7 +15,12 @@ firebase.initializeApp(config)
 
 const auth = firebase.auth()
 const database = firebase.database()
-const messaging = firebase.messaging()
+let messaging
+try {
+  messaging = firebase.messaging()
+} catch (e) {
+  console.warn('No messaging', e)
+}
 
 export {
   firebase,
