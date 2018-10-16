@@ -57,6 +57,9 @@
     "webpack-node-externals": "^1.4.3"
   },
   "jest": {
+    "globals": {
+      "VERSION": "test-001"
+    },
     "moduleFileExtensions": [
       "js",
       "json",
