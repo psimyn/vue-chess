@@ -60,6 +60,9 @@ export default {
         isStalemate
       }
     },
+    gameStarted: (state) => {
+      return state.game.white && state.game.black
+    },
     currentMove: state => state.currentMove,
     players: state => state.players,
     message: state => state.message,

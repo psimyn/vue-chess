@@ -19,7 +19,10 @@
         <status />
         <captured-pieces />
       </el-tab-pane>
-      <el-tab-pane label="Analyze">
+      <el-tab-pane
+        label="Analyze"
+        :disabled="!gameStarted"
+      >
         <move-history></move-history>
       </el-tab-pane>
       <el-tab-pane
@@ -66,6 +69,9 @@ export default {
   computed: {
     ...mapState({
       version: "version"
+    }),
+    ...mapGetters({
+      gameStarted: "gameStarted"
     }),
     expandIcon() {
       return this.expanded ? "el-icon-arrow-down" : "el-icon-arrow-up";

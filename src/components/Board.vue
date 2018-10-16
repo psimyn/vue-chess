@@ -61,15 +61,13 @@ export default {
       selected: "selected",
       gameStatus: "gameStatus",
       game: "game",
+      gameStarted: "gameStarted",
       players: "players",
       loading: "loading"
     }),
     // todo: determine, default to false
     playingAsBlack() {
       return false;
-    },
-    gameStarted() {
-      return this.game.white && this.game.black;
     },
     board() {
       return this.gameStatus.board;
