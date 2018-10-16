@@ -50,8 +50,13 @@ export const actions = {
     })
   },
 
-  setCurrentMove({ commit }, index) {
+  setCurrentMove({ commit, state }, index) {
     commit(SET_CURRENT_MOVE, index)
+
+    state.gameClient = chess.create({ PGN: true })
+    state.moves.slice(0, index).forEach(move => {
+      state.gameClient.move(move)
+    })
   },
 
   loadGame({ commit, dispatch, state }, gameId) {
@@ -74,7 +79,6 @@ export const actions = {
       if (!state.movesById[id]) {
         commit(ADD_MOVE, move, id)
         dispatch('setCurrentMove', state.moves.length)
-        state.gameClient.move(move)
       }
 
       commit(SET_SELECTED_SQUARE, null)
@@ -233,8 +237,6 @@ export const actions = {
     if (validMove) {
       commit(SET_SELECTED_SQUARE, null)
       commit(SET_MESSAGE, null)
-      // todo: find a way to not dupe this with other one
-      // state.gameClient.move(validMove)
       const key = database.ref(`moves/${state.gameId}`).push(validMove)
       // commit(ADD_MOVE, validMove, key)
     } else {

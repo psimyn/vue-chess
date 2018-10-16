@@ -71,7 +71,7 @@ export default {
     message: state => state.message,
     moves: state => state.moves,
     currentMoves: (state, getters) => {
-      return []
+      // return []
       const gameClient = chess.create({ PGN: true })
       return getters.currentMovesPgn.map(m => {
         try {
