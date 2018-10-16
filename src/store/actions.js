@@ -79,6 +79,9 @@ export const actions = {
       const white = snapshot.child('white').val()
       const black = snapshot.child('black').val()
 
+      dispatch('updatePlayerIfNeeded', white)
+      dispatch('updatePlayerIfNeeded', black)
+
       state.game = {
         ...state.game,
         white,
