@@ -1,3 +1,9 @@
+0.4.4
+
+- Improve About page
+- prevent x overflow when starting games
+- Fix crash in browsers that don't support mesasgin
+
 0.4.3
 
 - Fix touchcancel making pieces stick
