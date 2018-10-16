@@ -100,13 +100,9 @@ export default {
       }
     },
     selected: state => state.selected,
-    capturedPieces: (state, getters) => {
-      return {
-        white: [],
-        black: []
-      }
-      const moves = getters.currentMoves
-      return moves.reduce((acc, { move }) => {
+    capturedPieces: (state) => {
+      const moves = state.gameClient.game.moveHistory
+      return moves.reduce((acc, move) => {
         const capturedPiece = move.capturedPiece
         if (capturedPiece) {
           acc[capturedPiece.side.name].push(capturedPiece)
