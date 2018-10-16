@@ -37,7 +37,7 @@
           :disabled="currentMove === moves.length - 1"
         />
 
-        <a :href="newGameUrl">New game from here</a>
+        <!-- <a :href="newGameUrl">New game from here</a> -->
 
         <h3>Move History</h3>
         <div class="move-history-list">

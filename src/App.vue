@@ -50,9 +50,14 @@ export default {
 
     this.loadGame(gameId);
 
-    if (isNewGame) {
+    if (false) {
       const query = window.location.search.slice(1);
-      let { moves = "" } = querystring.parse(query);
+      let { moves = "", ...otherParams } = querystring.parse(query);
+      history.replaceState(
+        "",
+        "",
+        `?${querystring.stringify(otherParams)}#${gameId}`
+      );
       this.addMoves(moves.split(","));
     }
   }
