@@ -53,7 +53,7 @@ export default {
     if (isNewGame) {
       const query = window.location.search.slice(1);
       let { moves = "" } = querystring.parse(query);
-      store.dispatch("addMoves", moves.split(","));
+      this.addMoves(moves.split(","));
     }
   }
 };
