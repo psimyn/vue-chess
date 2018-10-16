@@ -2,7 +2,7 @@
 
 - Improve About page
 - prevent x overflow when starting games
-- Fix crash in browsers that don't support mesasgin
+- Fix crash in browsers that don't support messaging
 
 0.4.3
 
