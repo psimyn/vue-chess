@@ -14,25 +14,33 @@
     <el-tabs
       type="border-card"
       class="chess-tabs"
+      value="play"
+      :before-leave="resetCurrentMove"
     >
-      <el-tab-pane label="Play">
+      <el-tab-pane
+        label="Play"
+        name="play"
+      >
         <status />
         <captured-pieces />
       </el-tab-pane>
       <el-tab-pane
         label="Analyze"
+        name="analyze"
         :disabled="!gameStarted"
       >
         <move-history></move-history>
       </el-tab-pane>
       <el-tab-pane
         label="My Games"
+        name="games"
         lazy
       >
         <game-list />
       </el-tab-pane>
       <el-tab-pane
         label="Settings"
+        name="settings"
         lazy
       >
         <player />
@@ -78,8 +86,14 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["setCurrentMove"]),
     toggleExpanded() {
       this.expanded = !this.expanded;
+    },
+    resetCurrentMove(activeName, oldActiveName) {
+      if (activeName === "play") {
+        this.setCurrentMove();
+      }
     }
   }
 };
