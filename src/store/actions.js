@@ -72,10 +72,6 @@ export const actions = {
       const move = snapshot.val()
 
       if (!state.movesById[id]) {
-        console.log('Adding move from firebase', {
-          id,
-          move
-        })
         commit(ADD_MOVE, move, id)
         dispatch('setCurrentMove', state.moves.length)
         state.gameClient.move(move)

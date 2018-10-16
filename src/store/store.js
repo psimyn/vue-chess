@@ -75,7 +75,6 @@ export default {
       const gameClient = chess.create({ PGN: true })
       return getters.currentMovesPgn.map(m => {
         try {
-          console.log(m)
           return gameClient.move(m)
         } catch (e) {
           debugger
