@@ -29,11 +29,13 @@ export default {
   [SET_SELECTED_SQUARE](state, selection) {
     state.selected = selection
   },
-  [ADD_MOVE](state, move) {
-    // todo: should this error instead?
+  [ADD_MOVE](state, move, id = Math.random()) {
     if (move) {
       state.moves = state.moves.concat(move)
-      state.currentMove = state.moves.length - 1
+      state.currentMove = state.moves.length
+      state.movesById[id] = move
+    } else {
+      console.warn('Tried to add falsey move', move)
     }
   },
   [SET_CURRENT_MOVE](state, index = state.moves.length) {

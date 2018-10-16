@@ -46,7 +46,7 @@ const {
   selectSquare,
   movePiece,
   loadGame,
-  addMoves,
+  startGameFromMoveList,
   setPlayer
 } = actions
 
@@ -58,7 +58,7 @@ function createStore() {
 test('add moves', function () {
   const kpIndianOpening = ['e4', 'e5', 'd3']
   const store = createStore()
-  store.dispatch('addMoves', kpIndianOpening)
+  store.dispatch('startGameFromMoveList', kpIndianOpening)
 
   expect(store.state.moves).toEqual(kpIndianOpening)
 })

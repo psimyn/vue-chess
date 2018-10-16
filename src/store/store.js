@@ -14,11 +14,14 @@ const initialState = {
 
   // game state
   moves: [],
+  movesById: {},
   currentMove: -1,
   capturedPieces: {
     white: [],
     black: []
   },
+
+  gameClient: chess.create({ PGN: true }),
 
   // player
   playerId: null,
@@ -68,28 +71,24 @@ export default {
     message: state => state.message,
     moves: state => state.moves,
     currentMoves: (state, getters) => {
+      return []
       const gameClient = chess.create({ PGN: true })
       return getters.currentMovesPgn.map(m => {
         try {
+          console.log(m)
           return gameClient.move(m)
         } catch (e) {
+          debugger
           console.error(e)
         }
       })
     },
-    currentMovesPgn: state => state.moves.slice(0, state.currentMove + 1),
-    gameStatus: (state, getters) => {
-      const gameClient = chess.create({ PGN: true })
-      getters.currentMovesPgn.forEach(m => {
-        try {
-          return gameClient.move(m)
-        } catch (e) {
-          console.error(e)
-        }
-      })
-      return gameClient.getStatus()
+    currentMovesPgn: state => state.moves, // .slice(0, state.currentMove + 1),
+    gameStatus: (state) => {
+      return state.gameClient.getStatus()
     },
     previousMove: (state, getters) => {
+      return {}
       if (getters.currentMoves.length === 0) return {};
       const move = getters.currentMoves[getters.currentMoves.length - 1]
       if (!move) {
@@ -103,6 +102,10 @@ export default {
     },
     selected: state => state.selected,
     capturedPieces: (state, getters) => {
+      return {
+        white: [],
+        black: []
+      }
       const moves = getters.currentMoves
       return moves.reduce((acc, { move }) => {
         const capturedPiece = move.capturedPiece

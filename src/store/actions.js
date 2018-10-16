@@ -42,9 +42,12 @@ function sameSquare(a, b) {
 }
 
 export const actions = {
-  addMoves({ commit }, moves) {
-    3
-    moves.forEach(move => commit(ADD_MOVE, move))
+  startGameFromMoveList({ commit, state }, moves) {
+    // TODO: should maybe validate these
+    moves.forEach(move => {
+      database.ref(`moves/${state.gameId}`).push(move)
+      // commit(ADD_MOVE, move, key)
+    })
   },
 
   setCurrentMove({ commit }, index) {
@@ -62,16 +65,23 @@ export const actions = {
     }
 
     state.moves = []
+    state.movesById = {}
 
-    database.ref(`moves/${gameId}`).on('child_added', (snapshot, prevKey) => {
+    database.ref(`moves/${gameId}`).on('child_added', (snapshot) => {
+      const id = snapshot.key
       const move = snapshot.val()
-      const lastIndex = Math.max(0, state.moves.length - 1)
-      const lastMove = state.moves[lastIndex]
-      if (lastMove !== move) {
-        commit(ADD_MOVE, move)
-        commit(SET_SELECTED_SQUARE, null)
+
+      if (!state.movesById[id]) {
+        console.log('Adding move from firebase', {
+          id,
+          move
+        })
+        commit(ADD_MOVE, move, id)
         dispatch('setCurrentMove', state.moves.length)
+        state.gameClient.move(move)
       }
+
+      commit(SET_SELECTED_SQUARE, null)
       commit(SET_LOADING, false)
     })
 
@@ -225,10 +235,12 @@ export const actions = {
     })
 
     if (validMove) {
-      commit(ADD_MOVE, validMove)
       commit(SET_SELECTED_SQUARE, null)
       commit(SET_MESSAGE, null)
-      database.ref(`moves/${state.gameId}`).push(validMove)
+      // todo: find a way to not dupe this with other one
+      // state.gameClient.move(validMove)
+      const key = database.ref(`moves/${state.gameId}`).push(validMove)
+      commit(ADD_MOVE, validMove, key)
     } else {
       commit(SET_SELECTED_SQUARE, null)
       dispatch('selectSquare', to)

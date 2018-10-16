@@ -37,7 +37,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(["loadGame", "addMoves"])
+    ...mapActions(["loadGame", "startGameFromMoveList"])
   },
   mounted() {
     let isNewGame;
@@ -50,7 +50,7 @@ export default {
 
     this.loadGame(gameId);
 
-    if (false) {
+    if (isNewGame) {
       const query = window.location.search.slice(1);
       let { moves = "", ...otherParams } = querystring.parse(query);
       history.replaceState(
@@ -58,7 +58,7 @@ export default {
         "",
         `?${querystring.stringify(otherParams)}#${gameId}`
       );
-      this.addMoves(moves.split(","));
+      this.startGameFromMoveList(moves.split(","));
     }
   }
 };
