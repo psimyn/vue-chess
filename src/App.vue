@@ -68,7 +68,10 @@ body {
 }
 
 /* todo: reset */
-h3,
+h3 {
+  margin-bottom: 0;
+}
+
 p {
   margin: 0;
 }

@@ -11,7 +11,9 @@
           </span>
           <span class="error" transition="slide" v-show="message">{{message}}</span>
         </h3>
-        <span><strong>{{whiteName}}</strong> v <strong>{{blackName}}</strong></span>
+        <span v-if="whiteName || blackName">
+          <strong>{{whiteName}}</strong> v <strong>{{blackName}}</strong>
+        </span>
       </div>
     </div>
   </template>

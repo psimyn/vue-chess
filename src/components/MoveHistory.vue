@@ -4,8 +4,6 @@
         v-if="moves.length > 0"
         class="moveHistory"
       >
-        <h3>Move History</h3>
-
         <el-button
           type="secondary"
           icon="el-icon-d-arrow-left"
@@ -40,6 +38,8 @@
         />
 
         <a :href="newGameUrl">New game from here</a>
+
+        <h3>Move History</h3>
         <div class="move-history-list">
           <div class="slider">
             <div v-bind:style="{top}" class="slider-knob">
