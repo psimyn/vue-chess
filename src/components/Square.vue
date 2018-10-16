@@ -155,8 +155,11 @@ export default {
       const square = el && el.closest(".square");
       const coord = square && square.getAttribute("data-coord");
 
-      this.x = 0;
-      this.y = 0;
+      // wrap in rAF as there may still be one queued from previous Move event
+      requestAnimationFrame(() => {
+        this.x = 0;
+        this.y = 0;
+      });
 
       this.clickSquare(coord);
       this.removeEventListeners();
