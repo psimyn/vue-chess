@@ -36,10 +36,12 @@
             >
               <game-list />
             </el-tab-pane>
-            <el-tab-pane label="Settings">
-              <player
-                v-if="!loading"
-              />
+            <el-tab-pane
+              label="Settings"
+              lazy
+            >
+              <player />
+              Version: {{ version }}
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -73,6 +75,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      version: "version"
+    }),
     ...mapGetters({
       player: "player",
       game: "game",

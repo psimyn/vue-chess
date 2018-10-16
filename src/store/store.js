@@ -32,7 +32,8 @@ const initialState = {
   loading: true,
   loadingGames: true,
   selected: null,
-  message: null
+  message: null,
+  version: VERSION
 }
 
 export default {
