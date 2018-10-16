@@ -236,7 +236,7 @@ export const actions = {
       // todo: find a way to not dupe this with other one
       // state.gameClient.move(validMove)
       const key = database.ref(`moves/${state.gameId}`).push(validMove)
-      commit(ADD_MOVE, validMove, key)
+      // commit(ADD_MOVE, validMove, key)
     } else {
       commit(SET_SELECTED_SQUARE, null)
       dispatch('selectSquare', to)
