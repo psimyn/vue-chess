@@ -7,6 +7,7 @@ import { notationToIndex } from './chess'
 import {
   SET_PLAYER_NAME,
   SET_PLAYER,
+  SET_PLAYER_NAME_BY_ID,
   UNSET_PLAYER,
   UPDATE_PLAYER_NAMES,
   SET_MESSAGE,
@@ -90,39 +91,54 @@ export const actions = {
     commit(SET_GAME_ID, gameId)
   },
 
-  updateGame() {
-
+  updatePlayerIfNeeded({ commit, state }, id) {
+    const name = state.players[id]
+    if (!name) {
+      commit(SET_PLAYER_NAME_BY_ID, {
+        id,
+        name: '...'
+      })
+      return database.ref(`players/${id}/name`)
+        .once('value')
+        .then(snapshot => {
+          commit(SET_PLAYER_NAME_BY_ID, {
+            id,
+            name: snapshot.val()
+          })
+        })
+    }
+    return Promise.resolve()
   },
-  updatePlayerGames({ state, commit }) {
-    commit(SET_LOADING_GAMES, true)
+
+  updateGame({ commit, dispatch, state }, snapshot) {
+    const gameId = snapshot.key
+    const { black: blackPlayerId, white: whitePlayerId } = snapshot.val()
+    return Promise.all([
+      dispatch('updatePlayerIfNeeded', blackPlayerId),
+      dispatch('updatePlayerIfNeeded', whitePlayerId)
+    ]).then(() => {
+      commit(UPDATE_MY_GAMES, {
+        gameId,
+        white: state.players[whitePlayerId],
+        black: state.players[blackPlayerId]
+      })
+    })
+  },
+
+  updatePlayerGames({ state, commit, dispatch }) {
     database.ref(`players/${state.playerId}/games`).on('value', (snapshot) => {
       const gameIds = snapshot.val() || {}
       const games = Object.keys(gameIds).filter(i => gameIds[i])
-      games.forEach((gameId) => {
-        database.ref(`games/${gameId}`).on('value', updateGames)
-
-        function updateGames(snapshot) {
-          const game = snapshot.val()
-          return Promise.all([
-            database.ref(`players/${game.white}/name`).once('value'),
-            database.ref(`players/${game.black}/name`).once('value')
-          ])
-            .then(([white, black]) => {
-              commit(UPDATE_PLAYER_NAMES, {
-                [game.white]: white.val(),
-                [game.black]: black.val()
-              })
-              commit(UPDATE_MY_GAMES, {
-                gameId,
-                white: white.val(),
-                black: black.val()
-              })
-              commit(SET_LOADING_GAMES, false)
-              if (state.players.white && state.players.black) {
-                database.ref(`games/${gameId}`).off('value', updateGames)
-              }
+      Promise.all(
+        games.map((gameId) => {
+          return new Promise((resolve) => {
+            database.ref(`games/${gameId}`).on('value', snapshot => {
+              dispatch('updateGame', snapshot).then(resolve)
             })
-        }
+          })
+        })
+      ).then(() => {
+        commit(SET_LOADING_GAMES, false)
       })
     })
   },

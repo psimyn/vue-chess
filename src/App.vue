@@ -80,19 +80,6 @@ export default {
       moves: "moves",
       loading: "loading"
     }),
-    players() {
-      return this.game.players;
-    },
-    turn() {
-      return this.moves.length % 2 === 1 ? "White" : "Black";
-    },
-    yourMove() {
-      if (this.moves.length % 2 === 1) {
-        return this.players.white === this.player.id;
-      } else {
-        return this.players.black === this.player.id;
-      }
-    },
     expandIcon() {
       return this.expanded ? "el-icon-arrow-down" : "el-icon-arrow-up";
     }
@@ -172,6 +159,7 @@ button {
 
 .el-tabs__content {
   overflow: auto;
+  min-height: 2em;
 }
 
 .expanded {

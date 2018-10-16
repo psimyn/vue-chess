@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import {
   SET_PLAYER_NAME,
+  SET_PLAYER_NAME_BY_ID,
   SET_PLAYER,
   UNSET_PLAYER,
   UPDATE_PLAYER_NAMES,
@@ -88,6 +89,12 @@ export default {
     state.players = {
       ...state.players,
       [playerId]: name
+    }
+  },
+  [SET_PLAYER_NAME_BY_ID](state, { name, id }) {
+    state.players = {
+      ...state.players,
+      [id]: name
     }
   }
 }
