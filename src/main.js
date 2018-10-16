@@ -1,29 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {
-  Button,
-  Card,
-  Loading,
-  Row,
-  Switch,
-  Tabs,
-  TabPane
-} from 'element-ui'
 import querystring from 'querystring'
+import registerElements from './elements'
 import App from './App.vue'
 import storeConfig from './store/store'
 import { auth, database } from './store/firebase'
 
-Vue.use(Button)
-Vue.use(Card)
-Vue.use(Row)
-Vue.use(Switch)
-Vue.use(Tabs)
-Vue.use(TabPane)
-
-Vue.use(Loading.directive)
-
-Vue.prototype.$loading = Loading.service
+registerElements(Vue)
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')

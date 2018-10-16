@@ -8,7 +8,7 @@ import {
   TabPane
 } from 'element-ui'
 
-export default function (Vue) {
+export default function registerElements(Vue) {
   Vue.use(Button)
   Vue.use(Card)
   Vue.use(Row)
@@ -16,7 +16,5 @@ export default function (Vue) {
   Vue.use(Tabs)
   Vue.use(TabPane)
 
-  // Vue.use(Loading.directive)
-
-  // Vue.prototype.$loading = Loading.service
+  Vue.use(Loading.directive)
 }
