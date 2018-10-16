@@ -17,8 +17,10 @@ npm test
 
 ## TODO
 
-- Forward/back moves
-- New Game from Analyze tab
+- fix notifications
+- firebase deprecations
+- filter & order My Games (recent/active first)
 - add dateStarted and lastMove fields
 - Move anims
+- Sentry
 - Offline support
