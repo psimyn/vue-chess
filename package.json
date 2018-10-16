@@ -69,5 +69,6 @@
       ".*\\.(js)$": "babel-jest",
       ".*\\.(vue)$": "vue-jest"
     }
-  }
+  },
+  "version": "0.4.1"
 }
