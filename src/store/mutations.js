@@ -39,8 +39,7 @@ export default {
   [SET_CURRENT_MOVE](state, index = state.moves.length) {
     const totalMoves = state.moves.length
     if (totalMoves === 0) {
-      console.error('Empty moves array')
-      state.currentMove = 1
+      state.currentMove = -1
     } else {
       if (index >= totalMoves) {
         index = totalMoves - 1

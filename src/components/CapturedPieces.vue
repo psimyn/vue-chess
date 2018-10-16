@@ -25,7 +25,6 @@ export default {
     ElPiece
   },
   methods: {
-    ...mapActions(["setCurrentMove"]),
     captured(color) {
       const order = ["queen", "rook", "bishop", "knight", "pawn"];
       const pieces = this.capturedPieces[color];
