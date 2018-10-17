@@ -70,33 +70,20 @@ export default {
     players: state => state.players,
     message: state => state.message,
     moves: state => state.moves,
-    currentMoves: (state, getters) => {
-      // return []
-      const gameClient = chess.create({ PGN: true })
-      return getters.currentMovesPgn.map(m => {
-        try {
-          return gameClient.move(m)
-        } catch (e) {
-          debugger
-          console.error(e)
-        }
-      })
-    },
-    currentMovesPgn: state => state.moves, // .slice(0, state.currentMove + 1),
     gameStatus: (state) => {
       return state.gameClient.getStatus()
     },
-    previousMove: (state, getters) => {
-      return {}
-      if (getters.currentMoves.length === 0) return {};
-      const move = getters.currentMoves[getters.currentMoves.length - 1]
-      if (!move) {
-        console.error('invalid moves for game: ', state.gameId)
-      }
+    previousMove: (state) => {
+      const moves = state.gameClient.game.moveHistory
+      const last = moves.length - 1
+      const lastMove = moves[last]
+      if (!lastMove) return {}
       return {
-        src: move.prevSquare,
-        dest: move.postSquare,
-        capturedPiece: move.capturedPiece
+        capturedPiece: lastMove.capturedPiece,
+        dest: {
+          rank: lastMove.postRank,
+          file: lastMove.postFile
+        }
       }
     },
     selected: state => state.selected,
