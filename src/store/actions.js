@@ -42,14 +42,6 @@ function sameSquare(a, b) {
 }
 
 export const actions = {
-  startGameFromMoveList({ commit, state }, moves) {
-    // TODO: should maybe validate these
-    moves.forEach(move => {
-      database.ref(`moves/${state.gameId}`).push(move)
-      // commit(ADD_MOVE, move, key)
-    })
-  },
-
   setCurrentMove({ commit, state }, index) {
     commit(SET_CURRENT_MOVE, index)
 

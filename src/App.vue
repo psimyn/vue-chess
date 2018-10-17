@@ -16,7 +16,6 @@
 import Board from "./components/Board.vue";
 import CollapseTabs from "./components/CollapseTabs.vue";
 import { mapActions, mapGetters } from "vuex";
-import querystring from "querystring";
 
 function generateGameId() {
   return (Math.random() * new Date().getTime()).toString(36).slice(0, 6);
@@ -37,29 +36,12 @@ export default {
     })
   },
   methods: {
-    ...mapActions(["loadGame", "startGameFromMoveList"])
+    ...mapActions(["loadGame"])
   },
   mounted() {
     let isNewGame;
-    let gameId = document.location.hash.slice(1);
-
-    if (!gameId) {
-      gameId = generateGameId();
-      isNewGame = true;
-    }
-
+    let gameId = document.location.hash.slice(1) || generateGameId();
     this.loadGame(gameId);
-
-    if (isNewGame) {
-      const query = window.location.search.slice(1);
-      let { moves = "", ...otherParams } = querystring.parse(query);
-      history.replaceState(
-        "",
-        "",
-        `?${querystring.stringify(otherParams)}#${gameId}`
-      );
-      this.startGameFromMoveList(moves.split(","));
-    }
   }
 };
 </script>

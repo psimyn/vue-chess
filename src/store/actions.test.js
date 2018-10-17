@@ -46,7 +46,6 @@ const {
   selectSquare,
   movePiece,
   loadGame,
-  startGameFromMoveList,
   setPlayer
 } = actions
 
@@ -54,14 +53,6 @@ const {
 function createStore() {
   return new Vuex.Store(cloneDeep(storeConfig))
 }
-
-test('add moves', function () {
-  const kpIndianOpening = ['e4', 'e5', 'd3']
-  const store = createStore()
-  store.dispatch('startGameFromMoveList', kpIndianOpening)
-
-  expect(store.state.moves).toEqual(kpIndianOpening)
-})
 
 // // taken from https://github.com/vuejs/vuex/blob/master/docs/en/testing.md
 // const testAction = (action, arg, state, expectedMutations, expectedError) => {
