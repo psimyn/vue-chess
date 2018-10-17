@@ -17,10 +17,6 @@ import Board from "./components/Board.vue";
 import CollapseTabs from "./components/CollapseTabs.vue";
 import { mapActions, mapGetters } from "vuex";
 
-function generateGameId() {
-  return (Math.random() * new Date().getTime()).toString(36).slice(0, 6);
-}
-
 export default {
   components: {
     Board,
@@ -40,7 +36,7 @@ export default {
   },
   mounted() {
     let isNewGame;
-    let gameId = document.location.hash.slice(1) || generateGameId();
+    let gameId = document.location.hash.slice(1);
     this.loadGame(gameId);
   }
 };

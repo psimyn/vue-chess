@@ -21,6 +21,10 @@ import {
   SHOW_PLAYER_NAME_CONFIRMATION
 } from './mutation-types';
 
+function generateGameId() {
+  return (Math.random() * new Date().getTime()).toString(36).slice(0, 6);
+}
+
 export const sw = {
   setPlayerToken(player) {
     player.getIdToken().then((token) => {
@@ -51,7 +55,7 @@ export const actions = {
     })
   },
 
-  loadGame({ commit, dispatch, state }, gameId) {
+  loadGame({ commit, dispatch, state }, gameId = generateGameId()) {
     commit(SET_LOADING, true)
 
     // remove old listeners

@@ -50,9 +50,42 @@ const {
 } = actions
 
 
-function createStore() {
-  return new Vuex.Store(cloneDeep(storeConfig))
+function createStore(args) {
+  return new Vuex.Store({
+    ...cloneDeep(storeConfig),
+    ...args
+  })
 }
+
+describe('setCurrentMove', () => {
+  let store
+
+  beforeEach(() => {
+    store = createStore()
+    store.state.moves = ['d4', 'd6', 'c4']
+  })
+
+  it('defaults to moves.length - 1', () => {
+    store.dispatch('setCurrentMove')
+
+    expect(store.state.currentMove).toBe(2)
+  })
+
+  it('defaults to move.length for invalid values', () => {
+    store.dispatch('setCurrentMove', 1000)
+
+    expect(store.state.currentMove).toBe(2)
+  })
+
+  it('sets currentMove for valid value', () => {
+    store.dispatch('setCurrentMove', 1)
+
+    expect(store.state.currentMove).toBe(1)
+  })
+
+})
+
+
 
 // // taken from https://github.com/vuejs/vuex/blob/master/docs/en/testing.md
 // const testAction = (action, arg, state, expectedMutations, expectedError) => {
