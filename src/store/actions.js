@@ -42,11 +42,11 @@ function sameSquare(a, b) {
 }
 
 export const actions = {
-  setCurrentMove({ commit, state }, index) {
+  setCurrentMove({ commit, state }, index = state.moves.length) {
     commit(SET_CURRENT_MOVE, index)
 
     state.gameClient = chess.create({ PGN: true })
-    state.moves.slice(0, index).forEach(move => {
+    state.moves.slice(0, index + 1).forEach(move => {
       state.gameClient.move(move)
     })
   },
