@@ -37,7 +37,12 @@
           :disabled="currentMove === moves.length - 1"
         />
 
-        <a :href="newGameUrl">New game from here</a>
+        <el-button
+          type="secondary"
+          @click="newGameFromCurrent"
+        >
+          New game from here
+        </el-button>
 
         <h3>Move History</h3>
         <div class="move-history-list">
@@ -80,16 +85,12 @@ export default {
       current: 0
     };
   },
-  methods: mapActions(["setCurrentMove"]),
+  methods: mapActions(["setCurrentMove", "newGameFromCurrent"]),
   computed: {
     ...mapGetters({
       moves: "moves",
       currentMove: "currentMove"
     }),
-    newGameUrl() {
-      const moveList = this.moves.slice(0, this.currentMove + 1).join(",");
-      return `?moves=${moveList}`;
-    },
     top() {
       const value = (this.currentMove / this.moves.length) * 100;
       return `${value}%`;

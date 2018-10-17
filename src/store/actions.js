@@ -55,6 +55,18 @@ export const actions = {
     })
   },
 
+  newGameFromCurrent({ dispatch, state }) {
+    const moves = state.moves.slice(0, state.currentMove + 1)
+    dispatch('loadGame')
+    dispatch('preloadMoves', moves)
+  },
+
+  preloadMoves({ state }, moves) {
+    moves.forEach(move => {
+      database.ref(`moves/${state.gameId}`).push(move)
+    })
+  },
+
   loadGame({ commit, dispatch, state }, gameId = generateGameId()) {
     commit(SET_LOADING, true)
 
