@@ -12,7 +12,7 @@
       v-if="showLabel"
       class="square-label"
     >
-      {{ rank }}{{ file }}
+      {{ file }}{{ rank }}
     </div>
     <piece
       v-show="piece"
