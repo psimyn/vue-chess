@@ -67,7 +67,8 @@ export const actions = {
     })
   },
 
-  loadGame({ commit, dispatch, state }, gameId = generateGameId()) {
+  loadGame({ commit, dispatch, state }, gameId) {
+    gameId = gameId || generateGameId()
     commit(SET_LOADING, true)
 
     // remove old listeners
@@ -79,6 +80,8 @@ export const actions = {
 
     state.moves = []
     state.movesById = {}
+    document.location.hash = gameId
+    commit(SET_GAME_ID, gameId)
 
     database.ref(`moves/${gameId}`).on('child_added', (snapshot) => {
       const id = snapshot.key
@@ -107,9 +110,6 @@ export const actions = {
       }
       commit(SET_LOADING, false)
     })
-
-    document.location.hash = gameId
-    commit(SET_GAME_ID, gameId)
   },
 
   updatePlayerIfNeeded({ commit, state }, id) {
