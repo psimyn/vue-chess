@@ -92,8 +92,12 @@ export const actions = {
         dispatch('setCurrentMove', state.moves.length)
       }
 
+      // when loading a new game, wait until last move is added
+      if (move === state.moves[state.moves.length - 1]) {
+        commit(SET_LOADING, false)
+      }
+
       commit(SET_SELECTED_SQUARE, null)
-      commit(SET_LOADING, false)
     })
 
     database.ref(`games/${gameId}`).on('value', (snapshot) => {
@@ -108,7 +112,6 @@ export const actions = {
         white,
         black
       }
-      commit(SET_LOADING, false)
     })
   },
 
