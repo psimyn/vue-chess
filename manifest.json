@@ -1,14 +1,16 @@
 {
-  "name": "chess",
-  "short_name": "chess",
+  "name": "airchess",
+  "short_name": "airchess",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#f2f2f2",
-  "theme_color": "#f2f2f2",
+  "background_color": "#00ebfd",
+  "theme_color": "#00ebfd",
   "description": "Chess",
-  "icons": [{
-    "src": "static/white-pawn.svg",
-    "sizes": "512x512"
-  }],
+  "icons": [
+    {
+      "src": "static/white-pawn.svg",
+      "sizes": "512x512"
+    }
+  ],
   "gcm_sender_id": "103953800507"
 }
