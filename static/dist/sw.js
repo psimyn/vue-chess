@@ -1,4 +1,4 @@
-importScripts("/static/precache-manifest.f96ccef130e7b7d2baa771966e644f6d.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.2/workbox-sw.js");
+importScripts("/static/precache-manifest.2db916360ac9977097eff51b84bf7a3b.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.2/workbox-sw.js");
 
 // eslint-env serviceWorker
 // Give the service worker access to Firebase Messaging.
